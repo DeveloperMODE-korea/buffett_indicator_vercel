@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import CalculatorTabs from '@/components/calculator/CalculatorTabs'
 import CompoundCalculator from '@/components/calculator/CompoundCalculator'
+import TargetReturnCalculator from '@/components/calculator/TargetReturnCalculator'
+import DCACalculator from '@/components/calculator/DCACalculator'
+import RetirementCalculator from '@/components/calculator/RetirementCalculator'
 
 type CalculatorType = 'compound' | 'target' | 'dca' | 'retirement'
 
@@ -14,11 +17,11 @@ export default function CalculatorPage() {
       case 'compound':
         return <CompoundCalculator />
       case 'target':
-        return <div className="text-center p-8 text-gray-500 dark:text-gray-400">목표 수익률 계산기 (곧 추가 예정)</div>
+        return <TargetReturnCalculator />
       case 'dca':
-        return <div className="text-center p-8 text-gray-500 dark:text-gray-400">정기투자 계산기 (곧 추가 예정)</div>
+        return <DCACalculator />
       case 'retirement':
-        return <div className="text-center p-8 text-gray-500 dark:text-gray-400">은퇴 자금 계산기 (곧 추가 예정)</div>
+        return <RetirementCalculator />
       default:
         return <CompoundCalculator />
     }
