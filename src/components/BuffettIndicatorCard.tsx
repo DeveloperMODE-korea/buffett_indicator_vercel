@@ -82,8 +82,6 @@ export default function BuffettIndicatorCard({ data, loading, error }: Props) {
   }
 
   const statusInfo = getStatusInfo(data.currentValue, data.status)
-  const changeColor = data.changePercent >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-  const changeIcon = data.changePercent >= 0 ? '↗' : '↘'
 
   return (
     <div className={`card p-8 ${statusInfo.bgColor} ${statusInfo.borderColor} border-2 transition-colors`}>
@@ -92,12 +90,9 @@ export default function BuffettIndicatorCard({ data, loading, error }: Props) {
           현재 버핏 지수
         </h3>
         
-        <div className="flex items-center justify-center space-x-4 mb-4">
-          <div className="text-5xl font-bold text-gray-900 dark:text-white transition-colors">
+        <div className="text-center mb-4">
+          <div className="text-6xl font-bold text-gray-900 dark:text-white transition-colors">
             {data.currentValue.toFixed(1)}%
-          </div>
-          <div className={`text-2xl font-semibold ${changeColor} transition-colors`}>
-            {changeIcon} {Math.abs(data.changePercent).toFixed(1)}%
           </div>
         </div>
 
