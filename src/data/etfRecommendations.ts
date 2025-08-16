@@ -1,0 +1,289 @@
+export interface ETFInfo {
+  symbol: string
+  name: string
+  category: string
+  description: string
+  expenseRatio: string
+  aum: string
+  riskLevel: 'low' | 'medium' | 'high'
+  suitability: string[]
+  pros: string[]
+  cons: string[]
+  currentPrice?: number
+  ytdReturn?: string
+  dividendYield?: string
+}
+
+export const etfRecommendations: ETFInfo[] = [
+  // 미국 전체 시장 ETF
+  {
+    symbol: 'VTI',
+    name: 'Vanguard Total Stock Market ETF',
+    category: '미국 전체 시장',
+    description: '미국 전체 주식시장을 추종하는 대표적인 ETF로, 대형주부터 소형주까지 포괄적으로 투자합니다.',
+    expenseRatio: '0.03%',
+    aum: '3,200억 달러',
+    riskLevel: 'medium',
+    suitability: ['초보 투자자', '장기 투자', '분산 투자', '코어 포트폴리오'],
+    pros: ['매우 낮은 수수료', '넓은 분산 투자', '유동성이 높음', '안정적인 운용사'],
+    cons: ['미국 시장에만 집중', '환율 리스크'],
+    ytdReturn: '+15.2%',
+    dividendYield: '1.4%'
+  },
+  {
+    symbol: 'VOO',
+    name: 'Vanguard S&P 500 ETF',
+    category: '미국 대형주',
+    description: 'S&P 500 지수를 추종하는 ETF로, 미국 대형 기업들에 집중 투자합니다.',
+    expenseRatio: '0.03%',
+    aum: '4,100억 달러',
+    riskLevel: 'medium',
+    suitability: ['초보 투자자', '대형주 선호', '안정적 투자', '코어 포트폴리오'],
+    pros: ['매우 낮은 수수료', '대형주 중심 안정성', '높은 유동성', '검증된 지수'],
+    cons: ['소형주 배제', '미국 시장 의존'],
+    ytdReturn: '+14.8%',
+    dividendYield: '1.5%'
+  },
+  {
+    symbol: 'SPY',
+    name: 'SPDR S&P 500 ETF Trust',
+    category: '미국 대형주',
+    description: '최초의 ETF로, S&P 500 지수를 추종하며 높은 유동성을 제공합니다.',
+    expenseRatio: '0.09%',
+    aum: '4,800억 달러',
+    riskLevel: 'medium',
+    suitability: ['단기 거래', '높은 유동성 필요', '옵션 거래', '기관 투자자'],
+    pros: ['최고의 유동성', '옵션 거래 활발', '실시간 가격 추적', '오랜 역사'],
+    cons: ['상대적으로 높은 수수료', '배당금 재투자 지연'],
+    ytdReturn: '+14.7%',
+    dividendYield: '1.4%'
+  },
+
+  // 기술주 ETF
+  {
+    symbol: 'QQQ',
+    name: 'Invesco QQQ Trust',
+    category: '기술주',
+    description: 'NASDAQ-100 지수를 추종하는 ETF로, 기술주 중심의 성장주에 투자합니다.',
+    expenseRatio: '0.20%',
+    aum: '2,300억 달러',
+    riskLevel: 'high',
+    suitability: ['성장 투자', '기술주 선호', '높은 수익 추구', '리스크 감수 가능'],
+    pros: ['높은 성장 잠재력', '기술 혁신 기업 집중', '높은 유동성', '글로벌 기술 기업'],
+    cons: ['높은 변동성', '높은 밸류에이션', '섹터 집중 리스크'],
+    ytdReturn: '+42.3%',
+    dividendYield: '0.6%'
+  },
+  {
+    symbol: 'IYW',
+    name: 'iShares U.S. Technology ETF',
+    category: '기술주',
+    description: '미국 기술 섹터에 집중 투자하는 ETF로, 다양한 기술 기업들을 포함합니다.',
+    expenseRatio: '0.42%',
+    aum: '120억 달러',
+    riskLevel: 'high',
+    suitability: ['기술주 투자', '섹터 베팅', '성장 투자', '높은 리스크 감수'],
+    pros: ['순수 기술주 집중', '다양한 기술 기업', '높은 성장 잠재력', '섹터 특화'],
+    cons: ['높은 수수료', '섹터 리스크', '높은 변동성'],
+    ytdReturn: '+38.7%',
+    dividendYield: '0.4%'
+  },
+
+  // 배당주 ETF
+  {
+    symbol: 'VYM',
+    name: 'Vanguard High Dividend Yield ETF',
+    category: '배당주',
+    description: '높은 배당 수익률을 제공하는 기업들에 투자하는 ETF입니다.',
+    expenseRatio: '0.06%',
+    aum: '520억 달러',
+    riskLevel: 'medium',
+    suitability: ['배당 수익 추구', '소득 투자', '안정적 투자', '은퇴 준비'],
+    pros: ['높은 배당 수익률', '안정적인 기업', '낮은 수수료', '소득 창출'],
+    cons: ['성장성 제한', '금리 민감성', '배당 감소 가능성'],
+    ytdReturn: '+8.2%',
+    dividendYield: '3.1%'
+  },
+  {
+    symbol: 'SCHD',
+    name: 'Schwab U.S. Dividend Equity ETF',
+    category: '배당주',
+    description: '배당 성장과 품질을 모두 고려한 배당주 ETF입니다.',
+    expenseRatio: '0.06%',
+    aum: '580억 달러',
+    riskLevel: 'medium',
+    suitability: ['배당 성장', '품질 투자', '장기 투자', '소득 투자'],
+    pros: ['배당 성장 추구', '품질 기업 선별', '낮은 수수료', '균형잡힌 접근'],
+    cons: ['성장성 제한', '배당 기준 엄격', '섹터 편중 가능성'],
+    ytdReturn: '+9.8%',
+    dividendYield: '3.5%'
+  },
+
+  // 소형주 ETF
+  {
+    symbol: 'IWM',
+    name: 'iShares Russell 2000 ETF',
+    category: '소형주',
+    description: 'Russell 2000 지수를 추종하는 ETF로, 미국 소형주에 투자합니다.',
+    expenseRatio: '0.19%',
+    aum: '680억 달러',
+    riskLevel: 'high',
+    suitability: ['소형주 투자', '높은 성장 추구', '리스크 감수', '분산 투자'],
+    pros: ['높은 성장 잠재력', '소형주 분산', '높은 유동성', '미국 경제 대표'],
+    cons: ['높은 변동성', '높은 리스크', '경기 민감성'],
+    ytdReturn: '+12.4%',
+    dividendYield: '1.2%'
+  },
+  {
+    symbol: 'VB',
+    name: 'Vanguard Small-Cap ETF',
+    category: '소형주',
+    description: 'CRSP US Small Cap 지수를 추종하는 Vanguard의 소형주 ETF입니다.',
+    expenseRatio: '0.05%',
+    aum: '180억 달러',
+    riskLevel: 'high',
+    suitability: ['소형주 투자', '낮은 수수료 선호', '장기 투자', '분산 투자'],
+    pros: ['매우 낮은 수수료', '소형주 분산', '안정적인 운용사', '장기 성장'],
+    cons: ['높은 변동성', '소형주 리스크', '경기 민감성'],
+    ytdReturn: '+11.8%',
+    dividendYield: '1.4%'
+  },
+
+  // 국제 ETF
+  {
+    symbol: 'VXUS',
+    name: 'Vanguard Total International Stock ETF',
+    category: '국제 주식',
+    description: '미국을 제외한 전 세계 주식시장에 투자하는 ETF입니다.',
+    expenseRatio: '0.07%',
+    aum: '420억 달러',
+    riskLevel: 'medium',
+    suitability: ['글로벌 분산', '국제 투자', '지역 분산', '성장 투자'],
+    pros: ['글로벌 분산', '낮은 수수료', '다양한 지역', '성장 잠재력'],
+    cons: ['환율 리스크', '정치적 리스크', '유동성 제한'],
+    ytdReturn: '+8.9%',
+    dividendYield: '2.8%'
+  },
+  {
+    symbol: 'EFA',
+    name: 'iShares MSCI EAFE ETF',
+    category: '선진국',
+    description: '유럽, 아시아, 호주 등 선진국 주식시장에 투자하는 ETF입니다.',
+    expenseRatio: '0.32%',
+    aum: '580억 달러',
+    riskLevel: 'medium',
+    suitability: ['선진국 투자', '글로벌 분산', '안정적 투자', '지역 분산'],
+    pros: ['선진국 집중', '높은 유동성', '검증된 지수', '다양한 지역'],
+    cons: ['높은 수수료', '환율 리스크', '성장성 제한'],
+    ytdReturn: '+7.2%',
+    dividendYield: '3.1%'
+  },
+
+  // 신흥시장 ETF
+  {
+    symbol: 'VWO',
+    name: 'Vanguard FTSE Emerging Markets ETF',
+    category: '신흥시장',
+    description: '신흥시장 국가들의 주식시장에 투자하는 ETF입니다.',
+    expenseRatio: '0.08%',
+    aum: '780억 달러',
+    riskLevel: 'high',
+    suitability: ['신흥시장 투자', '높은 성장 추구', '리스크 감수', '글로벌 분산'],
+    pros: ['높은 성장 잠재력', '낮은 수수료', '다양한 국가', '인구 통계 이점'],
+    cons: ['높은 변동성', '정치적 리스크', '환율 리스크', '유동성 제한'],
+    ytdReturn: '+5.4%',
+    dividendYield: '2.9%'
+  },
+
+  // 채권 ETF
+  {
+    symbol: 'BND',
+    name: 'Vanguard Total Bond Market ETF',
+    category: '채권',
+    description: '미국 전체 채권시장을 추종하는 ETF로, 안정적인 수익을 제공합니다.',
+    expenseRatio: '0.03%',
+    aum: '980억 달러',
+    riskLevel: 'low',
+    suitability: ['안정적 투자', '소득 투자', '리스크 감소', '은퇴 준비'],
+    pros: ['안정적인 수익', '매우 낮은 수수료', '높은 유동성', '이자 수익'],
+    cons: ['낮은 수익률', '금리 리스크', '인플레이션 민감성'],
+    ytdReturn: '+2.1%',
+    dividendYield: '3.2%'
+  },
+  {
+    symbol: 'TLT',
+    name: 'iShares 20+ Year Treasury Bond ETF',
+    category: '장기 국채',
+    description: '20년 이상 만기의 미국 국채에 투자하는 ETF입니다.',
+    expenseRatio: '0.15%',
+    aum: '420억 달러',
+    riskLevel: 'medium',
+    suitability: ['안전 자산', '금리 하락 베팅', '소득 투자', '포트폴리오 헤징'],
+    pros: ['안전한 자산', '높은 이자 수익', '금리 하락 시 수익', '정부 보장'],
+    cons: ['금리 상승 리스크', '높은 변동성', '장기 투자 필요'],
+    ytdReturn: '-8.7%',
+    dividendYield: '3.8%'
+  },
+
+  // 부동산 ETF
+  {
+    symbol: 'VNQ',
+    name: 'Vanguard Real Estate ETF',
+    category: '부동산',
+    description: '미국 부동산 투자신탁(REIT)에 투자하는 ETF입니다.',
+    expenseRatio: '0.12%',
+    aum: '340억 달러',
+    riskLevel: 'medium',
+    suitability: ['부동산 투자', '높은 배당', '인플레이션 헤징', '분산 투자'],
+    pros: ['높은 배당 수익률', '인플레이션 보호', '부동산 노출', '낮은 수수료'],
+    cons: ['금리 민감성', '경기 민감성', '높은 변동성'],
+    ytdReturn: '+2.8%',
+    dividendYield: '4.2%'
+  },
+
+  // 원자재 ETF
+  {
+    symbol: 'GLD',
+    name: 'SPDR Gold Shares',
+    category: '원자재',
+    description: '금에 직접 투자하는 ETF로, 인플레이션 헤징과 안전 자산 역할을 합니다.',
+    expenseRatio: '0.40%',
+    aum: '580억 달러',
+    riskLevel: 'medium',
+    suitability: ['인플레이션 헤징', '안전 자산', '포트폴리오 보호', '글로벌 불확실성'],
+    pros: ['인플레이션 보호', '안전 자산', '글로벌 통화', '위기 시 수익'],
+    cons: ['보관 비용', '배당 없음', '가격 변동성', '실용성 부족'],
+    ytdReturn: '+12.4%',
+    dividendYield: '0.0%'
+  }
+]
+
+// ETF 카테고리별 분류
+export const etfCategories = [
+  '전체',
+  '미국 전체 시장',
+  '미국 대형주',
+  '기술주',
+  '배당주',
+  '소형주',
+  '국제 주식',
+  '선진국',
+  '신흥시장',
+  '채권',
+  '장기 국채',
+  '부동산',
+  '원자재'
+]
+
+// 투자 목적별 추천 ETF
+export const etfByPurpose = {
+  '초보 투자자': ['VTI', 'VOO', 'BND'],
+  '장기 투자': ['VTI', 'VXUS', 'BND'],
+  '소득 투자': ['VYM', 'SCHD', 'VNQ'],
+  '성장 투자': ['QQQ', 'IWM', 'VWO'],
+  '안정적 투자': ['VOO', 'BND', 'VNQ'],
+  '분산 투자': ['VTI', 'VXUS', 'BND', 'VNQ'],
+  '은퇴 준비': ['VYM', 'SCHD', 'BND', 'VNQ'],
+  '높은 수익 추구': ['QQQ', 'IWM', 'VWO'],
+  '인플레이션 헤징': ['VNQ', 'GLD', 'VWO']
+}

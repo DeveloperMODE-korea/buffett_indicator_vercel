@@ -148,6 +148,87 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ETF Recommendations Section */}
+      <section id="etf-recommendations" className="mb-12">
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-2xl p-8 border border-green-200 dark:border-green-700">
+          <div className="text-center mb-8">
+            <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              📈 추천 ETF 가이드
+            </h3>
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              투자 목적과 위험 성향에 맞는 ETF를 찾아보세요. VTI, VOO, QQQ, IYW 등 다양한 ETF의 상세 정보를 확인할 수 있습니다.
+            </p>
+          </div>
+          
+          {/* 인기 ETF 미리보기 */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700">
+              <Link href="/etf" className="block text-center">
+                <div className="text-2xl mb-2">📊</div>
+                <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                  VTI
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  미국 전체 시장
+                </div>
+              </Link>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700">
+              <Link href="/etf" className="block text-center">
+                <div className="text-2xl mb-2">🚀</div>
+                <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                  QQQ
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  기술주
+                </div>
+              </Link>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700">
+              <Link href="/etf" className="block text-center">
+                <div className="text-2xl mb-2">💰</div>
+                <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                  VYM
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  배당주
+                </div>
+              </Link>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700">
+              <Link href="/etf" className="block text-center">
+                <div className="text-2xl mb-2">🌍</div>
+                <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                  VXUS
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  국제 주식
+                </div>
+              </Link>
+            </div>
+          </div>
+          
+          {/* ETF 가이드 바로가기 버튼 */}
+          <div className="text-center">
+            <Link 
+              href="/etf"
+              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              전체 ETF 가이드 보기
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Economic Comparison Chart Section */}
       <section id="economic-comparison" className="mb-12">
         <EconomicComparisonChart />
