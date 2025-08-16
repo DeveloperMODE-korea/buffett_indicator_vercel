@@ -42,6 +42,9 @@ export default function RootLayout({
                     <a href="/calculator" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
                       투자 계산기
                     </a>
+                    <a href="/dictionary" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                      📚 용어 사전
+                    </a>
                     <a href="#info" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
                       정보
                     </a>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import BuffettIndicatorCard from '@/components/BuffettIndicatorCard'
 import BuffettChart from '@/components/BuffettChart'
 import InfoSection from '@/components/InfoSection'
@@ -54,6 +55,87 @@ export default function Home() {
             버핏 지수 추이 차트
           </h3>
           <BuffettChart loading={loading} />
+        </div>
+      </section>
+
+      {/* Investment Dictionary Section */}
+      <section id="dictionary" className="mb-12">
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 border border-blue-200 dark:border-blue-700">
+          <div className="text-center mb-8">
+            <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              📚 투자 용어 사전
+            </h3>
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              투자와 경제 용어를 쉽게 찾아보세요. 버핏 지수부터 기본적인 투자 개념까지!
+            </p>
+          </div>
+          
+          {/* 인기 용어 미리보기 */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700">
+              <Link href="/dictionary" className="block text-center">
+                <div className="text-2xl mb-2">📈</div>
+                <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                  버핏 지수
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  시장지표
+                </div>
+              </Link>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700">
+              <Link href="/dictionary" className="block text-center">
+                <div className="text-2xl mb-2">💰</div>
+                <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                  P/E 비율
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  주식용어
+                </div>
+              </Link>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700">
+              <Link href="/dictionary" className="block text-center">
+                <div className="text-2xl mb-2">🔄</div>
+                <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                  복리
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  투자기본
+                </div>
+              </Link>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700">
+              <Link href="/dictionary" className="block text-center">
+                <div className="text-2xl mb-2">⚡</div>
+                <div className="font-semibold text-gray-900 dark:text-white text-sm">
+                  변동성
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  위험관리
+                </div>
+              </Link>
+            </div>
+          </div>
+          
+          {/* 용어 사전 바로가기 버튼 */}
+          <div className="text-center">
+            <Link 
+              href="/dictionary"
+              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              전체 용어 사전 보기
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
         </div>
       </section>
 
