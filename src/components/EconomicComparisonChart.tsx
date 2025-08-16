@@ -27,7 +27,7 @@ ChartJS.register(
 
 interface EconomicData {
   buffettIndicator: Array<{date: string, value: number}>
-  peRatio: Array<{date: string, value: number}>
+  unemploymentRate: Array<{date: string, value: number}>
   fedFundsRate: Array<{date: string, value: number}>
   inflationRate: Array<{date: string, value: number}>
   treasury10Year: Array<{date: string, value: number}>
@@ -49,7 +49,7 @@ export default function EconomicComparisonChart() {
   const [lastUpdated, setLastUpdated] = useState<string>('')
   const [visibleSeries, setVisibleSeries] = useState({
     buffett: true,
-    pe: true,
+    unemployment: true,
     fedFunds: true,
     inflation: true,
     treasury: true
@@ -90,9 +90,9 @@ export default function EconomicComparisonChart() {
       return date.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short' })
     }) || [],
     datasets: [
-      // 버핏 지수 (왼쪽 Y축)
+      // 시장/GDP 비율 (왼쪽 Y축)
       {
-        label: '버핏 지수',
+        label: '시장/GDP 비율',
         data: visibleSeries.buffett ? (data?.buffettIndicator.map(point => point.value) || []) : [],
         borderColor: '#3B82F6',
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -102,17 +102,17 @@ export default function EconomicComparisonChart() {
         pointHoverRadius: 6,
         hidden: !visibleSeries.buffett
       },
-      // P/E 비율 (왼쪽 Y축)
+      // 실업률 (오른쪽 Y축)
       {
-        label: 'S&P 500 P/E',
-        data: visibleSeries.pe ? (data?.peRatio.map(point => point.value) || []) : [],
+        label: '실업률',
+        data: visibleSeries.unemployment ? (data?.unemploymentRate.map(point => point.value) || []) : [],
         borderColor: '#10B981',
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
-        yAxisID: 'y',
+        yAxisID: 'y1',
         tension: 0.4,
         pointRadius: 4,
         pointHoverRadius: 6,
-        hidden: !visibleSeries.pe
+        hidden: !visibleSeries.unemployment
       },
       // 연방기금금리 (오른쪽 Y축)
       {
@@ -188,8 +188,8 @@ export default function EconomicComparisonChart() {
             const datasetLabel = context.dataset.label || ''
             const value = context.parsed.y
             
-            if (datasetLabel.includes('버핏') || datasetLabel.includes('P/E')) {
-              return `${datasetLabel}: ${value.toFixed(1)}`
+            if (datasetLabel.includes('시장')) {
+              return `${datasetLabel}: ${value.toFixed(4)}`
             } else {
               return `${datasetLabel}: ${value.toFixed(2)}%`
             }
@@ -218,7 +218,7 @@ export default function EconomicComparisonChart() {
         position: 'left' as const,
         title: {
           display: true,
-          text: '비율 지수 (버핏 지수, P/E)',
+          text: '시장/GDP 비율',
           font: {
             size: 12,
             weight: 'bold'
@@ -238,7 +238,7 @@ export default function EconomicComparisonChart() {
         position: 'right' as const,
         title: {
           display: true,
-          text: '금리/인플레이션 (%)',
+          text: '퍼센트 지표 (%)',
           font: {
             size: 12,
             weight: 'bold'
@@ -338,18 +338,18 @@ export default function EconomicComparisonChart() {
             }`}
           >
             <div className="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
-            버핏 지수
+            시장/GDP 비율
           </button>
           <button
-            onClick={() => toggleSeries('pe')}
+            onClick={() => toggleSeries('unemployment')}
             className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-              visibleSeries.pe 
+              visibleSeries.unemployment 
                 ? 'bg-green-100 text-green-800 border-2 border-green-300' 
                 : 'bg-gray-100 text-gray-500 border-2 border-gray-200 hover:bg-gray-200'
             }`}
           >
             <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-            S&P 500 P/E
+            실업률
           </button>
           <button
             onClick={() => toggleSeries('fedFunds')}
@@ -398,10 +398,10 @@ export default function EconomicComparisonChart() {
           💡 차트 해석 가이드:
         </h4>
         <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-          <li>• <strong>왼쪽 Y축</strong>: 버핏 지수와 P/E 비율 (비율 지수)</li>
-          <li>• <strong>오른쪽 Y축</strong>: 금리와 인플레이션 (퍼센트)</li>
-          <li>• 높은 버핏 지수 = 시장 과열 신호, 낮은 값 = 저평가 신호</li>
-          <li>• 금리 상승 시 주식시장에 부정적 영향 가능</li>
+          <li>• <strong>왼쪽 Y축</strong>: 시장/GDP 비율 (S&P 500 / GDP)</li>
+          <li>• <strong>오른쪽 Y축</strong>: 실업률, 금리, 인플레이션 (퍼센트)</li>
+          <li>• 높은 시장/GDP 비율 = 시장 과열 신호, 낮은 값 = 저평가 신호</li>
+          <li>• 금리 상승/실업률 증가 시 주식시장에 부정적 영향 가능</li>
           <li>• 범례를 클릭하여 특정 지표만 선택적으로 볼 수 있습니다</li>
         </ul>
       </div>
