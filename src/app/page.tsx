@@ -4,10 +4,18 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import BuffettIndicatorCard from '@/components/BuffettIndicatorCard'
 import BuffettChart from '@/components/BuffettChart'
+import EconomicComparisonChart from '@/components/EconomicComparisonChart'
 import InfoSection from '@/components/InfoSection'
 
+interface IndicatorData {
+  currentValue: number
+  changePercent: number
+  lastUpdated: string
+  status: 'overvalued' | 'undervalued' | 'fair'
+}
+
 export default function Home() {
-  const [indicatorData, setIndicatorData] = useState(null)
+  const [indicatorData, setIndicatorData] = useState<IndicatorData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -137,6 +145,11 @@ export default function Home() {
             </Link>
           </div>
         </div>
+      </section>
+
+      {/* Economic Comparison Chart Section */}
+      <section id="economic-comparison" className="mb-12">
+        <EconomicComparisonChart />
       </section>
 
       {/* Info Section */}
