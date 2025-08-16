@@ -29,10 +29,10 @@ export default function Home() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Hero Section */}
       <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 transition-colors">
           미국 버핏 지수 실시간 관측
         </h2>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto transition-colors">
           총 시가총액 대비 GDP 비율로 계산되는 버핏 지수를 통해 미국 주식시장의 
           과대평가/과소평가 상태를 실시간으로 확인하세요.
         </p>
@@ -49,8 +49,8 @@ export default function Home() {
 
       {/* Chart Section */}
       <section id="chart" className="mb-12">
-        <div className="card p-6">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">
+        <div className="card p-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 transition-colors">
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 transition-colors">
             버핏 지수 추이 차트
           </h3>
           <BuffettChart loading={loading} />

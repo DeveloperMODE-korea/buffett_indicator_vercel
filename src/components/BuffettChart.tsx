@@ -128,10 +128,10 @@ export default function BuffettChart({ loading }: Props) {
         fill: true,
         tension: 0.1,
       },
-      // 기준선들
+      // 기준선들 (Python 버전 기준)
       {
-        label: '저평가 기준 (70%)',
-        data: chartData.map(point => ({ x: point.x, y: 70 })),
+        label: '현저한 저평가 기준 (75%)',
+        data: chartData.map(point => ({ x: point.x, y: 75 })),
         borderColor: 'rgb(34, 197, 94)',
         backgroundColor: 'rgba(34, 197, 94, 0.1)',
         borderWidth: 1,
@@ -140,8 +140,28 @@ export default function BuffettChart({ loading }: Props) {
         pointRadius: 0,
       },
       {
-        label: '고평가 기준 (120%)',
-        data: chartData.map(point => ({ x: point.x, y: 120 })),
+        label: '적정가치-다소고평가 기준 (90%)',
+        data: chartData.map(point => ({ x: point.x, y: 90 })),
+        borderColor: 'rgb(59, 130, 246)',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        borderWidth: 1,
+        borderDash: [3, 3],
+        fill: false,
+        pointRadius: 0,
+      },
+      {
+        label: '현저한 고평가 기준 (115%)',
+        data: chartData.map(point => ({ x: point.x, y: 115 })),
+        borderColor: 'rgb(245, 158, 11)',
+        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        borderWidth: 1,
+        borderDash: [5, 5],
+        fill: false,
+        pointRadius: 0,
+      },
+      {
+        label: '극도 고평가 기준 (140%)',
+        data: chartData.map(point => ({ x: point.x, y: 140 })),
         borderColor: 'rgb(239, 68, 68)',
         backgroundColor: 'rgba(239, 68, 68, 0.1)',
         borderWidth: 1,
@@ -155,7 +175,7 @@ export default function BuffettChart({ loading }: Props) {
   if (loading) {
     return (
       <div className="h-96 flex items-center justify-center">
-        <div className="animate-pulse text-gray-500">차트 데이터를 불러오는 중...</div>
+        <div className="animate-pulse text-gray-500 dark:text-gray-400 transition-colors">차트 데이터를 불러오는 중...</div>
       </div>
     )
   }
@@ -170,8 +190,8 @@ export default function BuffettChart({ loading }: Props) {
             onClick={() => setTimeRange(range)}
             className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
               timeRange === range
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-primary-600 dark:bg-primary-500 text-white'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
             {range}
@@ -184,21 +204,32 @@ export default function BuffettChart({ loading }: Props) {
         <Line options={chartOptions} data={data} />
       </div>
 
-      {/* 차트 설명 */}
-      <div className="mt-4 text-sm text-gray-600">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="flex items-center">
-            <div className="w-4 h-0.5 bg-green-500 mr-2"></div>
-            <span>저평가 기준선 (70%)</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-4 h-0.5 bg-red-500 mr-2"></div>
-            <span>고평가 기준선 (120%)</span>
-          </div>
+      {/* 차트 설명 (Python 버전 기준) */}
+      <div className="mt-4 text-sm text-gray-600 dark:text-gray-400 transition-colors">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           <div className="flex items-center">
             <div className="w-4 h-0.5 bg-blue-500 mr-2"></div>
-            <span>현재 버핏 지수</span>
+            <span className="text-gray-700 dark:text-gray-300 transition-colors">현재 버핏 지수</span>
           </div>
+          <div className="flex items-center">
+            <div className="w-4 h-0.5 bg-green-500 mr-2 border-dashed"></div>
+            <span className="text-gray-700 dark:text-gray-300 transition-colors">현저한 저평가 (75%)</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-4 h-0.5 bg-blue-400 mr-2 border-dashed"></div>
+            <span className="text-gray-700 dark:text-gray-300 transition-colors">적정-다소고평가 (90%)</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-4 h-0.5 bg-yellow-500 mr-2 border-dashed"></div>
+            <span className="text-gray-700 dark:text-gray-300 transition-colors">현저한 고평가 (115%)</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-4 h-0.5 bg-red-500 mr-2 border-dashed"></div>
+            <span className="text-gray-700 dark:text-gray-300 transition-colors">극도 고평가 (140%)</span>
+          </div>
+        </div>
+        <div className="mt-3 text-xs text-gray-500 dark:text-gray-400 transition-colors">
+          * 기준선은 워렌 버핏의 시장 평가 기준을 반영합니다
         </div>
       </div>
     </div>
