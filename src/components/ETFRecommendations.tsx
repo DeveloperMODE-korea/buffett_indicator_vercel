@@ -103,6 +103,15 @@ export default function ETFRecommendations() {
               <option value="은퇴 준비">은퇴 준비</option>
               <option value="높은 수익 추구">높은 수익 추구</option>
               <option value="인플레이션 헤징">인플레이션 헤징</option>
+              <option value="섹터 투자">섹터 투자</option>
+              <option value="가치 투자">가치 투자</option>
+              <option value="국제 분산">국제 분산</option>
+              <option value="신흥시장">신흥시장</option>
+              <option value="채권 투자">채권 투자</option>
+              <option value="부동산 투자">부동산 투자</option>
+              <option value="원자재 투자">원자재 투자</option>
+              <option value="혁신 투자">혁신 투자</option>
+              <option value="고배당 투자">고배당 투자</option>
             </select>
           </div>
         </div>

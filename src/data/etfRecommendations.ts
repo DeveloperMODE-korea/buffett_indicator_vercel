@@ -255,6 +255,304 @@ export const etfRecommendations: ETFInfo[] = [
     cons: ['보관 비용', '배당 없음', '가격 변동성', '실용성 부족'],
     ytdReturn: '+12.4%',
     dividendYield: '0.0%'
+  },
+
+  // 추가 ETF들
+
+  // 섹터별 ETF
+  {
+    symbol: 'XLF',
+    name: 'Financial Select Sector SPDR Fund',
+    category: '금융주',
+    description: 'S&P 500의 금융 섹터에 집중 투자하는 ETF입니다.',
+    expenseRatio: '0.13%',
+    aum: '380억 달러',
+    riskLevel: 'medium',
+    suitability: ['섹터 투자', '금융주 선호', '경기 회복 베팅', '분산 투자'],
+    pros: ['금융 섹터 집중', '낮은 수수료', '높은 유동성', '경기 민감성'],
+    cons: ['섹터 리스크', '금리 민감성', '규제 리스크'],
+    ytdReturn: '+8.9%',
+    dividendYield: '2.1%'
+  },
+  {
+    symbol: 'XLE',
+    name: 'Energy Select Sector SPDR Fund',
+    category: '에너지주',
+    description: 'S&P 500의 에너지 섹터에 투자하는 ETF입니다.',
+    expenseRatio: '0.13%',
+    aum: '420억 달러',
+    riskLevel: 'high',
+    suitability: ['에너지 투자', '인플레이션 헤징', '원자재 베팅', '고위험 투자'],
+    pros: ['에너지 섹터 집중', '인플레이션 보호', '높은 배당', '상품 가격 연동'],
+    cons: ['높은 변동성', '원유 가격 의존', '환경 규제 리스크'],
+    ytdReturn: '+3.2%',
+    dividendYield: '3.8%'
+  },
+  {
+    symbol: 'XLV',
+    name: 'Health Care Select Sector SPDR Fund',
+    category: '헬스케어',
+    description: 'S&P 500의 헬스케어 섹터에 투자하는 ETF입니다.',
+    expenseRatio: '0.13%',
+    aum: '360억 달러',
+    riskLevel: 'medium',
+    suitability: ['헬스케어 투자', '방어적 투자', '장기 성장', '분산 투자'],
+    pros: ['방어적 특성', '인구 고령화 수혜', '안정적 수익', '높은 배당'],
+    cons: ['규제 리스크', '의료 정책 변화', '특허 만료 리스크'],
+    ytdReturn: '+6.7%',
+    dividendYield: '1.6%'
+  },
+
+  // 스타일별 ETF
+  {
+    symbol: 'VTV',
+    name: 'Vanguard Value ETF',
+    category: '가치주',
+    description: '미국 대형 가치주에 투자하는 ETF로, 저평가된 기업들에 집중합니다.',
+    expenseRatio: '0.04%',
+    aum: '1,050억 달러',
+    riskLevel: 'medium',
+    suitability: ['가치 투자', '안정적 투자', '배당 투자', '장기 투자'],
+    pros: ['낮은 수수료', '안정적 수익', '높은 배당', '저평가 기업'],
+    cons: ['성장성 제한', '경기 민감성', '낮은 변동성'],
+    ytdReturn: '+9.3%',
+    dividendYield: '2.3%'
+  },
+  {
+    symbol: 'VUG',
+    name: 'Vanguard Growth ETF',
+    category: '성장주',
+    description: '미국 대형 성장주에 투자하는 ETF로, 고성장 기업들에 집중합니다.',
+    expenseRatio: '0.04%',
+    aum: '1,980억 달러',
+    riskLevel: 'high',
+    suitability: ['성장 투자', '높은 수익 추구', '장기 투자', '기술주 선호'],
+    pros: ['높은 성장 잠재력', '낮은 수수료', '기술 기업 집중', '높은 수익'],
+    cons: ['높은 변동성', '높은 밸류에이션', '금리 민감성'],
+    ytdReturn: '+18.7%',
+    dividendYield: '0.6%'
+  },
+  {
+    symbol: 'IWD',
+    name: 'iShares Russell 1000 Value ETF',
+    category: '가치주',
+    description: 'Russell 1000 가치 지수를 추종하는 ETF입니다.',
+    expenseRatio: '0.19%',
+    aum: '540억 달러',
+    riskLevel: 'medium',
+    suitability: ['가치 투자', '배당 투자', '안정적 투자', '분산 투자'],
+    pros: ['가치주 집중', '높은 배당', '안정적 수익', '다양한 기업'],
+    cons: ['상대적으로 높은 수수료', '성장성 제한', '경기 민감성'],
+    ytdReturn: '+8.1%',
+    dividendYield: '2.5%'
+  },
+
+  // 국제 ETF 추가
+  {
+    symbol: 'EWJ',
+    name: 'iShares MSCI Japan ETF',
+    category: '일본',
+    description: '일본 주식시장에 투자하는 ETF입니다.',
+    expenseRatio: '0.50%',
+    aum: '180억 달러',
+    riskLevel: 'medium',
+    suitability: ['일본 투자', '선진국 분산', '기술주 투자', '지역 분산'],
+    pros: ['일본 시장 노출', '기술 기업 집중', '선진국 안정성', '환율 헤징'],
+    cons: ['높은 수수료', '환율 리스크', '경제 성장 제한'],
+    ytdReturn: '+7.8%',
+    dividendYield: '1.8%'
+  },
+  {
+    symbol: 'EWU',
+    name: 'iShares MSCI United Kingdom ETF',
+    category: '영국',
+    description: '영국 주식시장에 투자하는 ETF입니다.',
+    expenseRatio: '0.50%',
+    aum: '32억 달러',
+    riskLevel: 'medium',
+    suitability: ['영국 투자', '유럽 분산', '배당 투자', '선진국 분산'],
+    pros: ['영국 시장 노출', '높은 배당', '선진국 안정성', '다양한 섹터'],
+    cons: ['높은 수수료', '브렉시트 영향', '환율 리스크'],
+    ytdReturn: '+5.2%',
+    dividendYield: '3.4%'
+  },
+  {
+    symbol: 'EWG',
+    name: 'iShares MSCI Germany ETF',
+    category: '독일',
+    description: '독일 주식시장에 투자하는 ETF입니다.',
+    expenseRatio: '0.51%',
+    aum: '15억 달러',
+    riskLevel: 'medium',
+    suitability: ['독일 투자', '유럽 분산', '제조업 투자', '선진국 분산'],
+    pros: ['독일 시장 노출', '제조업 강국', '선진국 안정성', '기술 기업'],
+    cons: ['높은 수수료', '유럽 경제 의존', '환율 리스크'],
+    ytdReturn: '+6.9%',
+    dividendYield: '2.7%'
+  },
+
+  // 신흥시장 추가
+  {
+    symbol: 'INDA',
+    name: 'iShares MSCI India ETF',
+    category: '인도',
+    description: '인도 주식시장에 투자하는 ETF입니다.',
+    expenseRatio: '0.65%',
+    aum: '75억 달러',
+    riskLevel: 'high',
+    suitability: ['인도 투자', '신흥시장', '높은 성장 추구', '인구 통계 이점'],
+    pros: ['높은 성장 잠재력', '인구 통계 이점', '기술 기업', '소비 성장'],
+    cons: ['높은 수수료', '높은 변동성', '정치적 리스크', '환율 리스크'],
+    ytdReturn: '+12.3%',
+    dividendYield: '1.2%'
+  },
+  {
+    symbol: 'EWZ',
+    name: 'iShares MSCI Brazil ETF',
+    category: '브라질',
+    description: '브라질 주식시장에 투자하는 ETF입니다.',
+    expenseRatio: '0.59%',
+    aum: '58억 달러',
+    riskLevel: 'high',
+    suitability: ['브라질 투자', '신흥시장', '원자재 베팅', '높은 리스크'],
+    pros: ['원자재 수혜', '높은 성장 잠재력', '다양한 섹터', '높은 배당'],
+    cons: ['높은 변동성', '정치적 리스크', '환율 리스크', '경제 불안정'],
+    ytdReturn: '+8.7%',
+    dividendYield: '3.1%'
+  },
+
+  // 채권 ETF 추가
+  {
+    symbol: 'AGG',
+    name: 'iShares Core U.S. Aggregate Bond ETF',
+    category: '채권',
+    description: '미국 투자등급 채권시장을 추종하는 ETF입니다.',
+    expenseRatio: '0.03%',
+    aum: '1,020억 달러',
+    riskLevel: 'low',
+    suitability: ['안정적 투자', '소득 투자', '리스크 감소', '포트폴리오 헤징'],
+    pros: ['매우 낮은 수수료', '높은 유동성', '안정적 수익', '다양한 채권'],
+    cons: ['낮은 수익률', '금리 리스크', '인플레이션 민감성'],
+    ytdReturn: '+1.8%',
+    dividendYield: '3.1%'
+  },
+  {
+    symbol: 'LQD',
+    name: 'iShares iBoxx $ Investment Grade Corporate Bond ETF',
+    category: '회사채',
+    description: '미국 투자등급 회사채에 투자하는 ETF입니다.',
+    expenseRatio: '0.14%',
+    aum: '380억 달러',
+    riskLevel: 'medium',
+    suitability: ['소득 투자', '회사채 투자', '안정적 투자', '포트폴리오 분산'],
+    pros: ['높은 이자 수익', '투자등급 안정성', '다양한 기업', '정기 배당'],
+    cons: ['금리 리스크', '신용 리스크', '경기 민감성'],
+    ytdReturn: '+2.3%',
+    dividendYield: '4.2%'
+  },
+  {
+    symbol: 'HYG',
+    name: 'iShares iBoxx $ High Yield Corporate Bond ETF',
+    category: '고수익채',
+    description: '미국 고수익 회사채에 투자하는 ETF입니다.',
+    expenseRatio: '0.49%',
+    aum: '180억 달러',
+    riskLevel: 'high',
+    suitability: ['고수익 추구', '높은 리스크', '소득 투자', '경기 회복 베팅'],
+    pros: ['높은 이자 수익', '경기 회복 수혜', '다양한 기업', '정기 배당'],
+    cons: ['높은 신용 리스크', '높은 변동성', '경기 민감성', '높은 수수료'],
+    ytdReturn: '+4.8%',
+    dividendYield: '6.7%'
+  },
+
+  // 부동산 ETF 추가
+  {
+    symbol: 'IYR',
+    name: 'iShares U.S. Real Estate ETF',
+    category: '부동산',
+    description: '미국 부동산 투자신탁(REIT)에 투자하는 ETF입니다.',
+    expenseRatio: '0.42%',
+    aum: '320억 달러',
+    riskLevel: 'medium',
+    suitability: ['부동산 투자', '높은 배당', '인플레이션 헤징', '분산 투자'],
+    pros: ['높은 배당 수익률', '부동산 노출', '인플레이션 보호', '다양한 REIT'],
+    cons: ['높은 수수료', '금리 민감성', '경기 민감성', '높은 변동성'],
+    ytdReturn: '+3.1%',
+    dividendYield: '4.5%'
+  },
+  {
+    symbol: 'SCHH',
+    name: 'Schwab U.S. REIT ETF',
+    category: '부동산',
+    description: '미국 REIT에 투자하는 Schwab의 ETF입니다.',
+    expenseRatio: '0.07%',
+    aum: '45억 달러',
+    riskLevel: 'medium',
+    suitability: ['부동산 투자', '낮은 수수료', '높은 배당', '분산 투자'],
+    pros: ['매우 낮은 수수료', '높은 배당', '부동산 노출', '인플레이션 보호'],
+    cons: ['금리 민감성', '경기 민감성', '높은 변동성', '낮은 유동성'],
+    ytdReturn: '+2.9%',
+    dividendYield: '4.3%'
+  },
+
+  // 원자재 ETF 추가
+  {
+    symbol: 'SLV',
+    name: 'iShares Silver Trust',
+    category: '원자재',
+    description: '은에 직접 투자하는 ETF입니다.',
+    expenseRatio: '0.50%',
+    aum: '120억 달러',
+    riskLevel: 'high',
+    suitability: ['원자재 투자', '인플레이션 헤징', '고위험 투자', '포트폴리오 보호'],
+    pros: ['은 가격 노출', '인플레이션 보호', '산업용 수요', '안전 자산'],
+    cons: ['높은 변동성', '높은 수수료', '배당 없음', '보관 비용'],
+    ytdReturn: '+15.2%',
+    dividendYield: '0.0%'
+  },
+  {
+    symbol: 'USO',
+    name: 'United States Oil Fund LP',
+    category: '원자재',
+    description: '원유 가격에 연동되는 ETF입니다.',
+    expenseRatio: '0.81%',
+    aum: '15억 달러',
+    riskLevel: 'high',
+    suitability: ['원유 투자', '인플레이션 헤징', '고위험 투자', '상품 베팅'],
+    pros: ['원유 가격 노출', '인플레이션 보호', '에너지 섹터 베팅', '높은 수익'],
+    cons: ['매우 높은 변동성', '높은 수수료', '배당 없음', '롤오버 비용'],
+    ytdReturn: '+2.8%',
+    dividendYield: '0.0%'
+  },
+
+  // 특수 ETF
+  {
+    symbol: 'ARKK',
+    name: 'ARK Innovation ETF',
+    category: '혁신주',
+    description: '혁신적인 기술 기업들에 투자하는 액티브 ETF입니다.',
+    expenseRatio: '0.75%',
+    aum: '75억 달러',
+    riskLevel: 'high',
+    suitability: ['혁신 투자', '높은 성장 추구', '액티브 투자', '고위험 투자'],
+    pros: ['혁신 기업 집중', '높은 성장 잠재력', '액티브 운용', '다양한 기술'],
+    cons: ['매우 높은 변동성', '높은 수수료', '액티브 리스크', '높은 밸류에이션'],
+    ytdReturn: '+45.2%',
+    dividendYield: '0.0%'
+  },
+  {
+    symbol: 'JEPI',
+    name: 'JPMorgan Equity Premium Income ETF',
+    category: '소득주',
+    description: '옵션 전략을 활용한 소득 중심 ETF입니다.',
+    expenseRatio: '0.35%',
+    aum: '320억 달러',
+    riskLevel: 'medium',
+    suitability: ['소득 투자', '배당 투자', '안정적 투자', '은퇴 준비'],
+    pros: ['높은 배당 수익률', '안정적 수익', '옵션 전략', '월 배당'],
+    cons: ['성장성 제한', '복잡한 전략', '옵션 리스크', '상대적으로 높은 수수료'],
+    ytdReturn: '+8.9%',
+    dividendYield: '7.8%'
   }
 ]
 
@@ -266,24 +564,47 @@ export const etfCategories = [
   '기술주',
   '배당주',
   '소형주',
+  '가치주',
+  '성장주',
+  '금융주',
+  '에너지주',
+  '헬스케어',
   '국제 주식',
   '선진국',
+  '일본',
+  '영국',
+  '독일',
   '신흥시장',
+  '인도',
+  '브라질',
   '채권',
+  '회사채',
+  '고수익채',
   '장기 국채',
   '부동산',
-  '원자재'
+  '원자재',
+  '혁신주',
+  '소득주'
 ]
 
 // 투자 목적별 추천 ETF
 export const etfByPurpose = {
-  '초보 투자자': ['VTI', 'VOO', 'BND'],
-  '장기 투자': ['VTI', 'VXUS', 'BND'],
-  '소득 투자': ['VYM', 'SCHD', 'VNQ'],
-  '성장 투자': ['QQQ', 'IWM', 'VWO'],
-  '안정적 투자': ['VOO', 'BND', 'VNQ'],
-  '분산 투자': ['VTI', 'VXUS', 'BND', 'VNQ'],
-  '은퇴 준비': ['VYM', 'SCHD', 'BND', 'VNQ'],
-  '높은 수익 추구': ['QQQ', 'IWM', 'VWO'],
-  '인플레이션 헤징': ['VNQ', 'GLD', 'VWO']
+  '초보 투자자': ['VTI', 'VOO', 'BND', 'AGG'],
+  '장기 투자': ['VTI', 'VXUS', 'BND', 'VUG'],
+  '소득 투자': ['VYM', 'SCHD', 'VNQ', 'JEPI', 'LQD'],
+  '성장 투자': ['QQQ', 'IWM', 'VWO', 'ARKK', 'VUG'],
+  '안정적 투자': ['VOO', 'BND', 'VNQ', 'VTV', 'AGG'],
+  '분산 투자': ['VTI', 'VXUS', 'BND', 'VNQ', 'GLD'],
+  '은퇴 준비': ['VYM', 'SCHD', 'BND', 'VNQ', 'JEPI'],
+  '높은 수익 추구': ['QQQ', 'IWM', 'VWO', 'ARKK', 'HYG'],
+  '인플레이션 헤징': ['VNQ', 'GLD', 'VWO', 'XLE', 'SLV'],
+  '섹터 투자': ['XLF', 'XLE', 'XLV', 'QQQ', 'IWM'],
+  '가치 투자': ['VTV', 'IWD', 'VYM', 'SCHD'],
+  '국제 분산': ['VXUS', 'EFA', 'EWJ', 'EWU', 'EWG'],
+  '신흥시장': ['VWO', 'INDA', 'EWZ', 'EFA'],
+  '채권 투자': ['BND', 'AGG', 'LQD', 'HYG', 'TLT'],
+  '부동산 투자': ['VNQ', 'IYR', 'SCHH'],
+  '원자재 투자': ['GLD', 'SLV', 'USO', 'XLE'],
+  '혁신 투자': ['ARKK', 'QQQ', 'IYW', 'VUG'],
+  '고배당 투자': ['VYM', 'SCHD', 'JEPI', 'VNQ', 'LQD']
 }

@@ -190,22 +190,22 @@ export default function Home() {
               <Link href="/etf" className="block text-center">
                 <div className="text-2xl mb-2">💰</div>
                 <div className="font-semibold text-gray-900 dark:text-white text-sm">
-                  VYM
+                  JEPI
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  배당주
+                  고배당 소득
                 </div>
               </Link>
             </div>
             
             <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700">
               <Link href="/etf" className="block text-center">
-                <div className="text-2xl mb-2">🌍</div>
+                <div className="text-2xl mb-2">⚡</div>
                 <div className="font-semibold text-gray-900 dark:text-white text-sm">
-                  VXUS
+                  ARKK
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  국제 주식
+                  혁신 투자
                 </div>
               </Link>
             </div>
