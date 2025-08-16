@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import BuffettIndicatorCard from '@/components/BuffettIndicatorCard'
-import BuffettChart from '@/components/BuffettChart'
 import EconomicComparisonChart from '@/components/EconomicComparisonChart'
 import InfoSection from '@/components/InfoSection'
 
@@ -20,19 +19,29 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // API 데이터 로딩 로직은 나중에 구현
-    const mockData = {
-      currentValue: 185.2,
-      changePercent: 2.3,
-      lastUpdated: new Date().toISOString(),
-      status: 'overvalued' as const
-    }
-    
-    setTimeout(() => {
-      setIndicatorData(mockData)
-      setLoading(false)
-    }, 1000)
+    fetchBuffettIndicator()
   }, [])
+
+  const fetchBuffettIndicator = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      const response = await fetch('/api/buffett-indicator')
+      const result = await response.json()
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to fetch data')
+      }
+      
+      setIndicatorData(result.data)
+    } catch (err) {
+      console.error('Error fetching Buffett Indicator:', err)
+      setError(err instanceof Error ? err.message : '데이터를 불러오는 중 오류가 발생했습니다.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -56,15 +65,7 @@ export default function Home() {
         />
       </section>
 
-      {/* Chart Section */}
-      <section id="chart" className="mb-12">
-        <div className="card p-6 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 transition-colors">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 transition-colors">
-            버핏 지수 추이 차트
-          </h3>
-          <BuffettChart loading={loading} />
-        </div>
-      </section>
+
 
       {/* Investment Dictionary Section */}
       <section id="dictionary" className="mb-12">
