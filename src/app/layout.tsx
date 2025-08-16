@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import Link from 'next/link'
 import ThemeToggle from '@/components/ThemeToggle'
 import './globals.css'
 
@@ -36,21 +37,21 @@ export default function RootLayout({
                 </div>
                 <div className="flex items-center space-x-4">
                   <nav className="hidden sm:flex space-x-4">
-                    <a href="/" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                    <Link href="/" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
                       버핏 지수
-                    </a>
+                    </Link>
                     <a href="#economic-comparison" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
                       📊 지표 비교
                     </a>
-                                                    <a href="/calculator" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                  투자 계산기
-                                </a>
-                                <a href="/etf" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                  📈 ETF 가이드
-                                </a>
-                                <a href="/dictionary" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                  📚 용어 사전
-                                </a>
+                    <Link href="/calculator" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                      투자 계산기
+                    </Link>
+                    <Link href="/etf" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                      📈 ETF 가이드
+                    </Link>
+                    <Link href="/dictionary" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                      📚 용어 사전
+                    </Link>
                     <a href="#info" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
                       정보
                     </a>

@@ -7,14 +7,6 @@
       "maxDuration": 30
     }
   },
-  "env": {
-    "FRED_API_KEY": "@fred-api-key"
-  },
-  "build": {
-    "env": {
-      "FRED_API_KEY": "@fred-api-key"
-    }
-  },
   "headers": [
     {
       "source": "/api/(.*)",

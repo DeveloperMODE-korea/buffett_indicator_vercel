@@ -8,11 +8,11 @@ export interface InvestmentTerm {
 }
 
 export const investmentTerms: InvestmentTerm[] = [
-  // 기본 투자 용어
+  // ===== 기존 핵심 용어 (보강) =====
   {
     id: 'buffett-indicator',
     term: '버핏 지수 (Buffett Indicator)',
-    definition: '총 주식시장 시가총액을 국내총생산(GDP)로 나눈 비율. 워렌 버핏이 선호하는 시장 과열/과냉 판단 지표입니다.',
+    definition: '총 주식시장 시가총액을 국내총생산(GDP)로 나눈 비율. 시장이 과열/과냉 상태인지 판단하는 지표.',
     category: '시장지표',
     example: '버핏 지수 = (총 시가총액 ÷ GDP) × 100',
     relatedTerms: ['GDP', '시가총액', 'P/E 비율']
@@ -20,127 +20,376 @@ export const investmentTerms: InvestmentTerm[] = [
   {
     id: 'gdp',
     term: 'GDP (국내총생산)',
-    definition: '한 국가에서 일정 기간 동안 생산된 모든 재화와 서비스의 시장가치 총합입니다.',
+    definition: '한 국가에서 일정 기간 동안 생산된 모든 재화와 서비스의 시장가치 총합.',
     category: '경제지표',
-    example: '2023년 미국 GDP는 약 26조 달러입니다.',
-    relatedTerms: ['버핏 지수', '경제성장률']
+    example: '명목/실질 GDP, QoQ/YoY 성장률',
+    relatedTerms: ['경제성장률', '버핏 지수']
   },
   {
     id: 'market-cap',
     term: '시가총액 (Market Capitalization)',
-    definition: '상장된 모든 주식의 시장 가치 총합. 주가 × 발행주식수로 계산됩니다.',
+    definition: '상장 주식의 시장 가치 총합. 주가 × 발행주식수.',
     category: '주식용어',
-    example: '애플의 시가총액 = 주가 $180 × 발행주식 155억 주',
-    relatedTerms: ['버핏 지수', '주가', '발행주식수']
+    example: 'A사 시총 = 10만원 × 1억주 = 1조원',
+    relatedTerms: ['유동주식수', 'P/E 비율']
   },
   {
     id: 'pe-ratio',
     term: 'P/E 비율 (Price-to-Earnings Ratio)',
-    definition: '주가를 주당순이익으로 나눈 값. 주식이 얼마나 비싸게 거래되는지 나타내는 지표입니다.',
+    definition: '주가가 주당순이익(EPS)의 몇 배로 거래되는지 나타내는 지표.',
     category: '주식용어',
-    example: 'P/E 15배 = 현재 주가가 연간 순이익의 15배',
-    relatedTerms: ['PBR', 'ROE', '주당순이익']
+    example: 'P/E 15배 = 연간 순이익의 15배 가격',
+    relatedTerms: ['PBR', 'ROE', 'EPS']
   },
   {
     id: 'pbr',
     term: 'PBR (Price-to-Book Ratio)',
-    definition: '주가를 주당순자산가치로 나눈 값. 기업의 자산 대비 주가 수준을 나타냅니다.',
+    definition: '주가를 1주당 순자산가치(BPS)로 나눈 값.',
     category: '주식용어',
-    example: 'PBR 1.5배 = 주가가 순자산가치의 1.5배',
-    relatedTerms: ['P/E 비율', '순자산가치', 'ROE']
+    example: 'PBR 1.5배 = 순자산가치의 1.5배',
+    relatedTerms: ['ROE', '밸류에이션']
   },
   {
     id: 'roe',
     term: 'ROE (Return on Equity)',
-    definition: '자기자본이익률. 기업이 주주 자본을 얼마나 효율적으로 활용하여 이익을 창출하는지 나타내는 지표입니다.',
-    category: '재무지표',
-    example: 'ROE 15% = 자기자본 100원으로 15원의 순이익 창출',
-    relatedTerms: ['ROA', 'P/E 비율', '자기자본']
+    definition: '자기자본이익률. 주주자본 1원당 순이익.',
+    category: '성과지표',
+    example: 'ROE 15% = 자기자본 100원으로 15원 이익',
+    relatedTerms: ['ROA', 'PBR']
   },
   {
     id: 'compound-interest',
     term: '복리 (Compound Interest)',
-    definition: '원금과 이자를 합친 금액에 다시 이자가 붙는 것. 시간이 지날수록 기하급수적으로 증가합니다.',
+    definition: '이자에 이자가 붙는 효과로, 시간이 지날수록 기하급수적으로 증가.',
     category: '투자기본',
-    example: '연 10% 복리로 100만원 투자 시 10년 후 약 260만원',
-    relatedTerms: ['단리', '연간수익률', '투자기간']
+    example: '연 10% 복리, 100만원 → 10년 후 약 259만원',
+    relatedTerms: ['단리', '수익률', '투자기간']
   },
   {
     id: 'dca',
     term: 'DCA (Dollar Cost Averaging)',
-    definition: '정기적으로 일정 금액을 투자하는 전략. 시장 변동성을 분산시켜 평균 매수 단가를 낮추는 효과가 있습니다.',
+    definition: '정기적으로 일정 금액을 투자해 평균 매입단가를 평준화하는 전략.',
     category: '투자전략',
-    example: '매월 50만원씩 인덱스펀드에 투자하는 것',
-    relatedTerms: ['포트폴리오', '분산투자', '변동성']
+    example: '매월 말 S&P 500 ETF 50만원 매수',
+    relatedTerms: ['분산투자', '자동이체', '리밸런싱']
   },
   {
     id: 'volatility',
     term: '변동성 (Volatility)',
-    definition: '자산 가격의 변동 정도를 나타내는 지표. 높을수록 가격 변동이 크고 위험도가 높습니다.',
+    definition: '수익률의 표준편차로 표현되는 가격 변동의 정도.',
     category: '위험관리',
-    example: '변동성 20% = 연간 20% 범위에서 가격이 움직일 확률이 68%',
-    relatedTerms: ['표준편차', '위험', 'DCA']
+    example: '연 변동성 20% ≈ ±1표준편차 구간',
+    relatedTerms: ['표준편차', 'VaR', '드로우다운']
   },
   {
     id: 'diversification',
     term: '분산투자 (Diversification)',
-    definition: '여러 자산에 투자금을 나누어 투자하는 전략. 리스크를 줄이면서 안정적인 수익을 추구합니다.',
+    definition: '상관관계가 낮은 자산을 섞어 포트폴리오 위험을 낮추는 방법.',
     category: '투자전략',
-    example: '주식 60%, 채권 30%, 부동산 10%로 분산',
-    relatedTerms: ['포트폴리오', '리스크관리', '자산배분']
+    example: '주식·채권·원자재·부동산 혼합',
+    relatedTerms: ['상관계수', '자산배분', '리스크 패리티']
   },
   {
     id: 'bull-market',
     term: '강세장 (Bull Market)',
-    definition: '주가가 지속적으로 상승하는 시장 상황. 투자자들의 낙관적 심리가 지배적인 상태입니다.',
+    definition: '지속적 가격 상승 국면. 위험선호 확대.',
     category: '시장용어',
-    example: '2009-2021년 미국 주식시장의 장기 강세장',
-    relatedTerms: ['약세장', '시장사이클', '투자심리']
+    example: '2009–2021 미국 장기 강세장',
+    relatedTerms: ['약세장', '조정', '모멘텀']
   },
   {
     id: 'bear-market',
     term: '약세장 (Bear Market)',
-    definition: '주가가 지속적으로 하락하는 시장 상황. 보통 고점 대비 20% 이상 하락한 상태를 말합니다.',
+    definition: '고점 대비 20% 이상 하락한 시장 국면.',
     category: '시장용어',
-    example: '2008년 금융위기 당시의 주식시장',
-    relatedTerms: ['강세장', '시장조정', '투자심리']
+    example: '2008 금융위기, 2020 팬데믹 초기',
+    relatedTerms: ['강세장', '조정', '변동성']
   },
   {
     id: 'inflation',
     term: '인플레이션 (Inflation)',
-    definition: '물가가 지속적으로 상승하는 현상. 화폐의 구매력이 감소하여 투자 수익률에 영향을 줍니다.',
+    definition: '일반적인 물가 수준의 지속적 상승.',
     category: '경제지표',
-    example: '연 3% 인플레이션 = 100원 상품이 1년 후 103원',
-    relatedTerms: ['디플레이션', '실질수익률', '금리']
+    example: 'CPI, PCE 물가지수',
+    relatedTerms: ['디스인플레이션', '디플레이션', '금리']
   },
   {
     id: 'interest-rate',
     term: '금리 (Interest Rate)',
-    definition: '돈을 빌리는 대가로 지급하는 이자율. 경제 전반과 투자 시장에 큰 영향을 미칩니다.',
+    definition: '자금의 시간가치. 기준금리, 시장금리 등.',
     category: '경제지표',
-    example: '기준금리 3% = 중앙은행이 설정한 기준 이자율',
-    relatedTerms: ['인플레이션', '채권가격', '통화정책']
+    example: '연준 FF Rate 5% 등',
+    relatedTerms: ['채권가격', '듀레이션', '통화정책']
   },
   {
     id: 'etf',
     term: 'ETF (Exchange-Traded Fund)',
-    definition: '거래소에서 거래되는 펀드. 특정 지수나 섹터를 추종하며 개별 주식처럼 거래 가능합니다.',
+    definition: '거래소 상장 인덱스 펀드. 실시간 가격으로 매매.',
     category: '투자상품',
-    example: 'S&P 500 ETF는 S&P 500 지수를 추종',
-    relatedTerms: ['인덱스펀드', '뮤추얼펀드', '패시브투자']
+    example: 'SPY, QQQ, VTI, ARKK',
+    relatedTerms: ['인덱스펀드', '뮤추얼펀드', 'NAV']
+  },
+
+  // ===== 성과·위험 지표 =====
+  {
+    id: 'alpha',
+    term: '알파 (Alpha)',
+    definition: '벤치마크 대비 초과수익률.',
+    category: '성과지표',
+    example: '연간 알파 +2% = 시장보다 2% 초과',
+    relatedTerms: ['베타', '샤프비율']
+  },
+  {
+    id: 'beta',
+    term: '베타 (Beta)',
+    definition: '시장수익률 변동에 대한 민감도. 1보다 크면 시장보다 민감.',
+    category: '위험관리',
+    example: '베타 1.2: 시장 10% 상승시 12% 기대',
+    relatedTerms: ['CAPM', '시스템 리스크']
+  },
+  {
+    id: 'sharpe-ratio',
+    term: '샤프 비율 (Sharpe Ratio)',
+    definition: '무위험수익률 대비 초과수익을 변동성으로 나눈 값.',
+    category: '성과지표',
+    example: 'Sharpe ≥ 1: 양호, ≥ 2: 우수',
+    relatedTerms: ['정보비율', '트레이너비율']
+  },
+  {
+    id: 'sortino-ratio',
+    term: '소르티노 비율 (Sortino Ratio)',
+    definition: '샤프와 유사하나 하방 변동성(손실)만 사용.',
+    category: '성과지표',
+    example: '하락 위험을 더 중시하는 평가',
+    relatedTerms: ['샤프 비율', '드로우다운']
+  },
+  {
+    id: 'max-drawdown',
+    term: '최대 낙폭 (Max Drawdown)',
+    definition: '고점 대비 최저점까지의 최대 손실 비율.',
+    category: '위험관리',
+    example: '최대 낙폭 -35%',
+    relatedTerms: ['변동성', 'VaR']
+  },
+  {
+    id: 'var',
+    term: 'VaR (Value at Risk)',
+    definition: '특정 신뢰수준에서 예상 가능한 최대 손실 추정치.',
+    category: '위험관리',
+    example: '1일 95% VaR = -3%',
+    relatedTerms: ['CVaR', '분산·공분산']
+  },
+  {
+    id: 'correlation',
+    term: '상관계수 (Correlation)',
+    definition: '자산 간 동행 정도(-1~+1). 낮을수록 분산효과 ↑.',
+    category: '위험관리',
+    example: '주식–채권 상관 -0.2',
+    relatedTerms: ['분산투자', '공분산']
+  },
+
+  // ===== 채권(Bonds) =====
+  {
+    id: 'bond',
+    term: '채권 (Bond)',
+    definition: '정부/기업 등이 자금을 조달하기 위해 발행하는 부채성 증권.',
+    category: '채권',
+    example: '만기, 쿠폰, 액면가, 수익률',
+    relatedTerms: ['듀레이션', '금리', '크레딧 스프레드']
+  },
+  {
+    id: 'duration',
+    term: '듀레이션 (Duration)',
+    definition: '채권 가격의 금리 민감도. 높을수록 금리 변화에 민감.',
+    category: '채권',
+    example: '듀레이션 8: 금리 +1% 시 가격 약 -8%',
+    relatedTerms: ['컨벡서티', '금리위험']
+  },
+  {
+    id: 'convexity',
+    term: '컨벡서티 (Convexity)',
+    definition: '금리 변화에 대한 채권 가격 곡선의 굴곡(비선형성) 측정.',
+    category: '채권',
+    example: '듀레이션 보정치로 정밀한 민감도',
+    relatedTerms: ['듀레이션']
+  },
+  {
+    id: 'credit-spread',
+    term: '크레딧 스프레드',
+    definition: '무위험채(국채) 대비 회사채 추가 금리.',
+    category: '채권',
+    example: 'A등급 회사채 200bp 스프레드',
+    relatedTerms: ['신용등급', '하이일드']
+  },
+  {
+    id: 'yield-curve',
+    term: '수익률 곡선 (Yield Curve)',
+    definition: '만기별 금리 수준을 나타내는 곡선. 정상/평탄/역전.',
+    category: '채권',
+    example: '장단기 금리 역전 = 경기 둔화 신호로 해석되기도',
+    relatedTerms: ['경기선행', '금리정책']
+  },
+
+  // ===== 파생상품(Derivatives) =====
+  {
+    id: 'derivative',
+    term: '파생상품 (Derivative)',
+    definition: '기초자산(주식, 지수, 금리, 원자재 등)에 연동된 금융상품.',
+    category: '파생상품',
+    example: '선물, 옵션, 스왑',
+    relatedTerms: ['헷지', '레버리지']
+  },
+  {
+    id: 'futures',
+    term: '선물 (Futures)',
+    definition: '미래의 특정 시점에 미리 정한 가격으로 자산을 사고파는 표준화 계약.',
+    category: '파생상품',
+    example: 'E-mini S&P 500 선물',
+    relatedTerms: ['현물', '레버리지', '마진']
+  },
+  {
+    id: 'options',
+    term: '옵션 (Options)',
+    definition: '정해진 가격으로 살/팔 권리를 매수자에게 부여하는 계약(콜/풋).',
+    category: '파생상품',
+    example: '콜옵션 프리미엄, 델타/감마/세타/베가',
+    relatedTerms: ['IV', '그릭스', '커버드콜']
+  },
+  {
+    id: 'covered-call',
+    term: '커버드 콜 (Covered Call)',
+    definition: '보유 주식 위에 콜옵션을 매도해 프리미엄 수취하는 전략.',
+    category: '파생상품',
+    example: 'JEPI 유사전략(프리미엄/배당)',
+    relatedTerms: ['옵션', '소득전략']
+  },
+  {
+    id: 'swap',
+    term: '스왑 (Swap)',
+    definition: '현금흐름 교환 계약. 금리스왑/통화스왑 등.',
+    category: '파생상품',
+    example: '고정↔변동 금리 교환',
+    relatedTerms: ['헤지', '파생상품']
+  },
+
+  // ===== 포트폴리오/자산배분 =====
+  {
+    id: 'asset-allocation',
+    term: '자산배분 (Asset Allocation)',
+    definition: '목표수익·위험 수준에 맞춰 자산군 비중을 결정.',
+    category: '투자전략',
+    example: '60/40(주식/채권), 올웨더, 영구 포트폴리오',
+    relatedTerms: ['리스크 패리티', '리밸런싱']
+  },
+  {
+    id: 'rebalancing',
+    term: '리밸런싱 (Rebalancing)',
+    definition: '변경된 비중을 목표비중으로 되돌리는 작업.',
+    category: '투자전략',
+    example: '연 1회 또는 밴드 방식(±5%p)',
+    relatedTerms: ['자산배분', '거래비용']
+  },
+  {
+    id: 'risk-parity',
+    term: '리스크 패리티 (Risk Parity)',
+    definition: '각 자산이 기여하는 위험을 균등하게 배분하는 전략.',
+    category: '투자전략',
+    example: '채권 레버리지로 위험 균형',
+    relatedTerms: ['분산투자', '변동성 타깃팅']
+  },
+  {
+    id: 'smart-beta',
+    term: '스마트베타 (Smart Beta)',
+    definition: '가치·모멘텀·퀄리티·저변동성 등 팩터에 기반한 인덱싱.',
+    category: '투자전략',
+    example: 'VTV(가치), MTUM(모멘텀), QUAL(퀄리티)',
+    relatedTerms: ['팩터', '인덱스']
+  },
+
+  // ===== 펀드/ETF 심화 =====
+  {
+    id: 'expense-ratio',
+    term: '총보수율 (Expense Ratio)',
+    definition: '펀드 운용에 부과되는 연간 총비용 비율.',
+    category: '투자상품',
+    example: 'VTI 0.03% 등',
+    relatedTerms: ['AUM', '추적오차']
+  },
+  {
+    id: 'aum',
+    term: 'AUM (운용자산규모)',
+    definition: '펀드 운용사가 관리 중인 자산의 총 규모.',
+    category: '투자상품',
+    example: '규모가 클수록 유동성·스프레드 유리 경향',
+    relatedTerms: ['유동성', '거래비용']
+  },
+  {
+    id: 'tracking-error',
+    term: '추적 오차 (Tracking Error)',
+    definition: 'ETF 수익률이 기준지수와 얼마나 어긋나는지의 표준편차.',
+    category: '투자상품',
+    example: '작을수록 지수추종 정확도 ↑',
+    relatedTerms: ['인덱스', '리플리케이션']
+  },
+  {
+    id: 'etf-structure',
+    term: 'ETF 구조 (Creation/Redemption)',
+    definition: 'AP가 바스켓을 주고받아 ETF 유통주식을 창출/환매하는 메커니즘.',
+    category: '투자상품',
+    example: '프리미엄·할인율 완화 기능',
+    relatedTerms: ['NAV', 'AP', '프리미엄/디스카운트']
+  },
+
+  // ===== 회계/현금흐름 =====
+  {
+    id: 'free-cash-flow',
+    term: '잉여현금흐름 (Free Cash Flow, FCF)',
+    definition: '영업현금흐름에서 자본적지출을 차감한 현금.',
+    category: '재무지표',
+    example: 'FCF 증가 = 배당/자사주/재투자 여력 확대',
+    relatedTerms: ['EBITDA', 'CAPEX']
+  },
+  {
+    id: 'ebitda',
+    term: 'EBITDA',
+    definition: '이자·세금·감가상각·무형자산상각 전 이익. 현금창출력 지표.',
+    category: '재무지표',
+    example: 'EV/EBITDA 배수로 밸류에이션 비교',
+    relatedTerms: ['FCF', '영업이익']
+  },
+
+  // ===== 매크로/환율 =====
+  {
+    id: 'ppi-cpi',
+    term: 'CPI/PPI',
+    definition: '소비자물가지수/생산자물가지수. 물가의 대표 지표.',
+    category: '경제지표',
+    example: '핵심 CPI(식품·에너지 제외) 주시',
+    relatedTerms: ['인플레이션', '금리']
+  },
+  {
+    id: 'dxy',
+    term: '달러지수 (DXY)',
+    definition: '미 달러의 주요 통화 대비 가치 지수.',
+    category: '시장지표',
+    example: '달러 강세 → 신흥국/원자재 압박 경향',
+    relatedTerms: ['환율', '원자재']
   }
 ]
 
-// 카테고리 목록
+// 카테고리 목록 (세분화)
 export const categories = [
   '전체',
   '시장지표',
-  '경제지표', 
+  '경제지표',
   '주식용어',
   '재무지표',
+  '성과지표',
   '투자기본',
   '투자전략',
   '투자상품',
   '위험관리',
+  '채권',
+  '파생상품',
   '시장용어'
 ]

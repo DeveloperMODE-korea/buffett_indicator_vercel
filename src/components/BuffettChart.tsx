@@ -89,7 +89,7 @@ export default function BuffettChart({ loading }: Props) {
       x: {
         type: 'time' as const,
         time: {
-          unit: timeRange === '1Y' ? 'month' : timeRange === '5Y' ? 'year' : 'year',
+          unit: (timeRange === '1Y' ? 'month' : 'year') as 'month' | 'year',
         },
         title: {
           display: true,
