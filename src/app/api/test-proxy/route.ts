@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   console.log(`[TestProxy] Fetching: ${testUrl}`);
 
   try {
-    const response = await fetch(test.url);
+    const response = await fetch(testUrl);
     const data = await response.json();
     console.log('[TestProxy] Response from proxy:', data);
     return NextResponse.json(data);
