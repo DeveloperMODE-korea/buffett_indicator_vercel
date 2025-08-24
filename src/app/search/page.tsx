@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import StockChart from '@/components/StockChart'
+import TradingViewChart from '@/components/TradingViewChart'
 
 interface StockData {
   symbol: string
@@ -239,8 +239,8 @@ export default function SearchPage() {
              </div>
            ) : (
              <div className="space-y-6">
-               {/* 주가 차트 */}
-               <StockChart stockData={selectedStock} />
+                               {/* TradingView 차트 */}
+                <TradingViewChart stockData={selectedStock} />
                
                {/* 기본 정보 */}
                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
