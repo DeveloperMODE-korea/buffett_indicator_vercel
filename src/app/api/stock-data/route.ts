@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
             exchange: quote.fullExchangeName,
             currency: quote.currency,
             marketState: quote.marketState,
-            lastUpdated: new Date(quote.regularMarketTime * 1000).toISOString(),
+            lastUpdated: quote.regularMarketTime ? new Date(quote.regularMarketTime * 1000).toISOString() : new Date().toISOString(),
           }
 
           // 히스토리 데이터 포함 여부
