@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import StockChart from '@/components/StockChart'
 
 interface StockData {
   symbol: string
@@ -83,7 +84,7 @@ export default function SearchPage() {
     setError(null)
 
     try {
-      const response = await fetch(`/api/stock-data?symbols=${symbol}`)
+      const response = await fetch(`/api/stock-data?symbols=${symbol}&history=true&days=30`)
       const result = await response.json()
 
       if (result.success && result.data.length > 0) {
@@ -224,98 +225,103 @@ export default function SearchPage() {
         </div>
       )}
 
-      {/* 선택된 주식 상세 정보 */}
-      {selectedStock && (
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            📊 {selectedStock.name} ({selectedStock.symbol})
-          </h2>
-          
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-2 text-gray-600 dark:text-gray-400">데이터를 불러오는 중...</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* 기본 정보 */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl">기본 정보</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {formatCurrency(selectedStock.price, selectedStock.currency)}
-                    </span>
-                    <span className={`text-lg font-medium ${getChangeColor(selectedStock.change)}`}>
-                      {getChangeIcon(selectedStock.change)} {formatNumber(selectedStock.change, 2)} ({formatNumber(selectedStock.changePercent, 2)}%)
-                    </span>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">이전 종가:</span>
-                      <span className="ml-2 font-medium">{formatCurrency(selectedStock.previousClose, selectedStock.currency)}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">시가:</span>
-                      <span className="ml-2 font-medium">{formatCurrency(selectedStock.open, selectedStock.currency)}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">고가:</span>
-                      <span className="ml-2 font-medium">{formatCurrency(selectedStock.high, selectedStock.currency)}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">저가:</span>
-                      <span className="ml-2 font-medium">{formatCurrency(selectedStock.low, selectedStock.currency)}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+             {/* 선택된 주식 상세 정보 */}
+       {selectedStock && (
+         <div className="mb-8">
+           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+             📊 {selectedStock.name} ({selectedStock.symbol})
+           </h2>
+           
+           {loading ? (
+             <div className="text-center py-8">
+               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+               <p className="mt-2 text-gray-600 dark:text-gray-400">데이터를 불러오는 중...</p>
+             </div>
+           ) : (
+             <div className="space-y-6">
+               {/* 주가 차트 */}
+               <StockChart stockData={selectedStock} />
+               
+               {/* 기본 정보 */}
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                 <Card>
+                   <CardHeader>
+                     <CardTitle className="text-xl">기본 정보</CardTitle>
+                   </CardHeader>
+                   <CardContent className="space-y-4">
+                     <div className="flex justify-between items-center">
+                       <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                         {formatCurrency(selectedStock.price, selectedStock.currency)}
+                       </span>
+                       <span className={`text-lg font-medium ${getChangeColor(selectedStock.change)}`}>
+                         {getChangeIcon(selectedStock.change)} {formatNumber(selectedStock.change, 2)} ({formatNumber(selectedStock.changePercent, 2)}%)
+                       </span>
+                     </div>
+                     
+                     <div className="grid grid-cols-2 gap-4 text-sm">
+                       <div>
+                         <span className="text-gray-600 dark:text-gray-400">이전 종가:</span>
+                         <span className="ml-2 font-medium">{formatCurrency(selectedStock.previousClose, selectedStock.currency)}</span>
+                       </div>
+                       <div>
+                         <span className="text-gray-600 dark:text-gray-400">시가:</span>
+                         <span className="ml-2 font-medium">{formatCurrency(selectedStock.open, selectedStock.currency)}</span>
+                       </div>
+                       <div>
+                         <span className="text-gray-600 dark:text-gray-400">고가:</span>
+                         <span className="ml-2 font-medium">{formatCurrency(selectedStock.high, selectedStock.currency)}</span>
+                       </div>
+                       <div>
+                         <span className="text-gray-600 dark:text-gray-400">저가:</span>
+                         <span className="ml-2 font-medium">{formatCurrency(selectedStock.low, selectedStock.currency)}</span>
+                       </div>
+                     </div>
+                   </CardContent>
+                 </Card>
 
-              {/* 거래 정보 */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl">거래 정보</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">거래량:</span>
-                      <span className="ml-2 font-medium">{formatVolume(selectedStock.volume)}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">시가총액:</span>
-                      <span className="ml-2 font-medium">{formatVolume(selectedStock.marketCap)}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">P/E 비율:</span>
-                      <span className="ml-2 font-medium">{selectedStock.peRatio ? formatNumber(selectedStock.peRatio, 2) : 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">배당 수익률:</span>
-                      <span className="ml-2 font-medium">{selectedStock.dividendYield ? `${formatNumber(selectedStock.dividendYield, 2)}%` : 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">52주 고가:</span>
-                      <span className="ml-2 font-medium">{formatCurrency(selectedStock.fiftyTwoWeekHigh, selectedStock.currency)}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">52주 저가:</span>
-                      <span className="ml-2 font-medium">{formatCurrency(selectedStock.fiftyTwoWeekLow, selectedStock.currency)}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    마지막 업데이트: {new Date(selectedStock.lastUpdated).toLocaleString('ko-KR')}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-        </div>
-      )}
+                 {/* 거래 정보 */}
+                 <Card>
+                   <CardHeader>
+                     <CardTitle className="text-xl">거래 정보</CardTitle>
+                   </CardHeader>
+                   <CardContent className="space-y-4">
+                     <div className="grid grid-cols-2 gap-4 text-sm">
+                       <div>
+                         <span className="text-gray-600 dark:text-gray-400">거래량:</span>
+                         <span className="ml-2 font-medium">{formatVolume(selectedStock.volume)}</span>
+                       </div>
+                       <div>
+                         <span className="text-gray-600 dark:text-gray-400">시가총액:</span>
+                         <span className="ml-2 font-medium">{formatVolume(selectedStock.marketCap)}</span>
+                       </div>
+                       <div>
+                         <span className="text-gray-600 dark:text-gray-400">P/E 비율:</span>
+                         <span className="ml-2 font-medium">{selectedStock.peRatio ? formatNumber(selectedStock.peRatio, 2) : 'N/A'}</span>
+                       </div>
+                       <div>
+                         <span className="text-gray-600 dark:text-gray-400">배당 수익률:</span>
+                         <span className="ml-2 font-medium">{selectedStock.dividendYield ? `${formatNumber(selectedStock.dividendYield, 2)}%` : 'N/A'}</span>
+                       </div>
+                       <div>
+                         <span className="text-gray-600 dark:text-gray-400">52주 고가:</span>
+                         <span className="ml-2 font-medium">{formatCurrency(selectedStock.fiftyTwoWeekHigh, selectedStock.currency)}</span>
+                       </div>
+                       <div>
+                         <span className="text-gray-600 dark:text-gray-400">52주 저가:</span>
+                         <span className="ml-2 font-medium">{formatCurrency(selectedStock.fiftyTwoWeekLow, selectedStock.currency)}</span>
+                       </div>
+                     </div>
+                     
+                     <div className="text-xs text-gray-500 dark:text-gray-400">
+                       마지막 업데이트: {new Date(selectedStock.lastUpdated).toLocaleString('ko-KR')}
+                     </div>
+                   </CardContent>
+                 </Card>
+               </div>
+             </div>
+           )}
+         </div>
+       )}
 
       {/* 에러 메시지 */}
       {error && (
