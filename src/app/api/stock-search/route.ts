@@ -29,12 +29,14 @@ export async function GET(request: NextRequest) {
     })
 
     // 검색 결과 처리
-    const processedResults = searchResults.quotes?.map(quote => ({
-      symbol: quote.symbol,
-      name: quote.shortname || quote.longname || quote.displayName,
-      exchange: quote.exchange || quote.fullExchangeName || 'Unknown',
-      type: quote.quoteType || 'EQUITY',
-      score: quote.score || 0
+    const processedResults = searchResults.quotes?.filter(quote => 
+      quote && typeof quote === 'object' && 'symbol' in quote
+    ).map(quote => ({
+      symbol: (quote as any).symbol,
+      name: (quote as any).shortname || (quote as any).longname || (quote as any).displayName,
+      exchange: (quote as any).exchange || (quote as any).fullExchangeName || 'Unknown',
+      type: (quote as any).quoteType || 'EQUITY',
+      score: (quote as any).score || 0
     })) || []
 
     // 심볼로 정확히 일치하는 결과를 우선순위로 정렬
