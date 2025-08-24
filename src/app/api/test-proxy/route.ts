@@ -15,11 +15,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(data);
   } catch (error) {
     console.error('[TestProxy] Error fetching proxy:', error);
-    const errorResponse = {
-      message: error.message,
-      stack: error.stack,
-      cause: error.cause
+    let errorDetails = {};
+    if (error instanceof Error) {
+        errorDetails = {
+            message: error.message,
+            stack: error.stack,
+            cause: error.cause,
+        };
     }
-    return NextResponse.json({ error: 'Error in test proxy', details: errorResponse }, { status: 500 });
+    return NextResponse.json({ error: 'Error in test proxy', details: errorDetails }, { status: 500 });
   }
 }
