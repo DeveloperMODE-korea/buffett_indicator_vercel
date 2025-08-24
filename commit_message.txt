@@ -1,0 +1,5 @@
+fix: Handle unknown type in test route catch block
+
+- Fixes a TypeScript error where the type of the caught error is `unknown`.
+- Adds a check to ensure `error` is an instance of `Error` before accessing its properties.
+- This should resolve the latest build failure.
