@@ -25,6 +25,9 @@ export default function MobileNavigation() {
               <a href="#economic-comparison" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
                 📊 지표 비교
               </a>
+              <Link href="/search" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                🔍 주식 검색
+              </Link>
               <Link href="/calculator" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
                 투자 계산기
               </Link>
@@ -75,6 +78,13 @@ export default function MobileNavigation() {
               >
                 📈 지표 비교
               </a>
+              <Link 
+                href="/search" 
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                🔍 주식 검색
+              </Link>
               <Link 
                 href="/calculator" 
                 className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
