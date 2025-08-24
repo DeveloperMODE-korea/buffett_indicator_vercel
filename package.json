@@ -16,6 +16,7 @@
     "axios": "^1.7.7",
     "chart.js": "^4.4.0",
     "chartjs-adapter-date-fns": "^3.0.0",
+    "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "eslint": "^8",
     "eslint-config-next": "15.4.6",
@@ -23,7 +24,9 @@
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
-    "typescript": "^5"
+    "tailwind-merge": "^3.3.1",
+    "typescript": "^5",
+    "yahoo-finance2": "^2.13.3"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",

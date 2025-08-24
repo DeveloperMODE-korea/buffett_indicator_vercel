@@ -5,6 +5,7 @@ import Link from 'next/link'
 import BuffettIndicatorCard from '@/components/BuffettIndicatorCard'
 import EconomicComparisonChart from '@/components/EconomicComparisonChart'
 import InfoSection from '@/components/InfoSection'
+import RealTimeStockData from '@/components/RealTimeStockData'
 
 interface IndicatorData {
   currentValue: number
@@ -63,6 +64,21 @@ export default function Home() {
           loading={loading} 
           error={error} 
         />
+      </section>
+
+      {/* Real-time Stock Data */}
+      <section id="stock-data" className="mb-12">
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-2xl p-8 border border-green-200 dark:border-green-700">
+          <div className="text-center mb-8">
+            <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              📈 실시간 주식시장 데이터
+            </h3>
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              주요 주식과 시장 지수의 실시간 가격 정보를 확인하세요. 30초마다 자동 업데이트됩니다.
+            </p>
+          </div>
+          <RealTimeStockData />
+        </div>
       </section>
 
 
