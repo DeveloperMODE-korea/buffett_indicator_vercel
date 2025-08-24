@@ -15,36 +15,35 @@ export async function getFREDData(
   endDate?: string
 ): Promise<ApiResponse<FREDResponse>> {
   try {
-    if (!FRED_API_KEY) {
-      throw new Error('FRED API Key가 설정되지 않았습니다.')
-    }
-
     const params = new URLSearchParams({
       series_id: seriesId,
-      api_key: FRED_API_KEY,
-      file_type: 'json',
       observation_start: startDate || '2000-01-01',
       observation_end: endDate || new Date().toISOString().split('T')[0],
-    })
+    });
 
-    const response = await fetch(`${FRED_BASE_URL}/series/observations?${params}`)
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     
+    const response = await fetch(`${baseUrl}/api/context7-proxy?${params.toString()}`);
+
     if (!response.ok) {
-      throw new Error(`FRED API 오류: ${response.statusText}`)
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Proxy API 오류: ${response.statusText}`);
     }
 
-    const data: FREDResponse = await response.json()
+    const data: FREDResponse = await response.json();
     
     return {
       success: true,
       data,
-    }
+    };
   } catch (error) {
-    console.error('FRED API 호출 오류:', error)
+    console.error('FRED 데이터 프록시 호출 오류:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'FRED API 호출 중 오류가 발생했습니다.',
-    }
+      error: error instanceof Error ? error.message : 'FRED 데이터 프록시 호출 중 오류가 발생했습니다.',
+    };
   }
 }
 
