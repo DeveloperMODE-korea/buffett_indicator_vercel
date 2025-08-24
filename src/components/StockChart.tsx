@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -54,7 +54,7 @@ export default function StockChart({ stockData, loading = false }: StockChartPro
   const [timeRange, setTimeRange] = useState<'1D' | '1W' | '1M' | '3M' | '6M' | '1Y'>('1M')
   const [chartData, setChartData] = useState<any>(null)
   const [chartLoading, setChartLoading] = useState(false)
-  const chartRef = useRef<ChartJS>(null)
+  const chartRef = useRef<ChartJS<'line'>>(null)
 
   const timeRangeOptions = [
     { value: '1D', label: '1일', days: 1 },
@@ -66,7 +66,7 @@ export default function StockChart({ stockData, loading = false }: StockChartPro
   ]
 
   // 차트 데이터 가져오기
-  const fetchChartData = async (symbol: string, days: number) => {
+  const fetchChartData = useCallback(async (symbol: string, days: number) => {
     if (!symbol) return
 
     setChartLoading(true)
@@ -85,7 +85,7 @@ export default function StockChart({ stockData, loading = false }: StockChartPro
     } finally {
       setChartLoading(false)
     }
-  }
+  }, [])
 
   // 차트 데이터 처리
   const processChartData = (history: any[], symbol: string, name: string) => {
@@ -135,7 +135,7 @@ export default function StockChart({ stockData, loading = false }: StockChartPro
         fetchChartData(stockData.symbol, selectedRange.days)
       }
     }
-  }, [stockData?.symbol, timeRange])
+  }, [stockData?.symbol, timeRange, fetchChartData])
 
   // 초기 차트 데이터 설정
   useEffect(() => {
@@ -198,7 +198,7 @@ export default function StockChart({ stockData, loading = false }: StockChartPro
       x: {
         type: 'time' as const,
         time: {
-          unit: timeRange === '1D' ? 'hour' : timeRange === '1W' ? 'day' : 'day',
+          unit: (timeRange === '1D' ? 'hour' : 'day') as 'hour' | 'day',
           displayFormats: {
             hour: 'HH:mm',
             day: 'MM/dd',
