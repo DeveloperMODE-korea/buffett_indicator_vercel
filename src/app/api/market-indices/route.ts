@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
             exchange: quote.fullExchangeName,
             currency: quote.currency,
             marketState: quote.marketState,
-            lastUpdated: quote.regularMarketTime ? new Date(quote.regularMarketTime * 1000).toISOString() : new Date().toISOString(),
+            lastUpdated: quote.regularMarketTime && typeof quote.regularMarketTime === 'number' ? new Date(quote.regularMarketTime * 1000).toISOString() : new Date().toISOString(),
           }
 
           return {

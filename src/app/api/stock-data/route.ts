@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
         try {
           const quote = await yahooFinance.quote(symbol)
           
-          const stockInfo = {
+          const stockInfo: any = {
             symbol: quote.symbol,
             name: quote.shortName || quote.longName,
             price: quote.regularMarketPrice,
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
             exchange: quote.fullExchangeName,
             currency: quote.currency,
             marketState: quote.marketState,
-            lastUpdated: quote.regularMarketTime ? new Date(quote.regularMarketTime * 1000).toISOString() : new Date().toISOString(),
+            lastUpdated: quote.regularMarketTime && typeof quote.regularMarketTime === 'number' ? new Date(quote.regularMarketTime * 1000).toISOString() : new Date().toISOString(),
           }
 
           // 히스토리 데이터 포함 여부
