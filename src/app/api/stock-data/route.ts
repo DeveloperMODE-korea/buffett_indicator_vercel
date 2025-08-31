@@ -5,20 +5,19 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
 
-    // symbols 타입을 string[]으로 명확히 지정
+    // ✅ symbols를 string[]로 명확화 (타입 추론 이슈 차단)
     const symbols: string[] =
       searchParams.get('symbols')?.split(',') || ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'NVDA']
 
     const includeHistory = searchParams.get('history') === 'true'
-    const days = parseInt(searchParams.get('days') || '30')
+    const days = parseInt(searchParams.get('days') || '30', 10)
 
     console.log(`[Stock Data API] 요청된 심볼: ${symbols.join(', ')}`)
 
-    // 실시간 주식 데이터 가져오기
     const stockData = await Promise.all(
       symbols.map(async (symbol: string) => {
         try {
-          // ✅ 최신 버전에서 quote 사용
+          // ✅ 최신 yahoo-finance2: default import 객체의 메서드 직접 호출
           const quote = await yahooFinance.quote(symbol)
 
           const stockInfo: any = {
@@ -47,7 +46,7 @@ export async function GET(request: NextRequest) {
                 : new Date().toISOString(),
           }
 
-          // ✅ 히스토리 데이터 포함 여부
+          // ✅ 히스토리(일봉) 포함: 최신 버전은 chart() → { quotes, meta, events } 형태
           if (includeHistory) {
             try {
               const chartResult = await yahooFinance.chart(symbol, {
@@ -56,22 +55,28 @@ export async function GET(request: NextRequest) {
                 interval: '1d',
               })
 
-              if (chartResult.chart.result && chartResult.chart.result.length > 0) {
-                const result = chartResult.chart.result[0]
-                const quoteData = result.indicators.quote[0]
-                const timestamps = result.timestamp
+              // quotes: { date: Date, open, high, low, close, volume }[]
+              const quotes = chartResult.quotes || []
 
-                stockInfo.history = timestamps.map((ts, i) => ({
-                  date: new Date(ts * 1000).toISOString().split('T')[0],
-                  open: quoteData.open[i],
-                  high: quoteData.high[i],
-                  low: quoteData.low[i],
-                  close: quoteData.close[i],
-                  volume: quoteData.volume[i],
-                }))
-              } else {
-                stockInfo.history = []
-              }
+              // 일부 데이터에 null이 섞일 수 있어 안전 필터링
+              const safe = quotes.filter(
+                (q) =>
+                  q?.date instanceof Date &&
+                  typeof q.open === 'number' &&
+                  typeof q.high === 'number' &&
+                  typeof q.low === 'number' &&
+                  typeof q.close === 'number' &&
+                  typeof q.volume === 'number'
+              )
+
+              stockInfo.history = safe.map((q) => ({
+                date: q.date.toISOString().split('T')[0],
+                open: q.open,
+                high: q.high,
+                low: q.low,
+                close: q.close,
+                volume: q.volume,
+              }))
             } catch (historyError) {
               console.error(`[Stock Data API] ${symbol} 히스토리 데이터 오류:`, historyError)
               stockInfo.history = []
@@ -90,14 +95,14 @@ export async function GET(request: NextRequest) {
       })
     )
 
-    const successfulData = stockData.filter((item) => item.success)
-    const failedData = stockData.filter((item) => !item.success)
+    const successfulData = stockData.filter((x) => x.success)
+    const failedData = stockData.filter((x) => !x.success)
 
     console.log(`[Stock Data API] 성공: ${successfulData.length}개, 실패: ${failedData.length}개`)
 
     return NextResponse.json({
       success: true,
-      data: successfulData.map((item) => item.data),
+      data: successfulData.map((x: any) => x.data),
       failed: failedData,
       timestamp: new Date().toISOString(),
       totalRequested: symbols.length,
