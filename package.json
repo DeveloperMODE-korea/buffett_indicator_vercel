@@ -24,26 +24,27 @@
     "chartjs-adapter-date-fns": "^3.0.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "lightweight-charts": "^4.2.0",
     "next": "15.4.7",
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
     "tailwind-merge": "^3.3.1",
-    "yahoo-finance2": "^2.13.3",
-    "lightweight-charts": "^4.2.0"
+    "yahoo-finance2": "^2.13.3"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/postcss": "^4.1.12",
     "@tailwindcss/typography": "^0.5.10",
+    "@types/eslint": "^8",
     "@types/node": "^24",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@types/eslint": "^8",
+    "autoprefixer": "^10.4.21",
     "eslint": "^8",
     "eslint-config-next": "15.5.2",
     "husky": "^9.1.7",
     "postcss": "^8.4.38",
-    "autoprefixer": "^10.4.20",
     "tailwindcss": "^3.4.10",
     "typescript": "^5"
   }
