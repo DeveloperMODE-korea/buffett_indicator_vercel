@@ -10,7 +10,8 @@ import {
   HistogramData,
   CandlestickSeries,
   HistogramSeries,
-  type Time, // ✅ 추가
+  type Time,
+  type BusinessDay, // ✅ 추가
 } from 'lightweight-charts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -97,15 +98,23 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
         rightBarStaysOnScroll: true,
         borderVisible: false,
         visible: true,
-        // ✅ Time(UTCTimestamp | BusinessDay) 모두 처리
-        tickMarkFormatter: (time: Time) => {
+        // ✅ Time(UTCTimestamp | BusinessDay | BusinessDayString) 모두 처리
+        tickMarkFormatter: (time: Time): string => {
           if (typeof time === 'number') {
+            // UTCTimestamp (epoch seconds)
             const date = new Date(time * 1000)
             return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
-          } else {
-            const date = new Date(Date.UTC(time.year, time.month - 1, time.day))
+          }
+          if (typeof time === 'string') {
+            // BusinessDayString: 'YYYY-MM-DD'
+            const [y, m, d] = time.split('-').map((v) => parseInt(v, 10))
+            const date = new Date(Date.UTC(y, m - 1, d))
             return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
           }
+          // BusinessDay 객체 { year, month, day }
+          const { year, month, day } = time as BusinessDay
+          const date = new Date(Date.UTC(year, month - 1, day))
+          return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
         },
       },
       rightPriceScale: {
@@ -172,7 +181,6 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
   const processChartData = useCallback((history: any[]) => {
     if (!candlestickSeriesRef.current || !volumeSeriesRef.current) return
 
-    // ✅ 제네릭과 time 캐스팅
     const candlestickData: CandlestickData<Time>[] = history.map((item) => ({
       time: Math.floor(new Date(item.date).getTime() / 1000) as Time,
       open: item.open,
