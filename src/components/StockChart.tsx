@@ -50,20 +50,20 @@ interface StockChartProps {
   loading?: boolean
 }
 
+const timeRangeOptions = [
+  { value: '1D', label: '1일', days: 1 },
+  { value: '1W', label: '1주', days: 7 },
+  { value: '1M', label: '1개월', days: 30 },
+  { value: '3M', label: '3개월', days: 90 },
+  { value: '6M', label: '6개월', days: 180 },
+  { value: '1Y', label: '1년', days: 365 }
+]
+
 export default function StockChart({ stockData, loading = false }: StockChartProps) {
   const [timeRange, setTimeRange] = useState<'1D' | '1W' | '1M' | '3M' | '6M' | '1Y'>('1M')
   const [chartData, setChartData] = useState<any>(null)
   const [chartLoading, setChartLoading] = useState(false)
   const chartRef = useRef<ChartJS<'line'>>(null)
-
-  const timeRangeOptions = [
-    { value: '1D', label: '1일', days: 1 },
-    { value: '1W', label: '1주', days: 7 },
-    { value: '1M', label: '1개월', days: 30 },
-    { value: '3M', label: '3개월', days: 90 },
-    { value: '6M', label: '6개월', days: 180 },
-    { value: '1Y', label: '1년', days: 365 }
-  ]
 
   // 차트 데이터 가져오기
   const fetchChartData = useCallback(async (symbol: string, days: number) => {

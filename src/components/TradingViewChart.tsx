@@ -25,6 +25,15 @@ interface TradingViewChartProps {
   loading?: boolean
 }
 
+const timeRangeOptions = [
+  { value: '1D', label: '1일', days: 1 },
+  { value: '1W', label: '1주', days: 7 },
+  { value: '1M', label: '1개월', days: 30 },
+  { value: '3M', label: '3개월', days: 90 },
+  { value: '6M', label: '6개월', days: 180 },
+  { value: '1Y', label: '1년', days: 365 }
+]
+
 export default function TradingViewChart({ stockData, loading = false }: TradingViewChartProps) {
   const [timeRange, setTimeRange] = useState<'1D' | '1W' | '1M' | '3M' | '6M' | '1Y'>('1M')
   const [chartLoading, setChartLoading] = useState(false)
@@ -32,15 +41,6 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
   const chartRef = useRef<IChartApi | null>(null)
   const candlestickSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null)
   const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null)
-
-  const timeRangeOptions = [
-    { value: '1D', label: '1일', days: 1 },
-    { value: '1W', label: '1주', days: 7 },
-    { value: '1M', label: '1개월', days: 30 },
-    { value: '3M', label: '3개월', days: 90 },
-    { value: '6M', label: '6개월', days: 180 },
-    { value: '1Y', label: '1년', days: 365 }
-  ]
 
   // 차트 초기화
   const initializeChart = useCallback(() => {
@@ -181,7 +181,7 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
     } finally {
       setChartLoading(false)
     }
-  }, [])
+  }, [processChartData])
 
   // 차트 데이터 처리
   const processChartData = useCallback((history: any[]) => {
@@ -227,7 +227,7 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
         fetchChartData(stockData.symbol, selectedRange.days)
       }
     }
-  }, [stockData?.symbol, timeRange, fetchChartData, timeRangeOptions])
+  }, [stockData?.symbol, timeRange, fetchChartData])
 
   // 초기 차트 데이터 설정
   useEffect(() => {

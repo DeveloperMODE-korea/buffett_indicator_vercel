@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     const indicesData = await Promise.all(
       indices.map(async (index) => {
         try {
-          const quote = await yahooFinance.quote(index)
+          const quote = await yahooFinance.quote.bind(yahooFinance)(index)
           
           const indexInfo = {
             symbol: quote.symbol,
