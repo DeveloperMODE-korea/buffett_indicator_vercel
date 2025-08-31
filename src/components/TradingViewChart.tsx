@@ -8,7 +8,6 @@ import {
   ISeriesApi,
   CandlestickData,
   HistogramData,
-  // ✅ v5: 시리즈는 addSeries에 넘길 "정의"를 import해서 씁니다
   CandlestickSeries,
   HistogramSeries,
 } from 'lightweight-charts'
@@ -97,14 +96,14 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
         rightBarStaysOnScroll: true,
         borderVisible: false,
         visible: true,
-        // v5의 Time 타입과 맞추려면 any 캐스팅을 쓰거나 타입 시그니처를 확장할 수 있습니다.
+        // v5 Time 형과 맞추기 위한 안전 처리
         tickMarkFormatter: (time: any) => {
           const t = typeof time === 'number' ? time : (time?.timestamp ?? time)
           const date = new Date((typeof t === 'number' ? t : 0) * 1000)
           return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
         },
       },
-      // ✅ v5: priceScale → rightPriceScale
+      // v5: 오른쪽 가격축 옵션
       rightPriceScale: {
         borderColor: 'rgba(197, 203, 206, 0.3)',
         scaleMargins: { top: 0.1, bottom: 0.2 },
@@ -123,7 +122,7 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
       },
     })
 
-    // ✅ v5: addSeries(CandlestickSeries, options)
+    // v5: addSeries(CandlestickSeries, options)
     const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#26a69a',
       downColor: '#ef5350',
@@ -133,11 +132,16 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
       wickUpColor: '#26a69a',
     })
 
-    // ✅ v5: addSeries(HistogramSeries, options)
+    // v5: addSeries(HistogramSeries, options)
     const volumeSeries = chart.addSeries(HistogramSeries, {
       color: '#26a69a',
       priceFormat: { type: 'volume' },
-      priceScaleId: '', // 별도 스케일(하단)
+      priceScaleId: '', // 하단 별도 스케일(overlay)
+      // ⛔️ scaleMargins는 시리즈 옵션이 아님 — 아래에서 가격축에 적용
+    })
+
+    // ✅ 여기서 가격축 옵션으로 여백 적용
+    volumeSeries.priceScale().applyOptions({
       scaleMargins: { top: 0.8, bottom: 0 },
     })
 
