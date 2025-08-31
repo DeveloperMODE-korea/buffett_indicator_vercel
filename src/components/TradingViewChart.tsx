@@ -10,6 +10,7 @@ import {
   HistogramData,
   CandlestickSeries,
   HistogramSeries,
+  type Time, // ✅ 추가
 } from 'lightweight-charts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -96,10 +97,15 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
         rightBarStaysOnScroll: true,
         borderVisible: false,
         visible: true,
-        tickMarkFormatter: (time: any) => {
-          const t = typeof time === 'number' ? time : (time?.timestamp ?? time)
-          const date = new Date((typeof t === 'number' ? t : 0) * 1000)
-          return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
+        // ✅ Time(UTCTimestamp | BusinessDay) 모두 처리
+        tickMarkFormatter: (time: Time) => {
+          if (typeof time === 'number') {
+            const date = new Date(time * 1000)
+            return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
+          } else {
+            const date = new Date(Date.UTC(time.year, time.month - 1, time.day))
+            return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
+          }
         },
       },
       rightPriceScale: {
@@ -166,16 +172,17 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
   const processChartData = useCallback((history: any[]) => {
     if (!candlestickSeriesRef.current || !volumeSeriesRef.current) return
 
-    const candlestickData: CandlestickData[] = history.map((item) => ({
-      time: Math.floor(new Date(item.date).getTime() / 1000),
+    // ✅ 제네릭과 time 캐스팅
+    const candlestickData: CandlestickData<Time>[] = history.map((item) => ({
+      time: Math.floor(new Date(item.date).getTime() / 1000) as Time,
       open: item.open,
       high: item.high,
       low: item.low,
       close: item.close,
     }))
 
-    const volumeData: HistogramData[] = history.map((item) => ({
-      time: Math.floor(new Date(item.date).getTime() / 1000),
+    const volumeData: HistogramData<Time>[] = history.map((item) => ({
+      time: Math.floor(new Date(item.date).getTime() / 1000) as Time,
       value: item.volume,
       color: item.close >= item.open ? '#26a69a' : '#ef5350',
     }))
@@ -188,7 +195,7 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
     }
   }, [])
 
-  // ⬇️ 그 다음, 차트 데이터 가져오기 (processChartData를 의존성으로 안전하게 참조)
+  // ⬇️ 그 다음, 차트 데이터 가져오기
   const fetchChartData = useCallback(
     async (symbol: string, days: number) => {
       if (!symbol) return
