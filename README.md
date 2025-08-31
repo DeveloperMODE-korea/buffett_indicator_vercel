@@ -34,7 +34,6 @@
   - 🚀 **Deploy Preview**: PR 시 Vercel 프리뷰 배포
   - 🚀 **Deploy Production**: main 브랜치 시 프로덕션 배포
   - 📊 **Performance**: Lighthouse CI 성능 측정
-  - 📧 **Notify**: Slack 알림
 
 #### 2. **스테이징 배포** (`.github/workflows/deploy-staging.yml`)
 - **트리거**: `develop` 브랜치 푸시
