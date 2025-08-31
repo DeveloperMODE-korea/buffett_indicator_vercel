@@ -5,8 +5,12 @@ on:
     branches: [ develop ]
   workflow_dispatch:
 
+concurrency:
+  group: staging-deploy
+  cancel-in-progress: true
+
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
@@ -15,41 +19,45 @@ jobs:
     name: Deploy to Staging
     runs-on: ubuntu-latest
     environment: staging
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v5
-        
+
       - name: 📦 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          
+
       - name: 📥 Install dependencies
         run: npm ci
-        
+
       - name: 🔍 Run linting
         run: npm run lint
-        
+
       - name: 🧪 Run type check
         run: npm run type-check
-        
+
       - name: 🏗️ Build project
         run: npm run build
-        
-      - name: 🚀 Deploy to Vercel (Staging)
+
+      # 선택: 배포 전 시크릿 존재 여부 확인 (디버깅 도움)
+      - name: 🔎 Verify Vercel secrets presence
+        run: |
+          test -n "${VERCEL_TOKEN}" && echo "VERCEL_TOKEN: present" || (echo "VERCEL_TOKEN: MISSING" && exit 1)
+          test -n "${VERCEL_ORG_ID}" && echo "VERCEL_ORG_ID: present" || (echo "VERCEL_ORG_ID: MISSING" && exit 1)
+          test -n "${VERCEL_PROJECT_ID}" && echo "VERCEL_PROJECT_ID: present" || (echo "VERCEL_PROJECT_ID: MISSING" && exit 1)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ env.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID }}
+
+      - name: 🚀 Deploy to Vercel (Staging/Preview)
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ env.VERCEL_ORG_ID }}
           vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
-          vercel-args: '--target=preview'
-          
-      - name: 📧 Notify staging deployment
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          channel: '#staging-deployments'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
-        if: always()
+          # Preview 배포는 기본값이라 인자 불필요. 필요 시 아래 주석 해제:
+          # vercel-args: '--confirm'
