@@ -5,6 +5,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
 
+    // ✅ indices 타입 고정
     const indices: string[] =
       searchParams.get('indices')?.split(',') || [
         '^GSPC',     // S&P 500
@@ -12,22 +13,26 @@ export async function GET(request: NextRequest) {
         '^IXIC',     // NASDAQ
         '^RUT',      // Russell 2000
         '^VIX',      // VIX
-        '^TNX',      // 10년 국채 수익률
-        'DX-Y.NYB',  // 달러 지수
-        'GC=F',      // 금
-        'CL=F',      // 원유
-        'BTC-USD'    // 비트코인
+        '^TNX',      // 10Y Treasury Yield
+        'DX-Y.NYB',  // US Dollar Index
+        'GC=F',      // Gold
+        'CL=F',      // WTI Crude
+        'BTC-USD',   // Bitcoin
       ]
+
+    // ✅ stock-data와 동일한 옵션 지원
+    const includeHistory = searchParams.get('history') === 'true'
+    const days = parseInt(searchParams.get('days') || '30', 10)
 
     console.log(`[Market Indices API] 요청된 지수: ${indices.join(', ')}`)
 
     const indicesData = await Promise.all(
       indices.map(async (symbol: string) => {
         try {
-          // ✅ new 제거 후 바로 quote 호출
+          // ✅ 최신 yahoo-finance2 메서드 직접 호출
           const quote = await yahooFinance.quote(symbol)
 
-          const indexInfo = {
+          const indexInfo: any = {
             symbol: quote.symbol,
             name: quote.shortName || quote.longName,
             price: quote.regularMarketPrice,
@@ -49,6 +54,40 @@ export async function GET(request: NextRequest) {
                 : new Date().toISOString(),
           }
 
+          if (includeHistory) {
+            try {
+              const chartResult = await yahooFinance.chart(symbol, {
+                period1: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
+                period2: new Date(),
+                interval: '1d',
+              })
+
+              // ✅ 최신 반환 구조: quotes 배열
+              const quotes = chartResult.quotes || []
+              const safe = quotes.filter(
+                (q) =>
+                  q?.date instanceof Date &&
+                  typeof q.open === 'number' &&
+                  typeof q.high === 'number' &&
+                  typeof q.low === 'number' &&
+                  typeof q.close === 'number' &&
+                  typeof q.volume === 'number'
+              )
+
+              indexInfo.history = safe.map((q) => ({
+                date: q.date.toISOString().split('T')[0],
+                open: q.open,
+                high: q.high,
+                low: q.low,
+                close: q.close,
+                volume: q.volume,
+              }))
+            } catch (historyError) {
+              console.error(`[Market Indices API] ${symbol} 히스토리 데이터 오류:`, historyError)
+              indexInfo.history = []
+            }
+          }
+
           return { success: true, data: indexInfo }
         } catch (error) {
           console.error(`[Market Indices API] ${symbol} 데이터 오류:`, error)
@@ -68,7 +107,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: successfulData.map((item) => item.data),
+      data: successfulData.map((item: any) => item.data),
       failed: failedData,
       timestamp: new Date().toISOString(),
       totalRequested: indices.length,
