@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-// import yahooFinance from 'yahoo-finance2'  ❌ (에러 발생 원인)
-import * as yahooFinance from 'yahoo-finance2'  // ⭕ 올바른 방식
+import yahooFinance from 'yahoo-finance2'
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,6 +18,7 @@ export async function GET(request: NextRequest) {
     const stockData = await Promise.all(
       symbols.map(async (symbol: string) => {
         try {
+          // ✅ 최신 버전에서 quote 사용
           const quote = await yahooFinance.quote(symbol)
 
           const stockInfo: any = {
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
                 : new Date().toISOString(),
           }
 
-          // 히스토리 데이터 포함 여부
+          // ✅ 히스토리 데이터 포함 여부
           if (includeHistory) {
             try {
               const chartResult = await yahooFinance.chart(symbol, {
