@@ -1,18 +1,19 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
-  createChart,
-  ColorType,
-  IChartApi,
-  ISeriesApi,
-  CandlestickData,
-  HistogramData,
-  CandlestickSeries,
-  HistogramSeries,
-  type Time,
-  type BusinessDay, // ✅ 추가
-} from 'lightweight-charts'
+  ComposedChart,
+  Line,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Area,
+  ReferenceLine,
+} from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface StockData {
@@ -43,196 +44,92 @@ const timeRangeOptions = [
   { value: '3M', label: '3개월', days: 90 },
   { value: '6M', label: '6개월', days: 180 },
   { value: '1Y', label: '1년', days: 365 },
-]
+] as const
+
+type TimeRangeValue = typeof timeRangeOptions[number]['value']
 
 export default function TradingViewChart({ stockData, loading = false }: TradingViewChartProps) {
-  const [timeRange, setTimeRange] = useState<'1D' | '1W' | '1M' | '3M' | '6M' | '1Y'>('1M')
+  const [timeRange, setTimeRange] = useState<TimeRangeValue>('1M')
   const [chartLoading, setChartLoading] = useState(false)
-  const chartContainerRef = useRef<HTMLDivElement>(null)
-  const chartRef = useRef<IChartApi | null>(null)
-  const candlestickSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null)
-  const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null)
+  const [chartError, setChartError] = useState<string | null>(null)
+  const [chartData, setChartData] = useState<any[]>([])
 
-  // 차트 초기화
-  const initializeChart = useCallback(() => {
-    if (!chartContainerRef.current) return
-
-    // 기존 차트 제거
-    if (chartRef.current) {
-      chartRef.current.remove()
+  // 차트 데이터 처리
+  const processChartData = useCallback((history: StockData['history']) => {
+    if (!history || history.length === 0) {
+      setChartData([])
+      return
     }
 
-    // 새 차트 생성
-    const chart = createChart(chartContainerRef.current, {
-      layout: {
-        background: { type: ColorType.Solid, color: 'transparent' },
-        textColor: '#d1d5db',
-      },
-      grid: {
-        vertLines: { color: 'rgba(197, 203, 206, 0.1)' },
-        horzLines: { color: 'rgba(197, 203, 206, 0.1)' },
-      },
-      crosshair: {
-        mode: 1,
-        vertLine: {
-          color: '#2962FF',
-          width: 1,
-          style: 3,
-          labelBackgroundColor: '#2962FF',
-        },
-        horzLine: {
-          color: '#2962FF',
-          width: 1,
-          style: 3,
-          labelBackgroundColor: '#2962FF',
-        },
-      },
-      timeScale: {
-        borderColor: 'rgba(197, 203, 206, 0.3)',
-        timeVisible: true,
-        secondsVisible: false,
-        rightOffset: 12,
-        barSpacing: 3,
-        fixLeftEdge: true,
-        lockVisibleTimeRangeOnResize: true,
-        rightBarStaysOnScroll: true,
-        borderVisible: false,
-        visible: true,
-        // ✅ Time(UTCTimestamp | BusinessDay | BusinessDayString) 모두 처리
-        tickMarkFormatter: (time: Time): string => {
-          if (typeof time === 'number') {
-            // UTCTimestamp (epoch seconds)
-            const date = new Date(time * 1000)
-            return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
-          }
-          if (typeof time === 'string') {
-            // BusinessDayString: 'YYYY-MM-DD'
-            const [y, m, d] = time.split('-').map((v) => parseInt(v, 10))
-            const date = new Date(Date.UTC(y, m - 1, d))
-            return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
-          }
-          // BusinessDay 객체 { year, month, day }
-          const { year, month, day } = time as BusinessDay
-          const date = new Date(Date.UTC(year, month - 1, day))
-          return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
-        },
-      },
-      rightPriceScale: {
-        borderColor: 'rgba(197, 203, 206, 0.3)',
-        scaleMargins: { top: 0.1, bottom: 0.2 },
-        borderVisible: false,
-      },
-      handleScroll: {
-        mouseWheel: true,
-        pressedMouseMove: true,
-        horzTouchDrag: true,
-        vertTouchDrag: true,
-      },
-      handleScale: {
-        axisPressedMouseMove: true,
-        mouseWheel: true,
-        pinch: true,
-      },
-    })
+    try {
+      // 데이터 정렬 및 변환
+      const sortedData = [...history]
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .map(item => ({
+          date: new Date(item.date).toLocaleDateString('ko-KR', { 
+            month: 'short', 
+            day: 'numeric' 
+          }),
+          fullDate: item.date,
+          open: Number(item.open),
+          high: Number(item.high),
+          low: Number(item.low),
+          close: Number(item.close),
+          volume: Number(item.volume),
+          // 캔들 색상 결정
+          fill: item.close >= item.open ? '#26a69a' : '#ef5350',
+          // 가격 범위 (캔들스틱 시뮬레이션용)
+          priceRange: [Number(item.low), Number(item.high)],
+        }))
 
-    const candlestickSeries = chart.addSeries(CandlestickSeries, {
-      upColor: '#26a69a',
-      downColor: '#ef5350',
-      borderDownColor: '#ef5350',
-      borderUpColor: '#26a69a',
-      wickDownColor: '#ef5350',
-      wickUpColor: '#26a69a',
-    })
-
-    const volumeSeries = chart.addSeries(HistogramSeries, {
-      color: '#26a69a',
-      priceFormat: { type: 'volume' },
-      priceScaleId: '', // 하단 별도 스케일(overlay)
-    })
-
-    // 하단 거래량 패널 여백
-    volumeSeries.priceScale().applyOptions({
-      scaleMargins: { top: 0.8, bottom: 0 },
-    })
-
-    chartRef.current = chart
-    candlestickSeriesRef.current = candlestickSeries
-    volumeSeriesRef.current = volumeSeries
-
-    // 반응형 처리
-    const handleResize = () => {
-      if (chartRef.current && chartContainerRef.current) {
-        chartRef.current.resize(
-          chartContainerRef.current.clientWidth,
-          chartContainerRef.current.clientHeight
-        )
-      }
-    }
-
-    window.addEventListener('resize', handleResize)
-    handleResize()
-
-    return () => {
-      window.removeEventListener('resize', handleResize)
+      setChartData(sortedData)
+      setChartError(null)
+    } catch (error) {
+      console.error('Chart data processing error:', error)
+      setChartError('차트 데이터 처리 중 오류가 발생했습니다.')
+      setChartData([])
     }
   }, [])
 
-  // ✅ 차트 데이터 처리 (먼저 선언)
-  const processChartData = useCallback((history: any[]) => {
-    if (!candlestickSeriesRef.current || !volumeSeriesRef.current) return
-
-    const candlestickData: CandlestickData<Time>[] = history.map((item) => ({
-      time: Math.floor(new Date(item.date).getTime() / 1000) as Time,
-      open: item.open,
-      high: item.high,
-      low: item.low,
-      close: item.close,
-    }))
-
-    const volumeData: HistogramData<Time>[] = history.map((item) => ({
-      time: Math.floor(new Date(item.date).getTime() / 1000) as Time,
-      value: item.volume,
-      color: item.close >= item.open ? '#26a69a' : '#ef5350',
-    }))
-
-    candlestickSeriesRef.current.setData(candlestickData)
-    volumeSeriesRef.current.setData(volumeData)
-
-    if (chartRef.current) {
-      chartRef.current.timeScale().fitContent()
-    }
-  }, [])
-
-  // ⬇️ 그 다음, 차트 데이터 가져오기
+  // 차트 데이터 가져오기
   const fetchChartData = useCallback(
     async (symbol: string, days: number) => {
       if (!symbol) return
 
       setChartLoading(true)
+      setChartError(null)
+      
       try {
         const response = await fetch(`/api/stock-data?symbols=${symbol}&history=true&days=${days}`)
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
         const result = await response.json()
 
-        if (result.success && result.data.length > 0) {
+        if (result.success && result.data?.length > 0) {
           const stock = result.data[0]
           if (stock.history && stock.history.length > 0) {
             processChartData(stock.history)
+          } else {
+            setChartError('히스토리 데이터가 없습니다.')
+            setChartData([])
           }
+        } else {
+          setChartError('데이터를 가져올 수 없습니다.')
+          setChartData([])
         }
       } catch (error) {
         console.error('차트 데이터 가져오기 오류:', error)
+        setChartError('데이터를 가져오는 중 오류가 발생했습니다.')
+        setChartData([])
       } finally {
         setChartLoading(false)
       }
     },
     [processChartData]
   )
-
-  // 차트 초기화
-  useEffect(() => {
-    const cleanup = initializeChart()
-    return cleanup
-  }, [initializeChart])
 
   // 시간 범위 변경 시 차트 데이터 새로 가져오기
   useEffect(() => {
@@ -256,7 +153,39 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(value)
+  }
+
+  const formatVolume = (value: number) => {
+    if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(1)}M`
+    } else if (value >= 1000) {
+      return `${(value / 1000).toFixed(1)}K`
+    }
+    return value.toString()
+  }
+
+  // 커스텀 툴팁
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload
+      return (
+        <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+          <p className="text-sm font-semibold mb-2">{label}</p>
+          <div className="space-y-1 text-xs">
+            <p>시가: <span className="font-mono">{formatCurrency(data.open)}</span></p>
+            <p>고가: <span className="font-mono">{formatCurrency(data.high)}</span></p>
+            <p>저가: <span className="font-mono">{formatCurrency(data.low)}</span></p>
+            <p>종가: <span className={`font-mono ${data.fill === '#26a69a' ? 'text-green-600' : 'text-red-600'}`}>
+              {formatCurrency(data.close)}
+            </span></p>
+            <p>거래량: <span className="font-mono">{formatVolume(data.volume)}</span></p>
+          </div>
+        </div>
+      )
+    }
+    return null
   }
 
   if (loading || chartLoading) {
@@ -277,6 +206,38 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
     )
   }
 
+  if (chartError) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">TradingView 차트</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-96 flex items-center justify-center">
+            <div className="text-center text-red-500">
+              <div className="text-4xl mb-2">⚠️</div>
+              <p>{chartError}</p>
+              <button
+                onClick={() => {
+                  setChartError(null)
+                  if (stockData?.symbol) {
+                    const selectedRange = timeRangeOptions.find((option) => option.value === timeRange)
+                    if (selectedRange) {
+                      fetchChartData(stockData.symbol, selectedRange.days)
+                    }
+                  }
+                }}
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                다시 시도
+              </button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   if (!stockData) {
     return (
       <Card>
@@ -287,7 +248,7 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
           <div className="h-96 flex items-center justify-center">
             <div className="text-center text-gray-500 dark:text-gray-400">
               <div className="text-4xl mb-2">📊</div>
-              <p>주식을 선택하면 TradingView 차트가 표시됩니다</p>
+              <p>주식을 선택하면 차트가 표시됩니다</p>
             </div>
           </div>
         </CardContent>
@@ -295,10 +256,15 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
     )
   }
 
+  // 평균 가격 계산 (참조선용)
+  const avgPrice = chartData.length > 0 
+    ? chartData.reduce((sum, item) => sum + item.close, 0) / chartData.length 
+    : 0
+
   return (
     <Card>
       <CardHeader>
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
             <CardTitle className="text-lg">
               {stockData.name} ({stockData.symbol})
@@ -311,16 +277,17 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
               </span>
             </p>
           </div>
-          <div className="flex space-x-1">
+          <div className="flex flex-wrap gap-1">
             {timeRangeOptions.map((option) => (
               <button
                 key={option.value}
-                onClick={() => setTimeRange(option.value as any)}
+                onClick={() => setTimeRange(option.value)}
                 className={`px-3 py-1 text-sm rounded-md transition-colors ${
                   timeRange === option.value
                     ? 'bg-blue-600 text-white'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
+                disabled={chartLoading}
               >
                 {option.label}
               </button>
@@ -329,11 +296,106 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
         </div>
       </CardHeader>
       <CardContent>
-        <div
-          ref={chartContainerRef}
-          className="h-96 w-full"
-          style={{ background: 'transparent', position: 'relative' }}
-        />
+        {chartData.length > 0 ? (
+          <div className="space-y-4">
+            {/* 가격 차트 */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">가격</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <ComposedChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(156, 163, 175, 0.2)" />
+                  <XAxis 
+                    dataKey="date" 
+                    tick={{ fontSize: 12 }}
+                    stroke="#9ca3af"
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 12 }}
+                    stroke="#9ca3af"
+                    domain={['dataMin - 5', 'dataMax + 5']}
+                    tickFormatter={(value) => `$${value}`}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  
+                  {/* 평균선 */}
+                  <ReferenceLine 
+                    y={avgPrice} 
+                    stroke="#fbbf24" 
+                    strokeDasharray="5 5" 
+                    label={{ value: "평균", position: "right", fill: "#fbbf24", fontSize: 12 }}
+                  />
+                  
+                  {/* 가격 영역 차트 */}
+                  <Area
+                    type="monotone"
+                    dataKey="close"
+                    fill="#3b82f6"
+                    fillOpacity={0.1}
+                    stroke="#3b82f6"
+                    strokeWidth={2}
+                  />
+                  
+                  {/* 고가/저가 범위 */}
+                  {chartData.map((entry, index) => (
+                    <ReferenceLine
+                      key={`range-${index}`}
+                      segment={[
+                        { x: entry.date, y: entry.low },
+                        { x: entry.date, y: entry.high }
+                      ]}
+                      stroke={entry.fill}
+                      strokeWidth={1}
+                      opacity={0.5}
+                    />
+                  ))}
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* 거래량 차트 */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">거래량</h3>
+              <ResponsiveContainer width="100%" height={100}>
+                <ComposedChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(156, 163, 175, 0.2)" />
+                  <XAxis 
+                    dataKey="date" 
+                    tick={{ fontSize: 10 }}
+                    stroke="#9ca3af"
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 10 }}
+                    stroke="#9ca3af"
+                    tickFormatter={formatVolume}
+                  />
+                  <Tooltip 
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-white dark:bg-gray-800 p-2 rounded shadow-lg border border-gray-200 dark:border-gray-700">
+                            <p className="text-xs">거래량: {formatVolume(payload[0].value as number)}</p>
+                          </div>
+                        )
+                      }
+                      return null
+                    }}
+                  />
+                  <Bar 
+                    dataKey="volume" 
+                    fill="#26a69a"
+                    opacity={0.8}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        ) : (
+          <div className="h-96 flex items-center justify-center">
+            <div className="text-center text-gray-500 dark:text-gray-400">
+              <p>차트 데이터가 없습니다</p>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
