@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import yahooFinance from 'yahoo-finance2'
 
 export async function GET(request: NextRequest) {
+  const yahoo = new yahooFinance();
   try {
     const { searchParams } = new URL(request.url)
     const symbols = searchParams.get('symbols')?.split(',') || ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'NVDA']
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
     const stockData = await Promise.all(
       symbols.map(async (symbol) => {
         try {
-          const quote = await yahooFinance.quote(symbol)
+          const quote = await yahoo.quote(symbol)
           
           const stockInfo: any = {
             symbol: quote.symbol,
@@ -42,7 +43,7 @@ export async function GET(request: NextRequest) {
           // 히스토리 데이터 포함 여부
           if (includeHistory) {
             try {
-              const history = await yahooFinance.historical(symbol, {
+              const history = await yahoo.historical(symbol, {
                 period1: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
                 period2: new Date(),
                 interval: '1d'

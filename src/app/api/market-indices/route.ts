@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import yahooFinance from 'yahoo-finance2'
 
 export async function GET(request: NextRequest) {
+  const yahoo = new yahooFinance();
   try {
     const { searchParams } = new URL(request.url)
     const indices = searchParams.get('indices')?.split(',') || [
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
     const indicesData = await Promise.all(
       indices.map(async (symbol) => {
         try {
-          const quote = await yahooFinance.quote.bind(yahooFinance)(symbol)
+          const quote = await yahoo.quote(symbol)
           
           const indexInfo = {
             symbol: quote.symbol,
