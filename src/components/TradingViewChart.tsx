@@ -1,7 +1,14 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { createChart, ColorType, IChartApi, ISeriesApi, CandlestickData, LineData } from 'lightweight-charts'
+import {
+  createChart,
+  ColorType,
+  IChartApi,
+  ISeriesApi,
+  CandlestickData,
+  HistogramData,        // ✅ 추가
+} from 'lightweight-charts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface StockData {
@@ -95,7 +102,8 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
           })
         },
       },
-      priceScale: {
+      // ✅ 핵심 수정: priceScale → rightPriceScale
+      rightPriceScale: {
         borderColor: 'rgba(197, 203, 206, 0.3)',
         scaleMargins: {
           top: 0.1,
@@ -129,10 +137,8 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
     // 거래량 시리즈 추가 (별도 패널)
     const volumeSeries = chart.addHistogramSeries({
       color: '#26a69a',
-      priceFormat: {
-        type: 'volume',
-      },
-      priceScaleId: '',
+      priceFormat: { type: 'volume' },
+      priceScaleId: '', // 별도 스케일
       scaleMargins: {
         top: 0.8,
         bottom: 0,
@@ -196,8 +202,8 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
       close: item.close,
     }))
 
-    // 거래량 데이터 변환
-    const volumeData: LineData[] = history.map(item => ({
+    // 거래량 데이터 변환 (✅ HistogramData로 변경)
+    const volumeData: HistogramData[] = history.map(item => ({
       time: Math.floor(new Date(item.date).getTime() / 1000),
       value: item.volume,
       color: item.close >= item.open ? '#26a69a' : '#ef5350',
