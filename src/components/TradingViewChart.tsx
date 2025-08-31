@@ -96,14 +96,12 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
         rightBarStaysOnScroll: true,
         borderVisible: false,
         visible: true,
-        // v5 Time 형과 맞추기 위한 안전 처리
         tickMarkFormatter: (time: any) => {
           const t = typeof time === 'number' ? time : (time?.timestamp ?? time)
           const date = new Date((typeof t === 'number' ? t : 0) * 1000)
           return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
         },
       },
-      // v5: 오른쪽 가격축 옵션
       rightPriceScale: {
         borderColor: 'rgba(197, 203, 206, 0.3)',
         scaleMargins: { top: 0.1, bottom: 0.2 },
@@ -122,7 +120,6 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
       },
     })
 
-    // v5: addSeries(CandlestickSeries, options)
     const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#26a69a',
       downColor: '#ef5350',
@@ -132,15 +129,13 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
       wickUpColor: '#26a69a',
     })
 
-    // v5: addSeries(HistogramSeries, options)
     const volumeSeries = chart.addSeries(HistogramSeries, {
       color: '#26a69a',
       priceFormat: { type: 'volume' },
       priceScaleId: '', // 하단 별도 스케일(overlay)
-      // ⛔️ scaleMargins는 시리즈 옵션이 아님 — 아래에서 가격축에 적용
     })
 
-    // ✅ 여기서 가격축 옵션으로 여백 적용
+    // 하단 거래량 패널 여백
     volumeSeries.priceScale().applyOptions({
       scaleMargins: { top: 0.8, bottom: 0 },
     })
@@ -167,32 +162,7 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
     }
   }, [])
 
-  // 차트 데이터 가져오기
-  const fetchChartData = useCallback(
-    async (symbol: string, days: number) => {
-      if (!symbol) return
-
-      setChartLoading(true)
-      try {
-        const response = await fetch(`/api/stock-data?symbols=${symbol}&history=true&days=${days}`)
-        const result = await response.json()
-
-        if (result.success && result.data.length > 0) {
-          const stock = result.data[0]
-          if (stock.history && stock.history.length > 0) {
-            processChartData(stock.history)
-          }
-        }
-      } catch (error) {
-        console.error('차트 데이터 가져오기 오류:', error)
-      } finally {
-        setChartLoading(false)
-      }
-    },
-    [processChartData]
-  )
-
-  // 차트 데이터 처리
+  // ✅ 차트 데이터 처리 (먼저 선언)
   const processChartData = useCallback((history: any[]) => {
     if (!candlestickSeriesRef.current || !volumeSeriesRef.current) return
 
@@ -217,6 +187,31 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
       chartRef.current.timeScale().fitContent()
     }
   }, [])
+
+  // ⬇️ 그 다음, 차트 데이터 가져오기 (processChartData를 의존성으로 안전하게 참조)
+  const fetchChartData = useCallback(
+    async (symbol: string, days: number) => {
+      if (!symbol) return
+
+      setChartLoading(true)
+      try {
+        const response = await fetch(`/api/stock-data?symbols=${symbol}&history=true&days=${days}`)
+        const result = await response.json()
+
+        if (result.success && result.data.length > 0) {
+          const stock = result.data[0]
+          if (stock.history && stock.history.length > 0) {
+            processChartData(stock.history)
+          }
+        }
+      } catch (error) {
+        console.error('차트 데이터 가져오기 오류:', error)
+      } finally {
+        setChartLoading(false)
+      }
+    },
+    [processChartData]
+  )
 
   // 차트 초기화
   useEffect(() => {
