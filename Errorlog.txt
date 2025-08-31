@@ -1,0 +1,67 @@
+[03:29:30.019] Running build in Washington, D.C., USA (East) – iad1
+[03:29:30.019] Build machine configuration: 2 cores, 8 GB
+[03:29:30.042] Cloning github.com/DeveloperMODE-korea/buffett_indicator_vercel (Branch: main, Commit: 5be1e40)
+[03:29:30.353] Cloning completed: 311.000ms
+[03:29:32.105] Restored build cache from previous deployment (9ugJg9UTLDwptjriGVAw3qhWQWt8)
+[03:29:32.633] Running "vercel build"
+[03:29:33.233] Vercel CLI 46.1.0
+[03:29:34.384] Installing dependencies...
+[03:29:43.171] 
+[03:29:43.172] added 18 packages, removed 76 packages, and changed 11 packages in 8s
+[03:29:43.172] 
+[03:29:43.173] 144 packages are looking for funding
+[03:29:43.173]   run `npm fund` for details
+[03:29:43.214] Detected Next.js version: 15.4.7
+[03:29:43.215] Running "npm run build"
+[03:29:43.332] 
+[03:29:43.333] > buffett-indicator-vercel@0.1.0 build
+[03:29:43.333] > next build
+[03:29:43.333] 
+[03:29:43.994]    ▲ Next.js 15.4.7
+[03:29:43.995] 
+[03:29:44.065]    Creating an optimized production build ...
+[03:29:52.810] Failed to compile.
+[03:29:52.811] 
+[03:29:52.811] ./node_modules/yahoo-finance2/esm/tests/fetchCache.js
+[03:29:52.811] Module not found: Can't resolve '@std/testing/mock'
+[03:29:52.812] 
+[03:29:52.812] https://nextjs.org/docs/messages/module-not-found
+[03:29:52.812] 
+[03:29:52.812] Import trace for requested module:
+[03:29:52.813] ./node_modules/yahoo-finance2/esm/src/createYahooFinance.js
+[03:29:52.813] ./node_modules/yahoo-finance2/esm/src/index.js
+[03:29:52.813] ./src/app/api/stock-data/route.ts
+[03:29:52.813] 
+[03:29:52.813] ./node_modules/yahoo-finance2/esm/tests/fetchCache.js
+[03:29:52.814] Module not found: Can't resolve '@std/testing/bdd'
+[03:29:52.814] 
+[03:29:52.814] https://nextjs.org/docs/messages/module-not-found
+[03:29:52.814] 
+[03:29:52.814] Import trace for requested module:
+[03:29:52.814] ./node_modules/yahoo-finance2/esm/src/createYahooFinance.js
+[03:29:52.815] ./node_modules/yahoo-finance2/esm/src/index.js
+[03:29:52.815] ./src/app/api/stock-data/route.ts
+[03:29:52.815] 
+[03:29:52.815] ./node_modules/yahoo-finance2/esm/tests/fetchCache.js
+[03:29:52.815] Module not found: Can't resolve '@gadicc/fetch-mock-cache/runtimes/deno.ts'
+[03:29:52.815] 
+[03:29:52.815] https://nextjs.org/docs/messages/module-not-found
+[03:29:52.815] 
+[03:29:52.815] Import trace for requested module:
+[03:29:52.815] ./node_modules/yahoo-finance2/esm/src/createYahooFinance.js
+[03:29:52.815] ./node_modules/yahoo-finance2/esm/src/index.js
+[03:29:52.816] ./src/app/api/stock-data/route.ts
+[03:29:52.816] 
+[03:29:52.816] ./node_modules/yahoo-finance2/esm/tests/fetchCache.js
+[03:29:52.816] Module not found: Can't resolve '@gadicc/fetch-mock-cache/stores/fs.ts'
+[03:29:52.816] 
+[03:29:52.816] https://nextjs.org/docs/messages/module-not-found
+[03:29:52.816] 
+[03:29:52.816] Import trace for requested module:
+[03:29:52.816] ./node_modules/yahoo-finance2/esm/src/createYahooFinance.js
+[03:29:52.816] ./node_modules/yahoo-finance2/esm/src/index.js
+[03:29:52.816] ./src/app/api/stock-data/route.ts
+[03:29:52.816] 
+[03:29:52.827] 
+[03:29:52.827] > Build failed because of webpack errors
+[03:29:52.861] Error: Command "npm run build" exited with 1
