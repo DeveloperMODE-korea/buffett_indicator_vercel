@@ -3,50 +3,42 @@
 import { useState, useEffect } from 'react'
 
 export default function ThemeToggle() {
-  const [isDarkMode, setIsDarkMode] = useState(false)
+  const [theme, setTheme] = useState('light')
   const [mounted, setMounted] = useState(false)
 
-  // 컴포넌트가 마운트된 후에만 실행
   useEffect(() => {
     setMounted(true)
-    
-    // localStorage에서 테마 설정 불러오기
     const savedTheme = localStorage.getItem('theme')
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    
-    if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
-      setIsDarkMode(true)
-      document.documentElement.classList.add('dark')
-    } else {
-      setIsDarkMode(false)
-      document.documentElement.classList.remove('dark')
-    }
+    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light')
+    setTheme(initialTheme)
   }, [])
 
-  // 다크모드 토글 함수
-  const toggleDarkMode = () => {
-    const newDarkMode = !isDarkMode
-    setIsDarkMode(newDarkMode)
-    
-    if (newDarkMode) {
+  useEffect(() => {
+    if (theme === 'dark') {
       document.documentElement.classList.add('dark')
       localStorage.setItem('theme', 'dark')
     } else {
       document.documentElement.classList.remove('dark')
       localStorage.setItem('theme', 'light')
     }
+  }, [theme])
+
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light')
   }
 
-  // 서버 사이드 렌더링 중에는 렌더링하지 않음 (하이드레이션 에러 방지)
   if (!mounted) {
     return (
       <div className="w-14 h-8 bg-gray-300 rounded-full animate-pulse"></div>
     )
   }
 
+  const isDarkMode = theme === 'dark'
+
   return (
     <button
-      onClick={toggleDarkMode}
+      onClick={toggleTheme}
       className="relative inline-flex h-8 w-14 items-center justify-center rounded-full bg-gray-200 transition-colors hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-gray-700 dark:hover:bg-gray-600"
       aria-label={isDarkMode ? '라이트모드로 변경' : '다크모드로 변경'}
     >
