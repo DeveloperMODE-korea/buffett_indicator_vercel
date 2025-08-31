@@ -20,9 +20,9 @@ export async function GET(request: NextRequest) {
     console.log(`[Market Indices API] 요청된 지수: ${indices.join(', ')}`)
 
     const indicesData = await Promise.all(
-      indices.map(async (index) => {
+      indices.map(async (symbol) => {
         try {
-          const quote = await yahooFinance.quote.bind(yahooFinance)(index)
+          const quote = await yahooFinance.quote.bind(yahooFinance)(symbol)
           
           const indexInfo = {
             symbol: quote.symbol,
@@ -48,10 +48,10 @@ export async function GET(request: NextRequest) {
             data: indexInfo
           }
         } catch (error) {
-          console.error(`[Market Indices API] ${index} 데이터 오류:`, error)
+          console.error(`[Market Indices API] ${symbol} 데이터 오류:`, error)
           return {
             success: false,
-            symbol: index,
+            symbol: symbol,
             error: error instanceof Error ? error.message : '알 수 없는 오류'
           }
         }

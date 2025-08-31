@@ -1,55 +1,48 @@
-[03:41:11.897] Running build in Washington, D.C., USA (East) – iad1
-[03:41:11.902] Build machine configuration: 2 cores, 8 GB
-[03:41:11.929] Cloning github.com/DeveloperMODE-korea/buffett_indicator_vercel (Branch: main, Commit: f67fd94)
-[03:41:12.810] Cloning completed: 880.000ms
-[03:41:14.409] Restored build cache from previous deployment (9ugJg9UTLDwptjriGVAw3qhWQWt8)
-[03:41:14.935] Running "vercel build"
-[03:41:15.324] Vercel CLI 46.1.0
-[03:41:15.680] Installing dependencies...
-[03:41:25.822] 
-[03:41:25.822] > buffett-indicator-vercel@0.1.0 prepare
-[03:41:25.822] > husky install
-[03:41:25.823] 
-[03:41:25.885] husky - install command is DEPRECATED
-[03:41:26.009] 
-[03:41:26.009] added 42 packages, removed 69 packages, and changed 12 packages in 10s
-[03:41:26.010] 
-[03:41:26.011] 151 packages are looking for funding
-[03:41:26.011]   run `npm fund` for details
-[03:41:26.279] Detected Next.js version: 15.4.7
-[03:41:26.281] Running "npm run build"
-[03:41:26.413] 
-[03:41:26.413] > buffett-indicator-vercel@0.1.0 build
-[03:41:26.414] > next build
-[03:41:26.414] 
-[03:41:27.246]    ▲ Next.js 15.4.7
-[03:41:27.247] 
-[03:41:27.301]    Creating an optimized production build ...
-[03:41:36.637] [Error: Cannot apply unknown utility class `border-gray-200`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive]
-[03:41:39.038]  ✓ Compiled successfully in 11.0s
-[03:41:39.044]    Linting and checking validity of types ...
-[03:41:43.847] 
-[03:41:43.847] ./src/components/StockChart.tsx
-[03:41:43.848] 138:6  Warning: React Hook useEffect has a missing dependency: 'timeRangeOptions'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-[03:41:43.848] 
-[03:41:43.848] ./src/components/TradingViewChart.tsx
-[03:41:43.848] 36:9  Warning: The 'timeRangeOptions' array makes the dependencies of useEffect Hook (at line 230) change on every render. To fix this, wrap the initialization of 'timeRangeOptions' in its own useMemo() Hook.  react-hooks/exhaustive-deps
-[03:41:43.848] 184:6  Warning: React Hook useCallback has a missing dependency: 'processChartData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-[03:41:43.848] 
-[03:41:43.849] info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
-[03:41:47.695] Failed to compile.
-[03:41:47.696] 
-[03:41:47.696] ./src/app/api/market-indices/route.ts:25:31
-[03:41:47.696] Type error: No overload matches this call.
-[03:41:47.697]   The last overload gave the following error.
-[03:41:47.697]     The 'this' context of type '(new (options?: YahooFinanceOptions | undefined) => { _opts: YahooFinanceOptions; _fetch: (this: YahooFinanceFetchThis, urlBase: string, params?: Record<string, string> | undefined, moduleOpts?: YahooFinanceFetchModuleOptions | undefined, func?: string | undefined, needsCrumb?: boolean | undefined) => Promise<...>; ...' is not assignable to method's 'this' of type 'ModuleThis'.
-[03:41:47.697] 
-[03:41:47.697] [0m [90m 23 |[39m       indices[33m.[39mmap([36masync[39m (index) [33m=>[39m {
-[03:41:47.697]  [90m 24 |[39m         [36mtry[39m {
-[03:41:47.697] [31m[1m>[22m[39m[90m 25 |[39m           [36mconst[39m quote [33m=[39m [36mawait[39m yahooFinance[33m.[39mquote(index)
-[03:41:47.698]  [90m    |[39m                               [31m[1m^[22m[39m
-[03:41:47.698]  [90m 26 |[39m           
-[03:41:47.698]  [90m 27 |[39m           [36mconst[39m indexInfo [33m=[39m {
-[03:41:47.698]  [90m 28 |[39m             symbol[33m:[39m quote[33m.[39msymbol[33m,[39m[0m
-[03:41:47.719] Next.js build worker exited with code: 1 and signal: null
-[03:41:47.767] Error: Command "npm run build" exited with 1
+[03:44:36.965] Running build in Washington, D.C., USA (East) – iad1
+[03:44:36.966] Build machine configuration: 2 cores, 8 GB
+[03:44:37.034] Cloning github.com/DeveloperMODE-korea/buffett_indicator_vercel (Branch: main, Commit: 19e1f6e)
+[03:44:37.761] Cloning completed: 727.000ms
+[03:44:39.327] Restored build cache from previous deployment (9ugJg9UTLDwptjriGVAw3qhWQWt8)
+[03:44:39.872] Running "vercel build"
+[03:44:40.286] Vercel CLI 46.1.0
+[03:44:40.604] Installing dependencies...
+[03:44:50.088] 
+[03:44:50.089] > buffett-indicator-vercel@0.1.0 prepare
+[03:44:50.090] > husky install
+[03:44:50.090] 
+[03:44:50.139] husky - install command is DEPRECATED
+[03:44:50.154] 
+[03:44:50.155] added 42 packages, removed 69 packages, and changed 12 packages in 9s
+[03:44:50.155] 
+[03:44:50.156] 151 packages are looking for funding
+[03:44:50.156]   run `npm fund` for details
+[03:44:50.333] Detected Next.js version: 15.4.7
+[03:44:50.334] Running "npm run build"
+[03:44:50.477] 
+[03:44:50.478] > buffett-indicator-vercel@0.1.0 build
+[03:44:50.478] > next build
+[03:44:50.478] 
+[03:44:51.598]    ▲ Next.js 15.4.7
+[03:44:51.600] 
+[03:44:51.660]    Creating an optimized production build ...
+[03:45:01.274] [Error: Cannot apply unknown utility class `bg-primary-600`]
+[03:45:03.496]  ✓ Compiled successfully in 11.0s
+[03:45:03.497]    Linting and checking validity of types ...
+[03:45:12.133] Failed to compile.
+[03:45:12.134] 
+[03:45:12.135] ./src/app/api/market-indices/route.ts:25:55
+[03:45:12.135] Type error: No overload matches this call.
+[03:45:12.135]   Overload 1 of 2, '(this: { (this: ModuleThis, query: string[], queryOptionsOverrides?: QuoteOptionsWithReturnArray | undefined, moduleOptions?: ModuleOptionsWithValidateTrue | undefined): Promise<...>; (this: ModuleThis, query: string[], queryOptionsOverrides?: QuoteOptionsWithReturnMap | undefined, moduleOptions?: ModuleOptionsWithValidateTrue | undefined): Promise<...>; (this: ModuleThis, query: string[], queryOptionsOverrides?: QuoteOptionsWithReturnObject | undefined, moduleOptions?: ModuleOptionsWithValidateTrue | undefined): Promise<...>; (this: ModuleThis, query: string, queryOptionsOverrides?: QuoteOptions | undefined, moduleOptions?: ModuleOptionsWithValidateTrue | undefined): Promise<...>; (this: ModuleThis, query: string | string[], queryOptionsOverrides?: QuoteOptions | undefined, moduleOptions?: ModuleOptionsWithValidateFalse | undefined): Promise<...>; }, thisArg: ModuleThis): (query: string | string[], queryOptionsOverrides?: QuoteOptions | undefined, moduleOptions?: ModuleOptionsWithValidateFalse | undefined) => Promise<...>', gave the following error.
+[03:45:12.135]     Argument of type '(new (options?: YahooFinanceOptions | undefined) => { _opts: YahooFinanceOptions; _fetch: (this: YahooFinanceFetchThis, urlBase: string, params?: Record<string, string> | undefined, moduleOpts?: YahooFinanceFetchModuleOptions | undefined, func?: string | undefined, needsCrumb?: boolean | undefined) => Promise<...>; ...' is not assignable to parameter of type 'ModuleThis'.
+[03:45:12.135]   Overload 2 of 2, '(this: (this: ModuleThis, query: string | string[], queryOptionsOverrides?: QuoteOptions | undefined, moduleOptions?: ModuleOptionsWithValidateFalse | undefined) => Promise<...>, thisArg: ModuleThis): (query: string | string[], queryOptionsOverrides?: QuoteOptions | undefined, moduleOptions?: ModuleOptionsWithValidateFalse | undefined) => Promise<...>', gave the following error.
+[03:45:12.135]     Argument of type '(new (options?: YahooFinanceOptions | undefined) => { _opts: YahooFinanceOptions; _fetch: (this: YahooFinanceFetchThis, urlBase: string, params?: Record<string, string> | undefined, moduleOpts?: YahooFinanceFetchModuleOptions | undefined, func?: string | undefined, needsCrumb?: boolean | undefined) => Promise<...>; ...' is not assignable to parameter of type 'ModuleThis'.
+[03:45:12.136] 
+[03:45:12.136] [0m [90m 23 |[39m       indices[33m.[39mmap([36masync[39m (index) [33m=>[39m {
+[03:45:12.136]  [90m 24 |[39m         [36mtry[39m {
+[03:45:12.136] [31m[1m>[22m[39m[90m 25 |[39m           [36mconst[39m quote [33m=[39m [36mawait[39m yahooFinance[33m.[39mquote[33m.[39mbind(yahooFinance)(index)
+[03:45:12.136]  [90m    |[39m                                                       [31m[1m^[22m[39m
+[03:45:12.136]  [90m 26 |[39m           
+[03:45:12.136]  [90m 27 |[39m           [36mconst[39m indexInfo [33m=[39m {
+[03:45:12.136]  [90m 28 |[39m             symbol[33m:[39m quote[33m.[39msymbol[33m,[39m[0m
+[03:45:12.158] Next.js build worker exited with code: 1 and signal: null
+[03:45:12.202] Error: Command "npm run build" exited with 1

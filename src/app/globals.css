@@ -15,7 +15,5 @@
     @apply bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 transition-colors;
   }
   
-  .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200;
-  }
+  
 }
