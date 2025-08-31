@@ -10,6 +10,8 @@ import {
   HistogramData,
   CrosshairMode,
   LineStyle,
+  CandlestickSeries,   // ✅ 추가
+  HistogramSeries,     // ✅ 추가
   type Time,
 } from 'lightweight-charts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -56,7 +58,6 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
   const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null)
   const resizeObserverRef = useRef<ResizeObserver | null>(null)
 
-  // 차트 정리 함수
   const cleanupChart = useCallback(() => {
     if (chartRef.current) {
       chartRef.current.remove()
@@ -66,15 +67,11 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
     volumeSeriesRef.current = null
   }, [])
 
-  // 차트 초기화
   const initializeChart = useCallback(() => {
     if (!chartContainerRef.current) return
-
-    // 기존 차트 제거
     cleanupChart()
 
     try {
-      // 새 차트 생성
       const chart = createChart(chartContainerRef.current, {
         width: chartContainerRef.current.clientWidth,
         height: chartContainerRef.current.clientHeight,
@@ -120,10 +117,13 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
               } else if (typeof time === 'object' && 'year' in time && 'month' in time && 'day' in time) {
                 const date = new Date(Date.UTC(time.year, time.month - 1, time.day))
                 return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
+              } else if (typeof time === 'string') {
+                const [y, m, d] = time.split('-').map((v) => parseInt(v, 10))
+                const date = new Date(Date.UTC(y, m - 1, d))
+                return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
               }
               return ''
-            } catch (error) {
-              console.error('Date formatting error:', error)
+            } catch {
               return ''
             }
           },
@@ -146,8 +146,8 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
         },
       })
 
-      // 캔들스틱 시리즈 추가
-      const candlestickSeries = chart.addCandlestickSeries({
+      // ✅ v5 방식으로 시리즈 추가
+      const candlestickSeries = chart.addSeries(CandlestickSeries, {
         upColor: '#26a69a',
         downColor: '#ef5350',
         borderDownColor: '#ef5350',
@@ -156,11 +156,10 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
         wickUpColor: '#26a69a',
       })
 
-      // 볼륨 시리즈 추가
-      const volumeSeries = chart.addHistogramSeries({
+      const volumeSeries = chart.addSeries(HistogramSeries, {
         color: '#26a69a',
         priceFormat: { type: 'volume' },
-        priceScaleId: '',
+        priceScaleId: '', // 하단 별도 스케일
       })
 
       // 하단 거래량 패널 여백
@@ -172,72 +171,49 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
       candlestickSeriesRef.current = candlestickSeries
       volumeSeriesRef.current = volumeSeries
 
-      // ResizeObserver로 반응형 처리
-      if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect()
-      }
-
+      if (resizeObserverRef.current) resizeObserverRef.current.disconnect()
       resizeObserverRef.current = new ResizeObserver((entries) => {
         if (entries.length > 0 && chartRef.current) {
           const { width, height } = entries[0].contentRect
           chartRef.current.resize(width, height)
         }
       })
-
       resizeObserverRef.current.observe(chartContainerRef.current)
-
     } catch (error) {
       console.error('Chart initialization error:', error)
       setChartError('차트 초기화 중 오류가 발생했습니다.')
     }
   }, [cleanupChart])
 
-  // 차트 데이터 처리
   const processChartData = useCallback((history: StockData['history']) => {
     if (!candlestickSeriesRef.current || !volumeSeriesRef.current || !history) return
 
     try {
-      // 데이터 정렬 (오래된 날짜부터)
-      const sortedHistory = [...history].sort((a, b) => 
-        new Date(a.date).getTime() - new Date(b.date).getTime()
+      const sortedHistory = [...history].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
       )
 
-      // 캔들스틱 데이터
       const candlestickData: CandlestickData<Time>[] = sortedHistory
-        .filter(item => 
-          item.open != null && 
-          item.high != null && 
-          item.low != null && 
-          item.close != null
-        )
-        .map((item) => ({
-          time: Math.floor(new Date(item.date).getTime() / 1000) as Time,
-          open: Number(item.open),
-          high: Number(item.high),
-          low: Number(item.low),
-          close: Number(item.close),
+        .filter((i) => i.open != null && i.high != null && i.low != null && i.close != null)
+        .map((i) => ({
+          time: Math.floor(new Date(i.date).getTime() / 1000) as Time,
+          open: Number(i.open),
+          high: Number(i.high),
+          low: Number(i.low),
+          close: Number(i.close),
         }))
 
-      // 볼륨 데이터
       const volumeData: HistogramData<Time>[] = sortedHistory
-        .filter(item => item.volume != null)
-        .map((item) => ({
-          time: Math.floor(new Date(item.date).getTime() / 1000) as Time,
-          value: Number(item.volume),
-          color: item.close >= item.open ? '#26a69a' : '#ef5350',
+        .filter((i) => i.volume != null)
+        .map((i) => ({
+          time: Math.floor(new Date(i.date).getTime() / 1000) as Time,
+          value: Number(i.volume),
+          color: i.close >= i.open ? '#26a69a' : '#ef5350',
         }))
 
-      if (candlestickData.length > 0) {
-        candlestickSeriesRef.current.setData(candlestickData)
-      }
-      
-      if (volumeData.length > 0) {
-        volumeSeriesRef.current.setData(volumeData)
-      }
-
-      if (chartRef.current && candlestickData.length > 0) {
-        chartRef.current.timeScale().fitContent()
-      }
+      if (candlestickData.length) candlestickSeriesRef.current.setData(candlestickData)
+      if (volumeData.length) volumeSeriesRef.current.setData(volumeData)
+      if (chartRef.current && candlestickData.length) chartRef.current.timeScale().fitContent()
 
       setChartError(null)
     } catch (error) {
@@ -246,26 +222,20 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
     }
   }, [])
 
-  // 차트 데이터 가져오기
   const fetchChartData = useCallback(
     async (symbol: string, days: number) => {
       if (!symbol) return
-
       setChartLoading(true)
       setChartError(null)
-      
+
       try {
-        const response = await fetch(`/api/stock-data?symbols=${symbol}&history=true&days=${days}`)
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        
-        const result = await response.json()
+        const res = await fetch(`/api/stock-data?symbols=${symbol}&history=true&days=${days}`)
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const result = await res.json()
 
         if (result.success && result.data?.length > 0) {
           const stock = result.data[0]
-          if (stock.history && stock.history.length > 0) {
+          if (stock.history?.length > 0) {
             processChartData(stock.history)
           } else {
             setChartError('히스토리 데이터가 없습니다.')
@@ -273,8 +243,8 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
         } else {
           setChartError('데이터를 가져올 수 없습니다.')
         }
-      } catch (error) {
-        console.error('차트 데이터 가져오기 오류:', error)
+      } catch (e) {
+        console.error(e)
         setChartError('데이터를 가져오는 중 오류가 발생했습니다.')
       } finally {
         setChartLoading(false)
@@ -283,10 +253,8 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
     [processChartData]
   )
 
-  // 차트 초기화
   useEffect(() => {
     initializeChart()
-    
     return () => {
       if (resizeObserverRef.current) {
         resizeObserverRef.current.disconnect()
@@ -296,31 +264,24 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
     }
   }, [initializeChart, cleanupChart])
 
-  // 시간 범위 변경 시 차트 데이터 새로 가져오기
   useEffect(() => {
     if (stockData?.symbol) {
-      const selectedRange = timeRangeOptions.find((option) => option.value === timeRange)
-      if (selectedRange) {
-        fetchChartData(stockData.symbol, selectedRange.days)
-      }
+      const selected = timeRangeOptions.find((o) => o.value === timeRange)
+      if (selected) fetchChartData(stockData.symbol, selected.days)
     }
   }, [stockData?.symbol, timeRange, fetchChartData])
 
-  // 초기 차트 데이터 설정
   useEffect(() => {
-    if (stockData?.history && stockData.history.length > 0) {
-      processChartData(stockData.history)
-    }
+    if (stockData?.history?.length) processChartData(stockData.history)
   }, [stockData, processChartData])
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value)
-  }
 
   if (loading || chartLoading) {
     return (
@@ -355,10 +316,8 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
                 onClick={() => {
                   setChartError(null)
                   if (stockData?.symbol) {
-                    const selectedRange = timeRangeOptions.find((option) => option.value === timeRange)
-                    if (selectedRange) {
-                      fetchChartData(stockData.symbol, selectedRange.days)
-                    }
+                    const selected = timeRangeOptions.find((o) => o.value === timeRange)
+                    if (selected) fetchChartData(stockData.symbol, selected.days)
                   }
                 }}
                 className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
