@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import yahooFinance from 'yahoo-finance2'
+// import yahooFinance from 'yahoo-finance2'  ❌ (에러 발생 원인)
+import * as yahooFinance from 'yahoo-finance2'  // ⭕ 올바른 방식
 
 export async function GET(request: NextRequest) {
   try {
@@ -77,10 +78,7 @@ export async function GET(request: NextRequest) {
             }
           }
 
-          return {
-            success: true,
-            data: stockInfo,
-          }
+          return { success: true, data: stockInfo }
         } catch (error) {
           console.error(`[Stock Data API] ${symbol} 데이터 오류:`, error)
           return {
