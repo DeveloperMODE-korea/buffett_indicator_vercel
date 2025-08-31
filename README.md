@@ -55,10 +55,6 @@ VERCEL_PROJECT_ID=your_vercel_project_id
 # 보안 스캔
 SNYK_TOKEN=your_snyk_token
 
-# 알림
-SLACK_WEBHOOK=your_slack_webhook_url
-```
-
 ### 📊 배포 환경
 
 | 환경 | 브랜치 | URL | 목적 |
