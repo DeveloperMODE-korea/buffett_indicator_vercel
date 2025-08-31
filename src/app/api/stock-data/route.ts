@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import yahooFinance from 'yahoo-finance2'
 
 export async function GET(request: NextRequest) {
-  const yahoo = new yahooFinance();
   try {
     const { searchParams } = new URL(request.url)
     const symbols = searchParams.get('symbols')?.split(',') || ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'NVDA']
@@ -15,7 +14,7 @@ export async function GET(request: NextRequest) {
     const stockData = await Promise.all(
       symbols.map(async (symbol) => {
         try {
-          const quote = await yahoo.quote(symbol)
+          const quote = await yahooFinance.quote(symbol)
           
           const stockInfo: any = {
             symbol: quote.symbol,
@@ -37,26 +36,36 @@ export async function GET(request: NextRequest) {
             exchange: quote.fullExchangeName,
             currency: quote.currency,
             marketState: quote.marketState,
-            lastUpdated: quote.regularMarketTime && typeof quote.regularMarketTime === 'number' ? new Date(quote.regularMarketTime * 1000).toISOString() : new Date().toISOString(),
+            lastUpdated: quote.regularMarketTime && typeof quote.regularMarketTime === 'number'
+              ? new Date(quote.regularMarketTime * 1000).toISOString()
+              : new Date().toISOString(),
           }
 
           // 히스토리 데이터 포함 여부
           if (includeHistory) {
             try {
-              const history = await yahoo.historical(symbol, {
+              const chartResult = await yahooFinance.chart(symbol, {
                 period1: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
                 period2: new Date(),
                 interval: '1d'
               })
-              
-              stockInfo.history = history.map(item => ({
-                date: item.date.toISOString().split('T')[0],
-                open: item.open,
-                high: item.high,
-                low: item.low,
-                close: item.close,
-                volume: item.volume
-              }))
+
+              if (chartResult.chart.result && chartResult.chart.result.length > 0) {
+                const result = chartResult.chart.result[0]
+                const quoteData = result.indicators.quote[0]
+                const timestamps = result.timestamp
+
+                stockInfo.history = timestamps.map((ts, i) => ({
+                  date: new Date(ts * 1000).toISOString().split('T')[0],
+                  open: quoteData.open[i],
+                  high: quoteData.high[i],
+                  low: quoteData.low[i],
+                  close: quoteData.close[i],
+                  volume: quoteData.volume[i],
+                }))
+              } else {
+                stockInfo.history = []
+              }
             } catch (historyError) {
               console.error(`[Stock Data API] ${symbol} 히스토리 데이터 오류:`, historyError)
               stockInfo.history = []
