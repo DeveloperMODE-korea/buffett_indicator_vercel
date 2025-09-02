@@ -19,6 +19,23 @@ const TradingViewChart = dynamic(() => import('@/components/TradingViewChart'), 
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
+function downloadCsv(filename: string, rows: Array<string[]>) {
+  const csv = rows.map((r) => r.map((c) => {
+    const s = c == null ? '' : String(c)
+    if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+      return '"' + s.replace(/"/g, '""') + '"'
+    }
+    return s
+  }).join(',')).join('\n')
+  const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 interface StockData {
   symbol: string
   name: string
@@ -69,6 +86,10 @@ export default function SearchPage() {
   const [filingsData, setFilingsData] = useState<any | null>(null)
   const [financialsData, setFinancialsData] = useState<any | null>(null)
   const [financialsPeriod, setFinancialsPeriod] = useState<'annual' | 'quarterly'>('annual')
+  const [keyStatsData, setKeyStatsData] = useState<any | null>(null)
+  const [optionsData, setOptionsData] = useState<any | null>(null)
+  const [ftsData, setFtsData] = useState<any | null>(null)
+  const [fundFactsData, setFundFactsData] = useState<any | null>(null)
 
   // 섹션별 로딩/에러
   const [loadingMap, setLoadingMap] = useState<Record<string, boolean>>({})
@@ -210,6 +231,38 @@ export default function SearchPage() {
       setFinancialsData(j.data?.[0] || null)
     })
 
+  const loadKeyStats = async (symbol: string) =>
+    withSectionLoader('keyStats', async () => {
+      const r = await fetch(`/api/key-stats?symbols=${symbol}`)
+      const j = await r.json()
+      if (!j?.success) throw new Error('Key Stats 데이터 오류')
+      setKeyStatsData(j.data?.[0] || null)
+    })
+
+  const loadOptions = async (symbol: string) =>
+    withSectionLoader('options', async () => {
+      const r = await fetch(`/api/options?symbol=${symbol}`)
+      const j = await r.json()
+      if (!j?.success) throw new Error('옵션 데이터 오류')
+      setOptionsData(j.data || null)
+    })
+
+  const loadFts = async (symbol: string) =>
+    withSectionLoader('fts', async () => {
+      const r = await fetch(`/api/fundamentals-ts?symbol=${symbol}`)
+      const j = await r.json()
+      if (!j?.success) throw new Error('Fundamentals TS 데이터 오류')
+      setFtsData(j.data || null)
+    })
+
+  const loadFundFacts = async (symbol: string) =>
+    withSectionLoader('fundFacts', async () => {
+      const r = await fetch(`/api/fund-facts?symbols=${symbol}`)
+      const j = await r.json()
+      if (!j?.success) throw new Error('Fund Facts 데이터 오류')
+      setFundFactsData(j.data?.[0] || null)
+    })
+
   // 선택 종목 변경 시 병렬 로드
   useEffect(() => {
     const run = async () => {
@@ -224,6 +277,10 @@ export default function SearchPage() {
         loadRatings(selectedStock.symbol),
         loadFilings(selectedStock.symbol),
         loadFinancials(selectedStock.symbol, financialsPeriod),
+        loadKeyStats(selectedStock.symbol),
+        loadOptions(selectedStock.symbol),
+        loadFts(selectedStock.symbol),
+        loadFundFacts(selectedStock.symbol),
       ])
     }
     run()
@@ -727,6 +784,66 @@ export default function SearchPage() {
                          <option value="annual">연간</option>
                          <option value="quarterly">분기</option>
                        </select>
+                       <button
+                         className="ml-2 px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded"
+                         onClick={() => {
+                           const isRows = (financialsPeriod === 'annual'
+                             ? (financialsData?.incomeStatementHistory?.incomeStatementHistory || [])
+                             : (financialsData?.incomeStatementHistoryQuarterly?.incomeStatementHistory || [])).slice(0, 12)
+                           const rows: Array<string[]> = [[
+                             'Period','Revenue','GrossProfit','OperatingIncome','EBIT','InterestExpense','NetIncome'
+                           ]]
+                           isRows.forEach((row: any) => rows.push([
+                             row?.endDate ? new Date(row.endDate).toISOString().split('T')[0] : '',
+                             String(row?.totalRevenue ?? ''),
+                             String(row?.grossProfit ?? ''),
+                             String(row?.operatingIncome ?? ''),
+                             String(row?.ebit ?? ''),
+                             String(row?.interestExpense ?? ''),
+                             String(row?.netIncome ?? ''),
+                           ]))
+                           downloadCsv(`${selectedStock?.symbol || 'symbol'}_${financialsPeriod}_income.csv`, rows)
+                         }}
+                       >손익 CSV</button>
+                       <button
+                         className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded"
+                         onClick={() => {
+                           const bsRows = (financialsPeriod === 'annual'
+                             ? (financialsData?.balanceSheetHistory?.balanceSheetStatements || [])
+                             : (financialsData?.balanceSheetHistoryQuarterly?.balanceSheetStatements || [])).slice(0, 12)
+                           const rows: Array<string[]> = [[
+                             'Period','TotalAssets','TotalLiabilities','StockholderEquity'
+                           ]]
+                           bsRows.forEach((row: any) => rows.push([
+                             row?.endDate ? new Date(row.endDate).toISOString().split('T')[0] : '',
+                             String(row?.totalAssets ?? ''),
+                             String(row?.totalLiab ?? ''),
+                             String(row?.totalStockholderEquity ?? row?.stockholdersEquity ?? ''),
+                           ]))
+                           downloadCsv(`${selectedStock?.symbol || 'symbol'}_${financialsPeriod}_balance.csv`, rows)
+                         }}
+                       >대차 CSV</button>
+                       <button
+                         className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded"
+                         onClick={() => {
+                           const cfRows = (financialsPeriod === 'annual'
+                             ? (financialsData?.cashflowStatementHistory?.cashflowStatements || [])
+                             : (financialsData?.cashflowStatementHistoryQuarterly?.cashflowStatements || [])).slice(0, 12)
+                           const rows: Array<string[]> = [[
+                             'Period','CFO','Capex','FCF'
+                           ]]
+                           cfRows.forEach((row: any) => {
+                             const cfo = row?.totalCashFromOperatingActivities ?? ''
+                             const capex = row?.capitalExpenditures ?? ''
+                             const fcf = (typeof cfo === 'number' && typeof capex === 'number') ? cfo + capex : ''
+                             rows.push([
+                               row?.endDate ? new Date(row.endDate).toISOString().split('T')[0] : '',
+                               String(cfo), String(capex), String(fcf)
+                             ])
+                           })
+                           downloadCsv(`${selectedStock?.symbol || 'symbol'}_${financialsPeriod}_cashflow.csv`, rows)
+                         }}
+                       >현금흐름 CSV</button>
                      </div>
                    </div>
                  </CardHeader>
@@ -850,6 +967,156 @@ export default function SearchPage() {
                            }
                          </tbody>
                        </table>
+                     </div>
+                   )}
+                 </CardContent>
+               </Card>
+
+               {/* Key Stats */}
+               <Card>
+                 <CardHeader>
+                   <CardTitle className="text-xl">핵심 지표(Key Stats)</CardTitle>
+                 </CardHeader>
+                 <CardContent>
+                   {loadingMap.keyStats && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                   {errorMap.keyStats && (
+                     <div className="text-sm text-red-500 flex items-center gap-2">
+                       <span>{errorMap.keyStats}</span>
+                       <button className="px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded" onClick={() => selectedStock && loadKeyStats(selectedStock.symbol)}>재시도</button>
+                     </div>
+                   )}
+                   {!loadingMap.keyStats && !errorMap.keyStats && keyStatsData && (
+                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                       <div>시가총액: <span className="font-medium">{formatVolume(keyStatsData?.price?.marketCap || keyStatsData?.financialData?.marketCap)}</span></div>
+                       <div>베타: <span className="font-medium">{keyStatsData?.defaultKeyStatistics?.beta ?? 'N/A'}</span></div>
+                       <div>PSR(TTM): <span className="font-medium">{keyStatsData?.defaultKeyStatistics?.priceToSalesTrailing12Months ?? 'N/A'}</span></div>
+                       <div>PER(TTM): <span className="font-medium">{keyStatsData?.defaultKeyStatistics?.trailingPE ?? keyStatsData?.financialData?.trailingPE ?? 'N/A'}</span></div>
+                       <div>EV/EBITDA: <span className="font-medium">{keyStatsData?.defaultKeyStatistics?.enterpriseToEbitda ?? 'N/A'}</span></div>
+                       <div>배당수익률: <span className="font-medium">{keyStatsData?.summaryDetail?.dividendYield ? `${(keyStatsData.summaryDetail.dividendYield * 100).toFixed(2)}%` : 'N/A'}</span></div>
+                     </div>
+                   )}
+                 </CardContent>
+               </Card>
+
+               {/* 옵션 체인 (요약) */}
+               <Card>
+                 <CardHeader>
+                   <CardTitle className="text-xl">옵션 체인(가까운 만기)</CardTitle>
+                 </CardHeader>
+                 <CardContent>
+                   {loadingMap.options && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                   {errorMap.options && (
+                     <div className="text-sm text-red-500 flex items-center gap-2">
+                       <span>{errorMap.options}</span>
+                       <button className="px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded" onClick={() => selectedStock && loadOptions(selectedStock.symbol)}>재시도</button>
+                     </div>
+                   )}
+                   {!loadingMap.options && !errorMap.options && optionsData && optionsData.nearest && (
+                     <div className="overflow-x-auto text-sm">
+                       <div className="mb-2 text-gray-600 dark:text-gray-400">만기: {optionsData.nearest.expirationDate ? new Date(optionsData.nearest.expirationDate).toISOString().split('T')[0] : 'N/A'}</div>
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                         <div>
+                           <div className="font-semibold mb-1">Calls</div>
+                           <table className="min-w-full">
+                             <thead>
+                               <tr className="text-left"><th className="py-1 pr-3">행사가</th><th className="py-1 pr-3">가격</th><th className="py-1 pr-3">OI</th></tr>
+                             </thead>
+                             <tbody>
+                               {(optionsData.nearest.calls || []).map((c: any, i: number) => (
+                                 <tr key={`c-${i}`} className="border-t border-gray-200 dark:border-gray-700"><td className="py-1 pr-3">{c.strike}</td><td className="py-1 pr-3">{c.lastPrice ?? '-'}</td><td className="py-1 pr-3">{c.openInterest ?? '-'}</td></tr>
+                               ))}
+                             </tbody>
+                           </table>
+                         </div>
+                         <div>
+                           <div className="font-semibold mb-1">Puts</div>
+                           <table className="min-w-full">
+                             <thead>
+                               <tr className="text-left"><th className="py-1 pr-3">행사가</th><th className="py-1 pr-3">가격</th><th className="py-1 pr-3">OI</th></tr>
+                             </thead>
+                             <tbody>
+                               {(optionsData.nearest.puts || []).map((p: any, i: number) => (
+                                 <tr key={`p-${i}`} className="border-t border-gray-200 dark:border-gray-700"><td className="py-1 pr-3">{p.strike}</td><td className="py-1 pr-3">{p.lastPrice ?? '-'}</td><td className="py-1 pr-3">{p.openInterest ?? '-'}</td></tr>
+                               ))}
+                             </tbody>
+                           </table>
+                         </div>
+                       </div>
+                     </div>
+                   )}
+                 </CardContent>
+               </Card>
+
+               {/* Fundamentals TimeSeries (요약) */}
+               <Card>
+                 <CardHeader>
+                   <CardTitle className="text-xl">재무 시계열(요약)</CardTitle>
+                 </CardHeader>
+                 <CardContent>
+                   {loadingMap.fts && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                   {errorMap.fts && (
+                     <div className="text-sm text-red-500 flex items-center gap-2">
+                       <span>{errorMap.fts}</span>
+                       <button className="px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded" onClick={() => selectedStock && loadFts(selectedStock.symbol)}>재시도</button>
+                     </div>
+                   )}
+                   {!loadingMap.fts && !errorMap.fts && ftsData && (
+                     <pre className="text-xs whitespace-pre-wrap bg-gray-50 dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-x-auto">{JSON.stringify(ftsData?.timeseries?.result?.[0]?.timeSeries ?? ftsData, null, 2)}</pre>
+                   )}
+                 </CardContent>
+               </Card>
+
+               {/* ETF/펀드 */}
+               <Card>
+                 <CardHeader>
+                   <CardTitle className="text-xl">ETF/펀드 정보</CardTitle>
+                 </CardHeader>
+                 <CardContent>
+                   {loadingMap.fundFacts && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                   {errorMap.fundFacts && (
+                     <div className="text-sm text-red-500 flex items-center gap-2">
+                       <span>{errorMap.fundFacts}</span>
+                       <button className="px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded" onClick={() => selectedStock && loadFundFacts(selectedStock.symbol)}>재시도</button>
+                     </div>
+                   )}
+                   {!loadingMap.fundFacts && !errorMap.fundFacts && fundFactsData && (
+                     <div className="text-sm space-y-4">
+                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                         <div>펀드 패밀리: <span className="font-medium">{fundFactsData?.fundProfile?.family ?? 'N/A'}</span></div>
+                         <div>총보수(Expense Ratio): <span className="font-medium">{fundFactsData?.fundProfile?.feesExpensesInvestment?.annualReportExpenseRatio ?? 'N/A'}</span></div>
+                         <div>운용온기: <span className="font-medium">{fundFactsData?.fundProfile?.feesExpensesInvestment?.annualHoldingsTurnover ?? 'N/A'}</span></div>
+                       </div>
+                       <div>
+                         <div className="font-semibold mb-1">상위 보유 종목</div>
+                         <div className="mb-2">
+                           <button
+                             className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded text-sm"
+                             onClick={() => {
+                               const rows: Array<string[]> = [['Name','Symbol','Percent']]
+                               (fundFactsData?.topHoldings?.holdings || []).slice(0, 50).forEach((h: any) => rows.push([
+                                 String(h.holdingName ?? ''), String(h.symbol ?? ''),
+                                 h.holdingPercent != null ? String(h.holdingPercent) : ''
+                               ]))
+                               downloadCsv(`${selectedStock?.symbol || 'fund'}_holdings.csv`, rows)
+                             }}
+                           >CSV 내보내기</button>
+                         </div>
+                         <ul className="list-disc list-inside space-y-1">
+                           {(fundFactsData?.topHoldings?.holdings || []).slice(0, 10).map((h: any, i: number) => (
+                             <li key={i}>{h.holdingName} — {h.symbol} ({h.holdingPercent ? (h.holdingPercent * 100).toFixed(2) + '%' : 'N/A'})</li>
+                           ))}
+                           {((fundFactsData?.topHoldings?.holdings || []).length === 0) && <li className="text-gray-500">데이터 없음</li>}
+                         </ul>
+                       </div>
+                       <div>
+                         <div className="font-semibold mb-1">성과(요약)</div>
+                         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                           <div>YTD: <span className="font-medium">{fundFactsData?.fundPerformance?.trailingReturns?.returns?.ytd ?? 'N/A'}</span></div>
+                           <div>1Y: <span className="font-medium">{fundFactsData?.fundPerformance?.trailingReturns?.returns?.oneYear ?? 'N/A'}</span></div>
+                           <div>3Y: <span className="font-medium">{fundFactsData?.fundPerformance?.trailingReturns?.returns?.threeYear ?? 'N/A'}</span></div>
+                           <div>5Y: <span className="font-medium">{fundFactsData?.fundPerformance?.trailingReturns?.returns?.fiveYear ?? 'N/A'}</span></div>
+                         </div>
+                       </div>
                      </div>
                    )}
                  </CardContent>
