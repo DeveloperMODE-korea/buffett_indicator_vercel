@@ -1,6 +1,7 @@
 # 📊 버핏 지수 관측소
 
 실시간 주식 시장 데이터와 버핏 지수를 제공하는 Next.js 기반 웹 애플리케이션입니다.
+해당 웹 페이지는 https://github.com/DeveloperMODE-korea/DeveloperMODE_Financial-Terminal 을 계승합니다.
 
 ## 🚀 주요 기능
 

@@ -67,6 +67,8 @@ export default function SearchPage() {
   const [insightsData, setInsightsData] = useState<any | null>(null)
   const [ratingsData, setRatingsData] = useState<any | null>(null)
   const [filingsData, setFilingsData] = useState<any | null>(null)
+  const [financialsData, setFinancialsData] = useState<any | null>(null)
+  const [financialsPeriod, setFinancialsPeriod] = useState<'annual' | 'quarterly'>('annual')
 
   // 섹션별 로딩/에러
   const [loadingMap, setLoadingMap] = useState<Record<string, boolean>>({})
@@ -200,6 +202,14 @@ export default function SearchPage() {
       setFilingsData(j.data?.[0] || null)
     })
 
+  const loadFinancials = async (symbol: string, period: 'annual' | 'quarterly') =>
+    withSectionLoader('financials', async () => {
+      const r = await fetch(`/api/financials?symbols=${symbol}&period=${period}`)
+      const j = await r.json()
+      if (!j?.success) throw new Error('재무제표 데이터 오류')
+      setFinancialsData(j.data?.[0] || null)
+    })
+
   // 선택 종목 변경 시 병렬 로드
   useEffect(() => {
     const run = async () => {
@@ -213,10 +223,17 @@ export default function SearchPage() {
         loadInsights(selectedStock.symbol),
         loadRatings(selectedStock.symbol),
         loadFilings(selectedStock.symbol),
+        loadFinancials(selectedStock.symbol, financialsPeriod),
       ])
     }
     run()
   }, [selectedStock?.symbol])
+
+  useEffect(() => {
+    if (selectedStock?.symbol) {
+      loadFinancials(selectedStock.symbol, financialsPeriod)
+    }
+  }, [financialsPeriod])
 
   const formatNumber = (num: number, decimals: number = 2) => {
     if (num === null || num === undefined) return 'N/A'
@@ -694,6 +711,149 @@ export default function SearchPage() {
                    </CardContent>
                  </Card>
                </div>
+
+               {/* 재무제표 */}
+               <Card>
+                 <CardHeader>
+                   <div className="flex items-center justify-between">
+                     <CardTitle className="text-xl">재무제표</CardTitle>
+                     <div className="flex items-center gap-2 text-sm">
+                       <span className="text-gray-600 dark:text-gray-400">기간:</span>
+                       <select
+                         className="bg-gray-100 dark:bg-gray-700 rounded px-2 py-1"
+                         value={financialsPeriod}
+                         onChange={(e) => setFinancialsPeriod(e.target.value as 'annual' | 'quarterly')}
+                       >
+                         <option value="annual">연간</option>
+                         <option value="quarterly">분기</option>
+                       </select>
+                     </div>
+                   </div>
+                 </CardHeader>
+                 <CardContent>
+                   {loadingMap.financials && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                   {errorMap.financials && (
+                     <div className="text-sm text-red-500 flex items-center gap-2">
+                       <span>{errorMap.financials}</span>
+                       <button className="px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded" onClick={() => selectedStock && loadFinancials(selectedStock.symbol, financialsPeriod)}>재시도</button>
+                     </div>
+                   )}
+                   {!loadingMap.financials && !errorMap.financials && financialsData && (
+                     <div className="overflow-x-auto space-y-6">
+                       {/* 손익계산서 */}
+                       <table className="min-w-full text-sm">
+                         <thead>
+                           <tr className="text-left text-gray-600 dark:text-gray-400">
+                             <th className="py-2 pr-4">기간</th>
+                             <th className="py-2 pr-4">매출(Revenue)</th>
+                             <th className="py-2 pr-4">총이익(Gross)</th>
+                             <th className="py-2 pr-4">영업이익(Operating)</th>
+                             <th className="py-2 pr-4">EBIT</th>
+                             <th className="py-2 pr-4">이자보상배율(ICR)</th>
+                             <th className="py-2 pr-4">순이익(Net)</th>
+                           </tr>
+                         </thead>
+                         <tbody>
+                           {
+                             (financialsPeriod === 'annual'
+                               ? (financialsData?.incomeStatementHistory?.incomeStatementHistory || [])
+                               : (financialsData?.incomeStatementHistoryQuarterly?.incomeStatementHistory || [])
+                             ).slice(0, 6).map((row: any, idx: number) => {
+                               const revenue = typeof row?.totalRevenue === 'number' ? row.totalRevenue : null
+                               const gross = typeof row?.grossProfit === 'number' ? row.grossProfit : null
+                               const op = typeof row?.operatingIncome === 'number' ? row.operatingIncome : null
+                               const ebit = typeof row?.ebit === 'number' ? row.ebit : null
+                               const interest = typeof row?.interestExpense === 'number' ? row.interestExpense : null
+                               const icr = ebit != null && interest != null && interest !== 0 ? ebit / Math.abs(interest) : null
+                               const net = typeof row?.netIncome === 'number' ? row.netIncome : null
+                               return (
+                                 <tr key={`is-${idx}`} className="border-t border-gray-200 dark:border-gray-700">
+                                   <td className="py-2 pr-4">{row?.endDate ? new Date(row.endDate).toISOString().split('T')[0] : 'N/A'}</td>
+                                   <td className="py-2 pr-4">{revenue != null ? formatVolume(revenue) : 'N/A'}</td>
+                                   <td className="py-2 pr-4">{gross != null ? formatVolume(gross) : 'N/A'}</td>
+                                   <td className="py-2 pr-4">{op != null ? formatVolume(op) : 'N/A'}</td>
+                                   <td className="py-2 pr-4">{ebit != null ? formatVolume(ebit) : 'N/A'}</td>
+                                   <td className="py-2 pr-4">{icr != null ? icr.toFixed(2) : 'N/A'}</td>
+                                   <td className="py-2 pr-4">{net != null ? formatVolume(net) : 'N/A'}</td>
+                                 </tr>
+                               )
+                             })
+                           }
+                         </tbody>
+                       </table>
+
+                       {/* 대차대조표 */}
+                       <table className="min-w-full text-sm">
+                         <thead>
+                           <tr className="text-left text-gray-600 dark:text-gray-400">
+                             <th className="py-2 pr-4">기간</th>
+                             <th className="py-2 pr-4">총자산(Total Assets)</th>
+                             <th className="py-2 pr-4">총부채(Total Liab)</th>
+                             <th className="py-2 pr-4">자본(Equity)</th>
+                             <th className="py-2 pr-4">부채비율(%)</th>
+                           </tr>
+                         </thead>
+                         <tbody>
+                           {
+                             (financialsPeriod === 'annual'
+                               ? (financialsData?.balanceSheetHistory?.balanceSheetStatements || [])
+                               : (financialsData?.balanceSheetHistoryQuarterly?.balanceSheetStatements || [])
+                             ).slice(0, 6).map((row: any, idx: number) => {
+                               const assets = typeof row?.totalAssets === 'number' ? row.totalAssets : null
+                               const liab = typeof row?.totalLiab === 'number' ? row.totalLiab : null
+                               const equity = typeof row?.totalStockholderEquity === 'number'
+                                 ? row.totalStockholderEquity
+                                 : (typeof row?.stockholdersEquity === 'number' ? row.stockholdersEquity : null)
+                               const debtRatio = assets != null && liab != null && assets !== 0 ? (liab / assets) * 100 : null
+                               return (
+                                 <tr key={`bs-${idx}`} className="border-t border-gray-200 dark:border-gray-700">
+                                   <td className="py-2 pr-4">{row?.endDate ? new Date(row.endDate).toISOString().split('T')[0] : 'N/A'}</td>
+                                   <td className="py-2 pr-4">{assets != null ? formatVolume(assets) : 'N/A'}</td>
+                                   <td className="py-2 pr-4">{liab != null ? formatVolume(liab) : 'N/A'}</td>
+                                   <td className="py-2 pr-4">{equity != null ? formatVolume(equity) : 'N/A'}</td>
+                                   <td className="py-2 pr-4">{debtRatio != null ? debtRatio.toFixed(2) : 'N/A'}</td>
+                                 </tr>
+                               )
+                             })
+                           }
+                         </tbody>
+                       </table>
+
+                       {/* 현금흐름표 */}
+                       <table className="min-w-full text-sm">
+                         <thead>
+                           <tr className="text-left text-gray-600 dark:text-gray-400">
+                             <th className="py-2 pr-4">기간</th>
+                             <th className="py-2 pr-4">영업CF (CFO)</th>
+                             <th className="py-2 pr-4">CAPEX</th>
+                             <th className="py-2 pr-4">FCF (CFO-CAPEX)</th>
+                           </tr>
+                         </thead>
+                         <tbody>
+                           {
+                             (financialsPeriod === 'annual'
+                               ? (financialsData?.cashflowStatementHistory?.cashflowStatements || [])
+                               : (financialsData?.cashflowStatementHistoryQuarterly?.cashflowStatements || [])
+                             ).slice(0, 6).map((row: any, idx: number) => {
+                               const cfo = typeof row?.totalCashFromOperatingActivities === 'number' ? row.totalCashFromOperatingActivities : null
+                               const capex = typeof row?.capitalExpenditures === 'number' ? row.capitalExpenditures : null
+                               const fcf = cfo != null && capex != null ? cfo + capex : null
+                               return (
+                                 <tr key={`cf-${idx}`} className="border-t border-gray-200 dark:border-gray-700">
+                                   <td className="py-2 pr-4">{row?.endDate ? new Date(row.endDate).toISOString().split('T')[0] : 'N/A'}</td>
+                                   <td className="py-2 pr-4">{cfo != null ? formatVolume(cfo) : 'N/A'}</td>
+                                   <td className="py-2 pr-4">{capex != null ? formatVolume(capex) : 'N/A'}</td>
+                                   <td className="py-2 pr-4">{fcf != null ? formatVolume(fcf) : 'N/A'}</td>
+                                 </tr>
+                               )
+                             })
+                           }
+                         </tbody>
+                       </table>
+                     </div>
+                   )}
+                 </CardContent>
+               </Card>
              </div>
            )}
          </div>
