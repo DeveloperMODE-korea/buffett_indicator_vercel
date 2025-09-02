@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import TradingViewChart from '@/components/TradingViewChart'
 
@@ -51,7 +51,20 @@ export default function SearchPage() {
   const [insightsData, setInsightsData] = useState<any | null>(null)
   const [ratingsData, setRatingsData] = useState<any | null>(null)
   const [filingsData, setFilingsData] = useState<any | null>(null)
-  const [detailLoading, setDetailLoading] = useState(false)
+
+  // 섹션별 로딩/에러
+  const [loadingMap, setLoadingMap] = useState<Record<string, boolean>>({})
+  const [errorMap, setErrorMap] = useState<Record<string, string | null>>({})
+
+  // 더보기 컨트롤
+  const [newsLimit, setNewsLimit] = useState(5)
+  const [ratingsLimit, setRatingsLimit] = useState(5)
+  const [filingsLimit, setFilingsLimit] = useState(5)
+
+  // 정렬/필터 컨트롤
+  const [newsSort, setNewsSort] = useState<'latest' | 'title'>('latest')
+  const [ratingsFilter, setRatingsFilter] = useState<'all' | 'upgrade' | 'downgrade'>('all')
+  const [filingsFilter, setFilingsFilter] = useState<'all' | '10-K' | '10-Q' | '8-K'>('all')
 
   // 인기 검색어
   const popularSearches = [
@@ -110,56 +123,92 @@ export default function SearchPage() {
     }
   }
 
-  // 선택 종목 상세 병렬 로드 (기존 + 뉴스/등급/공시)
-  useEffect(() => {
-    const loadDetails = async () => {
-      if (!selectedStock?.symbol) return
-      setDetailLoading(true)
-      setEarningsData(null)
-      setAnalystData(null)
-      setOwnershipData(null)
-      setSummaryData(null)
-      setInsightsData(null)
-      setRatingsData(null)
-      setFilingsData(null)
-
-      try {
-        const symbol = selectedStock.symbol
-        const [earningsRes, analystRes, ownershipRes, summaryRes, insightsRes, ratingsRes, filingsRes] = await Promise.all([
-          fetch(`/api/earnings?symbols=${symbol}`),
-          fetch(`/api/analyst?symbols=${symbol}`),
-          fetch(`/api/ownership?symbols=${symbol}`),
-          fetch(`/api/summary?symbols=${symbol}&modules=price,summaryDetail,financialData,assetProfile`),
-          fetch(`/api/insights?symbols=${symbol}`),
-          fetch(`/api/ratings?symbols=${symbol}`),
-          fetch(`/api/sec-filings?symbols=${symbol}`),
-        ])
-
-        const [earningsJson, analystJson, ownershipJson, summaryJson, insightsJson, ratingsJson, filingsJson] = await Promise.all([
-          earningsRes.json(),
-          analystRes.json(),
-          ownershipRes.json(),
-          summaryRes.json(),
-          insightsRes.json(),
-          ratingsRes.json(),
-          filingsRes.json(),
-        ])
-
-        if (earningsJson?.success && earningsJson.data?.length) setEarningsData(earningsJson.data[0])
-        if (analystJson?.success && analystJson.data?.length) setAnalystData(analystJson.data[0])
-        if (ownershipJson?.success && ownershipJson.data?.length) setOwnershipData(ownershipJson.data[0])
-        if (summaryJson?.success && summaryJson.data?.length) setSummaryData(summaryJson.data[0])
-        if (insightsJson?.success && insightsJson.data?.length) setInsightsData(insightsJson.data[0])
-        if (ratingsJson?.success && ratingsJson.data?.length) setRatingsData(ratingsJson.data[0])
-        if (filingsJson?.success && filingsJson.data?.length) setFilingsData(filingsJson.data[0])
-      } catch (e) {
-        console.error('상세 데이터 로드 오류:', e)
-      } finally {
-        setDetailLoading(false)
-      }
+  // 공통 로더 헬퍼
+  const withSectionLoader = async (key: string, fn: () => Promise<void>) => {
+    setLoadingMap((m) => ({ ...m, [key]: true }))
+    setErrorMap((m) => ({ ...m, [key]: null }))
+    try {
+      await fn()
+    } catch (e: any) {
+      setErrorMap((m) => ({ ...m, [key]: e?.message || '로딩 실패' }))
+    } finally {
+      setLoadingMap((m) => ({ ...m, [key]: false }))
     }
+  }
 
-    loadDetails()
+  // 섹션별 로더
+  const loadEarnings = async (symbol: string) =>
+    withSectionLoader('earnings', async () => {
+      const r = await fetch(`/api/earnings?symbols=${symbol}`)
+      const j = await r.json()
+      if (!j?.success) throw new Error('실적 데이터 오류')
+      setEarningsData(j.data?.[0] || null)
+    })
+
+  const loadAnalyst = async (symbol: string) =>
+    withSectionLoader('analyst', async () => {
+      const r = await fetch(`/api/analyst?symbols=${symbol}`)
+      const j = await r.json()
+      if (!j?.success) throw new Error('애널리스트 데이터 오류')
+      setAnalystData(j.data?.[0] || null)
+    })
+
+  const loadOwnership = async (symbol: string) =>
+    withSectionLoader('ownership', async () => {
+      const r = await fetch(`/api/ownership?symbols=${symbol}`)
+      const j = await r.json()
+      if (!j?.success) throw new Error('보유 데이터 오류')
+      setOwnershipData(j.data?.[0] || null)
+    })
+
+  const loadSummary = async (symbol: string) =>
+    withSectionLoader('summary', async () => {
+      const r = await fetch(`/api/summary?symbols=${symbol}&modules=price,summaryDetail,financialData,assetProfile`)
+      const j = await r.json()
+      if (!j?.success) throw new Error('프로필 데이터 오류')
+      setSummaryData(j.data?.[0] || null)
+    })
+
+  const loadInsights = async (symbol: string) =>
+    withSectionLoader('insights', async () => {
+      const r = await fetch(`/api/insights?symbols=${symbol}`)
+      const j = await r.json()
+      if (!j?.success) throw new Error('인사이트 데이터 오류')
+      setInsightsData(j.data?.[0] || null)
+    })
+
+  const loadRatings = async (symbol: string) =>
+    withSectionLoader('ratings', async () => {
+      const r = await fetch(`/api/ratings?symbols=${symbol}`)
+      const j = await r.json()
+      if (!j?.success) throw new Error('등급 변경 데이터 오류')
+      setRatingsData(j.data?.[0] || null)
+    })
+
+  const loadFilings = async (symbol: string) =>
+    withSectionLoader('filings', async () => {
+      const r = await fetch(`/api/sec-filings?symbols=${symbol}`)
+      const j = await r.json()
+      if (!j?.success) throw new Error('공시 데이터 오류')
+      setFilingsData(j.data?.[0] || null)
+    })
+
+  // 선택 종목 변경 시 병렬 로드
+  useEffect(() => {
+    const run = async () => {
+      if (!selectedStock?.symbol) return
+      setNewsLimit(5); setRatingsLimit(5); setFilingsLimit(5)
+      await Promise.all([
+        loadEarnings(selectedStock.symbol),
+        loadAnalyst(selectedStock.symbol),
+        loadOwnership(selectedStock.symbol),
+        loadSummary(selectedStock.symbol),
+        loadInsights(selectedStock.symbol),
+        loadRatings(selectedStock.symbol),
+        loadFilings(selectedStock.symbol),
+      ])
+    }
+    run()
   }, [selectedStock?.symbol])
 
   // 검색어 변경 시 자동 검색
@@ -210,6 +259,30 @@ export default function SearchPage() {
     if (change < 0) return '↘️'
     return '→'
   }
+
+  // 메모이즈: 정렬/필터 적용 리스트
+  const sortedNews = useMemo(() => {
+    const items = [...(insightsData?.news ?? [])]
+    if (newsSort === 'latest') {
+      items.sort((a: any, b: any) => (new Date(b.providerPublishTime || b.publishedAt || 0).getTime()) - (new Date(a.providerPublishTime || a.publishedAt || 0).getTime()))
+    } else {
+      items.sort((a: any, b: any) => String(a.title || '').localeCompare(String(b.title || '')))
+    }
+    return items
+  }, [insightsData?.news, newsSort])
+
+  const filteredRatings = useMemo(() => {
+    const items = [...(ratingsData?.history ?? [])]
+    if (ratingsFilter === 'upgrade') return items.filter((r: any) => String(r.action || '').toLowerCase().includes('up'))
+    if (ratingsFilter === 'downgrade') return items.filter((r: any) => String(r.action || '').toLowerCase().includes('down'))
+    return items
+  }, [ratingsData?.history, ratingsFilter])
+
+  const filteredFilings = useMemo(() => {
+    const items: any[] = (filingsData?.filings ?? filingsData?.filingsRecent ?? []) || []
+    if (filingsFilter === 'all') return items
+    return items.filter((f: any) => (f?.type || f?.form || '').toUpperCase().includes(filingsFilter))
+  }, [filingsData, filingsFilter])
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -311,7 +384,7 @@ export default function SearchPage() {
                      <CardTitle className="text-xl">기본 정보</CardTitle>
                    </CardHeader>
                    <CardContent className="space-y-4">
-                     <div className="flex justify-between items-center">
+                     <div className="flex justify_between items-center">
                        <span className="text-2xl font-bold text-gray-900 dark:text-white">
                          {formatCurrency(selectedStock.price, selectedStock.currency)}
                        </span>
@@ -388,8 +461,14 @@ export default function SearchPage() {
                      <CardTitle className="text-xl">실적 / 캘린더</CardTitle>
                    </CardHeader>
                    <CardContent>
-                     {detailLoading && <p className="text-sm text-gray-500">불러오는 중...</p>}
-                     {!detailLoading && earningsData && (
+                     {loadingMap.earnings && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                     {errorMap.earnings && (
+                       <div className="text-sm text-red-500 flex items-center gap-2">
+                         <span>{errorMap.earnings}</span>
+                         <button className="px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded" onClick={() => selectedStock && loadEarnings(selectedStock.symbol)}>재시도</button>
+                       </div>
+                     )}
+                     {!loadingMap.earnings && !errorMap.earnings && earningsData && (
                        <div className="space-y-2 text-sm">
                          <div>
                            <span className="text-gray-600 dark:text-gray-400">최근 EPS(History):</span>
@@ -413,8 +492,14 @@ export default function SearchPage() {
                      <CardTitle className="text-xl">애널리스트 / 목표가</CardTitle>
                    </CardHeader>
                    <CardContent>
-                     {detailLoading && <p className="text-sm text-gray-500">불러오는 중...</p>}
-                     {!detailLoading && analystData && (
+                     {loadingMap.analyst && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                     {errorMap.analyst && (
+                       <div className="text-sm text-red-500 flex items_center gap-2">
+                         <span>{errorMap.analyst}</span>
+                         <button className="px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded" onClick={() => selectedStock && loadAnalyst(selectedStock.symbol)}>재시도</button>
+                       </div>
+                     )}
+                     {!loadingMap.analyst && !errorMap.analyst && analystData && (
                        <div className="space-y-2 text-sm">
                          <div>
                            <span className="text-gray-600 dark:text-gray-400">추천 트렌드(최근):</span>
@@ -434,8 +519,14 @@ export default function SearchPage() {
                      <CardTitle className="text-xl">보유자 / 내부자</CardTitle>
                    </CardHeader>
                    <CardContent>
-                     {detailLoading && <p className="text-sm text-gray-500">불러오는 중...</p>}
-                     {!detailLoading && ownershipData && (
+                     {loadingMap.ownership && <p className="text_sm text-gray-500">불러오는 중...</p>}
+                     {errorMap.ownership && (
+                       <div className="text-sm text-red-500 flex items-center gap-2">
+                         <span>{errorMap.ownership}</span>
+                         <button className="px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded" onClick={() => selectedStock && loadOwnership(selectedStock.symbol)}>재시도</button>
+                       </div>
+                     )}
+                     {!loadingMap.ownership && !errorMap.ownership && ownershipData && (
                        <div className="space-y-2 text-sm">
                          <div>
                            <span className="text-gray-600 dark:text-gray-400">기관 보유 비중:</span>
@@ -455,8 +546,14 @@ export default function SearchPage() {
                      <CardTitle className="text-xl">기업 프로필</CardTitle>
                    </CardHeader>
                    <CardContent>
-                     {detailLoading && <p className="text-sm text-gray-500">불러오는 중...</p>}
-                     {!detailLoading && summaryData && (
+                     {loadingMap.summary && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                     {errorMap.summary && (
+                       <div className="text-sm text-red-500 flex items-center gap-2">
+                         <span>{errorMap.summary}</span>
+                         <button className="px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded" onClick={() => selectedStock && loadSummary(selectedStock.symbol)}>재시도</button>
+                       </div>
+                     )}
+                     {!loadingMap.summary && !errorMap.summary && summaryData && (
                        <div className="space-y-2 text-sm">
                          <div>
                            <span className="text-gray-600 dark:text-gray-400">섹터:</span>
@@ -483,18 +580,38 @@ export default function SearchPage() {
                      <CardTitle className="text-xl">인사이트 / 뉴스</CardTitle>
                    </CardHeader>
                    <CardContent>
-                     {detailLoading && <p className="text-sm text-gray-500">불러오는 중...</p>}
-                     {!detailLoading && insightsData && (
-                       <ul className="list-disc list-inside text-sm space-y-1">
-                         {(insightsData?.news ?? []).slice(0, 5).map((n: any, idx: number) => (
-                           <li key={idx}>
-                             <a className="text-blue-600 dark:text-blue-400 hover:underline" href={n.link} target="_blank" rel="noreferrer">
-                               {n.title}
-                             </a>
-                           </li>
-                         ))}
-                         {(insightsData?.news ?? []).length === 0 && <li className="text-gray-500">뉴스 없음</li>}
-                       </ul>
+                     {/* 컨트롤 */}
+                     <div className="mb-3 flex items-center gap-2 text-sm">
+                       <span className="text-gray-600 dark:text-gray-400">정렬:</span>
+                       <select className="bg-gray-100 dark:bg-gray-700 rounded px-2 py-1" value={newsSort} onChange={(e) => setNewsSort(e.target.value as any)}>
+                         <option value="latest">최신순</option>
+                         <option value="title">제목순</option>
+                       </select>
+                     </div>
+
+                     {loadingMap.insights && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                     {errorMap.insights && (
+                       <div className="text-sm text-red-500 flex items-center gap-2">
+                         <span>{errorMap.insights}</span>
+                         <button className="px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded" onClick={() => selectedStock && loadInsights(selectedStock.symbol)}>재시도</button>
+                       </div>
+                     )}
+                     {!loadingMap.insights && !errorMap.insights && (
+                       <>
+                         <ul className="list-disc list-inside text-sm space-y-1">
+                           {sortedNews.slice(0, newsLimit).map((n: any, idx: number) => (
+                             <li key={idx}>
+                               <a className="text-blue-600 dark:text-blue-400 hover:underline" href={n.link} target="_blank" rel="noreferrer">
+                                 {n.title}
+                               </a>
+                             </li>
+                           ))}
+                           {sortedNews.length === 0 && <li className="text-gray-500">뉴스 없음</li>}
+                         </ul>
+                         {sortedNews.length > newsLimit && (
+                           <button className="mt-3 text-sm px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded" onClick={() => setNewsLimit((v) => v + 5)}>더 보기</button>
+                         )}
+                       </>
                      )}
                    </CardContent>
                  </Card>
@@ -504,16 +621,37 @@ export default function SearchPage() {
                      <CardTitle className="text-xl">등급 변경(업/다운)</CardTitle>
                    </CardHeader>
                    <CardContent>
-                     {detailLoading && <p className="text-sm text-gray-500">불러오는 중...</p>}
-                     {!detailLoading && ratingsData && (
-                       <ul className="list-disc list-inside text-sm space-y-1">
-                         {(ratingsData?.history ?? []).slice(0, 5).map((r: any, idx: number) => (
-                           <li key={idx}>
-                             {r.firm}: {r.fromGrade} → {r.toGrade} ({r.action})
-                           </li>
-                         ))}
-                         {!(ratingsData?.history ?? []).length && <li className="text-gray-500">데이터 없음</li>}
-                       </ul>
+                     {/* 컨트롤 */}
+                     <div className="mb-3 flex items-center gap-2 text-sm">
+                       <span className="text-gray-600 dark:text-gray-400">필터:</span>
+                       <select className="bg-gray-100 dark:bg-gray-700 rounded px-2 py-1" value={ratingsFilter} onChange={(e) => setRatingsFilter(e.target.value as any)}>
+                         <option value="all">전체</option>
+                         <option value="upgrade">업그레이드</option>
+                         <option value="downgrade">다운그레이드</option>
+                       </select>
+                     </div>
+
+                     {loadingMap.ratings && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                     {errorMap.ratings && (
+                       <div className="text-sm text-red-500 flex items-center gap-2">
+                         <span>{errorMap.ratings}</span>
+                         <button className="px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded" onClick={() => selectedStock && loadRatings(selectedStock.symbol)}>재시도</button>
+                       </div>
+                     )}
+                     {!loadingMap.ratings && !errorMap.ratings && (
+                       <>
+                         <ul className="list-disc list-inside text-sm space-y-1">
+                           {filteredRatings.slice(0, ratingsLimit).map((r: any, idx: number) => (
+                             <li key={idx}>
+                               {r.firm}: {r.fromGrade} → {r.toGrade} ({r.action})
+                             </li>
+                           ))}
+                           {filteredRatings.length === 0 && <li className="text-gray-500">데이터 없음</li>}
+                         </ul>
+                         {filteredRatings.length > ratingsLimit && (
+                           <button className="mt-3 text-sm px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded" onClick={() => setRatingsLimit((v) => v + 5)}>더 보기</button>
+                         )}
+                       </>
                      )}
                    </CardContent>
                  </Card>
@@ -523,16 +661,41 @@ export default function SearchPage() {
                      <CardTitle className="text-xl">SEC / 공시</CardTitle>
                    </CardHeader>
                    <CardContent>
-                     {detailLoading && <p className="text-sm text-gray-500">불러오는 중...</p>}
-                     {!detailLoading && filingsData && (
-                       <ul className="list-disc list-inside text-sm space-y-1">
-                         {(filingsData?.filings ?? filingsData?.filingsRecent ?? [])?.slice(0, 5).map((f: any, idx: number) => (
-                           <li key={idx}>
-                             {f?.type || f?.form} • {f?.date || f?.fillingDate}
-                           </li>
-                         ))}
-                         {!((filingsData?.filings ?? filingsData?.filingsRecent ?? []).length) && <li className="text-gray-500">데이터 없음</li>}
-                       </ul>
+                     {/* 컨트롤 */}
+                     <div className="mb-3 flex items-center gap-2 text-sm">
+                       <span className="text-gray-600 dark:text-gray-400">필터:</span>
+                       <select className="bg-gray-100 dark:bg-gray-700 rounded px-2 py-1" value={filingsFilter} onChange={(e) => setFilingsFilter(e.target.value as any)}>
+                         <option value="all">전체</option>
+                         <option value="10-K">10-K</option>
+                         <option value="10-Q">10-Q</option>
+                         <option value="8-K">8-K</option>
+                       </select>
+                     </div>
+
+                     {loadingMap.filings && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                     {errorMap.filings && (
+                       <div className="text-sm text-red-500 flex items-center gap-2">
+                         <span>{errorMap.filings}</span>
+                         <button className="px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded" onClick={() => selectedStock && loadFilings(selectedStock.symbol)}>재시도</button>
+                       </div>
+                     )}
+                     {!loadingMap.filings && !errorMap.filings && (
+                       <>
+                         <ul className="list-disc list-inside text-sm space-y-1">
+                           {filteredFilings.slice(0, filingsLimit).map((f: any, idx: number) => (
+                             <li key={idx}>
+                               {f?.type || f?.form} • {f?.date || f?.fillingDate}
+                               {f?.edgarUrl && (
+                                 <a className="ml-2 text-blue-600 dark:text-blue-400 hover:underline" href={f.edgarUrl} target="_blank" rel="noreferrer">다운로드</a>
+                               )}
+                             </li>
+                           ))}
+                           {filteredFilings.length === 0 && <li className="text-gray-500">데이터 없음</li>}
+                         </ul>
+                         {filteredFilings.length > filingsLimit && (
+                           <button className="mt-3 text-sm px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded" onClick={() => setFilingsLimit((v) => v + 5)}>더 보기</button>
+                         )}
+                       </>
                      )}
                    </CardContent>
                  </Card>
