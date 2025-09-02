@@ -1092,7 +1092,7 @@ export default function SearchPage() {
                            <button
                              className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded text-sm"
                              onClick={() => {
-                               const rows: Array<string[]> = [['Name','Symbol','Percent']]
+                               const rows: Array<string[]> = [['Name','Symbol','Percent']];
                                (fundFactsData?.topHoldings?.holdings || []).slice(0, 50).forEach((h: any) => rows.push([
                                  String(h.holdingName ?? ''), String(h.symbol ?? ''),
                                  h.holdingPercent != null ? String(h.holdingPercent) : ''
