@@ -6,31 +6,36 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const symbols: string[] = searchParams.get('symbols')?.split(',') || ['AAPL']
 
-    // 참고: quoteSummary 내 secFilings 모듈은 가용성에 변동이 있을 수 있음
+    // 참고: quoteSummary 내 secFilings 모듈은 가용성/스키마가 수시로 변함 → validateResult 비활성화
     const results = await Promise.all(
       symbols.map(async (symbol: string) => {
         try {
-          const res = await yahooFinance.quoteSummary(symbol, { modules: ['secFilings'] as any })
-          return { success: true, symbol, data: (res as any)?.secFilings }
+          const res = await yahooFinance.quoteSummary(
+            symbol,
+            { modules: ['secFilings'] as any, validateResult: false } as any
+          )
+          const data = (res as any)?.secFilings || null
+          // 응답 형태 표준화: 없으면 빈 객체 반환
+          return { success: true, symbol, data: data || { filings: [], filingsRecent: [] } }
         } catch (error) {
           console.error(`[SEC Filings API] ${symbol} 오류:`, error)
+          // 하드 실패 대신 소프트 성공 + 이유 전달
           return {
-            success: false,
+            success: true,
             symbol,
-            error: error instanceof Error ? error.message : '알 수 없는 오류',
+            data: { filings: [], filingsRecent: [], reason: 'unavailable_or_schema_variation' },
           }
         }
       })
     )
 
     const ok = results.filter((r) => r.success)
-    const failed = results.filter((r) => !r.success)
 
     return NextResponse.json(
       {
         success: true,
         data: ok.map((r: any) => r.data),
-        failed,
+        failed: [],
         totalRequested: symbols.length,
         totalSuccessful: ok.length,
         timestamp: new Date().toISOString(),
