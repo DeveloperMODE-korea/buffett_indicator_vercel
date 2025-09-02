@@ -43,6 +43,16 @@ export default function SearchPage() {
   const [searchLoading, setSearchLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // 추가 섹션 상태
+  const [earningsData, setEarningsData] = useState<any | null>(null)
+  const [analystData, setAnalystData] = useState<any | null>(null)
+  const [ownershipData, setOwnershipData] = useState<any | null>(null)
+  const [summaryData, setSummaryData] = useState<any | null>(null)
+  const [insightsData, setInsightsData] = useState<any | null>(null)
+  const [ratingsData, setRatingsData] = useState<any | null>(null)
+  const [filingsData, setFilingsData] = useState<any | null>(null)
+  const [detailLoading, setDetailLoading] = useState(false)
+
   // 인기 검색어
   const popularSearches = [
     'AAPL', 'GOOGL', 'MSFT', 'TSLA', 'NVDA', 'AMZN', 'META', 'BRK-B', 'JPM', 'V',
@@ -100,6 +110,58 @@ export default function SearchPage() {
     }
   }
 
+  // 선택 종목 상세 병렬 로드 (기존 + 뉴스/등급/공시)
+  useEffect(() => {
+    const loadDetails = async () => {
+      if (!selectedStock?.symbol) return
+      setDetailLoading(true)
+      setEarningsData(null)
+      setAnalystData(null)
+      setOwnershipData(null)
+      setSummaryData(null)
+      setInsightsData(null)
+      setRatingsData(null)
+      setFilingsData(null)
+
+      try {
+        const symbol = selectedStock.symbol
+        const [earningsRes, analystRes, ownershipRes, summaryRes, insightsRes, ratingsRes, filingsRes] = await Promise.all([
+          fetch(`/api/earnings?symbols=${symbol}`),
+          fetch(`/api/analyst?symbols=${symbol}`),
+          fetch(`/api/ownership?symbols=${symbol}`),
+          fetch(`/api/summary?symbols=${symbol}&modules=price,summaryDetail,financialData,assetProfile`),
+          fetch(`/api/insights?symbols=${symbol}`),
+          fetch(`/api/ratings?symbols=${symbol}`),
+          fetch(`/api/sec-filings?symbols=${symbol}`),
+        ])
+
+        const [earningsJson, analystJson, ownershipJson, summaryJson, insightsJson, ratingsJson, filingsJson] = await Promise.all([
+          earningsRes.json(),
+          analystRes.json(),
+          ownershipRes.json(),
+          summaryRes.json(),
+          insightsRes.json(),
+          ratingsRes.json(),
+          filingsRes.json(),
+        ])
+
+        if (earningsJson?.success && earningsJson.data?.length) setEarningsData(earningsJson.data[0])
+        if (analystJson?.success && analystJson.data?.length) setAnalystData(analystJson.data[0])
+        if (ownershipJson?.success && ownershipJson.data?.length) setOwnershipData(ownershipJson.data[0])
+        if (summaryJson?.success && summaryJson.data?.length) setSummaryData(summaryJson.data[0])
+        if (insightsJson?.success && insightsJson.data?.length) setInsightsData(insightsJson.data[0])
+        if (ratingsJson?.success && ratingsJson.data?.length) setRatingsData(ratingsJson.data[0])
+        if (filingsJson?.success && filingsJson.data?.length) setFilingsData(filingsJson.data[0])
+      } catch (e) {
+        console.error('상세 데이터 로드 오류:', e)
+      } finally {
+        setDetailLoading(false)
+      }
+    }
+
+    loadDetails()
+  }, [selectedStock?.symbol])
+
   // 검색어 변경 시 자동 검색
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -108,7 +170,7 @@ export default function SearchPage() {
       } else {
         setSearchResults([])
       }
-    }, 300) // 300ms 디바운스
+    }, 300)
 
     return () => clearTimeout(timeoutId)
   }, [searchQuery])
@@ -315,6 +377,163 @@ export default function SearchPage() {
                      <div className="text-xs text-gray-500 dark:text-gray-400">
                        마지막 업데이트: {new Date(selectedStock.lastUpdated).toLocaleString('ko-KR')}
                      </div>
+                   </CardContent>
+                 </Card>
+               </div>
+
+               {/* 상세 섹션: 실적 / 애널리스트 / 보유 / 프로필 요약 */}
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                 <Card>
+                   <CardHeader>
+                     <CardTitle className="text-xl">실적 / 캘린더</CardTitle>
+                   </CardHeader>
+                   <CardContent>
+                     {detailLoading && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                     {!detailLoading && earningsData && (
+                       <div className="space-y-2 text-sm">
+                         <div>
+                           <span className="text-gray-600 dark:text-gray-400">최근 EPS(History):</span>
+                           <span className="ml-2 font-medium">{earningsData?.earningsHistory?.history?.[0]?.epsActual ?? 'N/A'}</span>
+                         </div>
+                         <div>
+                           <span className="text-gray-600 dark:text-gray-400">예상 EPS(Trend):</span>
+                           <span className="ml-2 font-medium">{earningsData?.earningsTrend?.trend?.[0]?.epsTrend?.current ?? 'N/A'}</span>
+                         </div>
+                         <div>
+                           <span className="text-gray-600 dark:text-gray-400">다음 실적 발표:</span>
+                           <span className="ml-2 font-medium">{earningsData?.calendarEvents?.earnings?.earningsDate?.[0] ? new Date(earningsData.calendarEvents.earnings.earningsDate[0]).toLocaleString('ko-KR') : 'N/A'}</span>
+                         </div>
+                       </div>
+                     )}
+                   </CardContent>
+                 </Card>
+
+                 <Card>
+                   <CardHeader>
+                     <CardTitle className="text-xl">애널리스트 / 목표가</CardTitle>
+                   </CardHeader>
+                   <CardContent>
+                     {detailLoading && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                     {!detailLoading && analystData && (
+                       <div className="space-y-2 text-sm">
+                         <div>
+                           <span className="text-gray-600 dark:text-gray-400">추천 트렌드(최근):</span>
+                           <span className="ml-2 font-medium">{analystData?.recommendationTrend?.trend?.[0]?.strongBuy ?? 0} Strong Buy</span>
+                         </div>
+                         <div>
+                           <span className="text-gray-600 dark:text-gray-400">목표가(평균):</span>
+                           <span className="ml-2 font-medium">{analystData?.financialData?.targetMeanPrice ? formatCurrency(analystData.financialData.targetMeanPrice, selectedStock.currency) : 'N/A'}</span>
+                         </div>
+                       </div>
+                     )}
+                   </CardContent>
+                 </Card>
+
+                 <Card>
+                   <CardHeader>
+                     <CardTitle className="text-xl">보유자 / 내부자</CardTitle>
+                   </CardHeader>
+                   <CardContent>
+                     {detailLoading && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                     {!detailLoading && ownershipData && (
+                       <div className="space-y-2 text-sm">
+                         <div>
+                           <span className="text-gray-600 dark:text-gray-400">기관 보유 비중:</span>
+                           <span className="ml-2 font-medium">{ownershipData?.majorHoldersBreakdown?.institutionsPercentHeld ? `${formatNumber(ownershipData.majorHoldersBreakdown.institutionsPercentHeld * 100, 2)}%` : 'N/A'}</span>
+                         </div>
+                         <div>
+                           <span className="text-gray-600 dark:text-gray-400">내부자 보유 비중:</span>
+                           <span className="ml-2 font-medium">{ownershipData?.majorHoldersBreakdown?.insidersPercentHeld ? `${formatNumber(ownershipData.majorHoldersBreakdown.insidersPercentHeld * 100, 2)}%` : 'N/A'}</span>
+                         </div>
+                       </div>
+                     )}
+                   </CardContent>
+                 </Card>
+
+                 <Card>
+                   <CardHeader>
+                     <CardTitle className="text-xl">기업 프로필</CardTitle>
+                   </CardHeader>
+                   <CardContent>
+                     {detailLoading && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                     {!detailLoading && summaryData && (
+                       <div className="space-y-2 text-sm">
+                         <div>
+                           <span className="text-gray-600 dark:text-gray-400">섹터:</span>
+                           <span className="ml-2 font-medium">{summaryData?.assetProfile?.sector ?? 'N/A'}</span>
+                         </div>
+                         <div>
+                           <span className="text-gray-600 dark:text-gray-400">산업:</span>
+                           <span className="ml-2 font-medium">{summaryData?.assetProfile?.industry ?? 'N/A'}</span>
+                         </div>
+                         <div>
+                           <span className="text-gray-600 dark:text-gray-400">직원 수:</span>
+                           <span className="ml-2 font-medium">{summaryData?.assetProfile?.fullTimeEmployees ?? 'N/A'}</span>
+                         </div>
+                       </div>
+                     )}
+                   </CardContent>
+                 </Card>
+               </div>
+
+               {/* 추가 섹션: 인사이트/뉴스, 등급 변경, SEC 공시 */}
+               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                 <Card>
+                   <CardHeader>
+                     <CardTitle className="text-xl">인사이트 / 뉴스</CardTitle>
+                   </CardHeader>
+                   <CardContent>
+                     {detailLoading && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                     {!detailLoading && insightsData && (
+                       <ul className="list-disc list-inside text-sm space-y-1">
+                         {(insightsData?.news ?? []).slice(0, 5).map((n: any, idx: number) => (
+                           <li key={idx}>
+                             <a className="text-blue-600 dark:text-blue-400 hover:underline" href={n.link} target="_blank" rel="noreferrer">
+                               {n.title}
+                             </a>
+                           </li>
+                         ))}
+                         {(insightsData?.news ?? []).length === 0 && <li className="text-gray-500">뉴스 없음</li>}
+                       </ul>
+                     )}
+                   </CardContent>
+                 </Card>
+
+                 <Card>
+                   <CardHeader>
+                     <CardTitle className="text-xl">등급 변경(업/다운)</CardTitle>
+                   </CardHeader>
+                   <CardContent>
+                     {detailLoading && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                     {!detailLoading && ratingsData && (
+                       <ul className="list-disc list-inside text-sm space-y-1">
+                         {(ratingsData?.history ?? []).slice(0, 5).map((r: any, idx: number) => (
+                           <li key={idx}>
+                             {r.firm}: {r.fromGrade} → {r.toGrade} ({r.action})
+                           </li>
+                         ))}
+                         {!(ratingsData?.history ?? []).length && <li className="text-gray-500">데이터 없음</li>}
+                       </ul>
+                     )}
+                   </CardContent>
+                 </Card>
+
+                 <Card>
+                   <CardHeader>
+                     <CardTitle className="text-xl">SEC / 공시</CardTitle>
+                   </CardHeader>
+                   <CardContent>
+                     {detailLoading && <p className="text-sm text-gray-500">불러오는 중...</p>}
+                     {!detailLoading && filingsData && (
+                       <ul className="list-disc list-inside text-sm space-y-1">
+                         {(filingsData?.filings ?? filingsData?.filingsRecent ?? [])?.slice(0, 5).map((f: any, idx: number) => (
+                           <li key={idx}>
+                             {f?.type || f?.form} • {f?.date || f?.fillingDate}
+                           </li>
+                         ))}
+                         {!((filingsData?.filings ?? filingsData?.filingsRecent ?? []).length) && <li className="text-gray-500">데이터 없음</li>}
+                       </ul>
+                     )}
                    </CardContent>
                  </Card>
                </div>
