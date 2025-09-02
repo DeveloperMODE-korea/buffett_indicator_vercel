@@ -1,12 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
 import yahooFinance from 'yahoo-finance2'
 
+async function fetchSecAtomBySymbol(symbol: string) {
+  // SEC CIK 조회는 별도 필요하지만 간단 폴백으로 심볼 기반 검색 RSS를 사용
+  const url = `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&owner=exclude&count=40&output=atom&CIK=${encodeURIComponent(symbol)}`
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': 'buffett-indicator-vercel (contact: dev@example.com)',
+      'Accept': 'application/atom+xml,application/xml;q=0.9,*/*;q=0.8',
+    },
+    cache: 'no-store',
+  })
+  if (!res.ok) return []
+  const text = await res.text()
+  // 매우 단순한 파서: entry 항목만 추출
+  const entries = [...text.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].map((m) => m[1])
+  return entries.slice(0, 20).map((e) => {
+    const type = (e.match(/<category[^>]*term=\"([^\"]+)\"/) || [])[1] || null
+    const title = (e.match(/<title>([\s\S]*?)<\/title>/) || [])[1] || null
+    const date = (e.match(/<updated>([^<]+)<\/updated>/) || [])[1] || null
+    const link = (e.match(/<link[^>]*href=\"([^\"]+)\"/) || [])[1] || null
+    return { form: type, type, date: date || null, edgarUrl: link, title }
+  })
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const symbols: string[] = searchParams.get('symbols')?.split(',') || ['AAPL']
 
-    // 참고: quoteSummary 내 secFilings 모듈은 가용성/스키마가 수시로 변함 → validateResult 비활성화
     const results = await Promise.all(
       symbols.map(async (symbol: string) => {
         try {
@@ -14,12 +36,27 @@ export async function GET(request: NextRequest) {
             symbol,
             { modules: ['secFilings'] as any, validateResult: false } as any
           )
-          const data = (res as any)?.secFilings || null
-          // 응답 형태 표준화: 없으면 빈 객체 반환
-          return { success: true, symbol, data: data || { filings: [], filingsRecent: [] } }
+          let data = (res as any)?.secFilings || { filings: [], filingsRecent: [] }
+
+          const combined = {
+            filings: Array.isArray(data?.filings) ? data.filings : [],
+            filingsRecent: Array.isArray(data?.filingsRecent) ? data.filingsRecent : [],
+          }
+
+          if ((combined.filings.length + combined.filingsRecent.length) === 0) {
+            try {
+              const fallback = await fetchSecAtomBySymbol(symbol)
+              return { success: true, symbol, data: { filings: fallback, filingsRecent: [] } }
+            } catch (e) {
+              // 폴백 실패 시도 무시, 빈 값 반환
+              return { success: true, symbol, data: combined }
+            }
+          }
+
+          return { success: true, symbol, data: combined }
         } catch (error) {
           console.error(`[SEC Filings API] ${symbol} 오류:`, error)
-          // 하드 실패 대신 소프트 성공 + 이유 전달
+          // 소프트 성공
           return {
             success: true,
             symbol,

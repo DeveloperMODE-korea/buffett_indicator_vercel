@@ -9,27 +9,39 @@ export async function GET(request: NextRequest) {
     const results = await Promise.all(
       symbols.map(async (symbol: string) => {
         try {
-          const res = await yahooFinance.insights(symbol as any)
-          return { success: true, symbol, data: res }
+          const base = await yahooFinance.insights(symbol as any)
+          let news = (base as any)?.news || []
+
+          // 폴백: insights 뉴스가 비어있으면 별도 뉴스 엔드포인트 호출(any 캐스트)
+          if (!news || news.length === 0) {
+            try {
+              const extra = await (yahooFinance as any).news(symbol)
+              news = Array.isArray(extra) ? extra : []
+            } catch (e) {
+              // 무시하고 빈 배열 유지
+            }
+          }
+
+          return { success: true, symbol, data: { ...(base as any), news } }
         } catch (error) {
           console.error(`[Insights API] ${symbol} 오류:`, error)
+          // 소프트 성공
           return {
-            success: false,
+            success: true,
             symbol,
-            error: error instanceof Error ? error.message : '알 수 없는 오류',
+            data: { news: [], reason: 'unavailable_or_schema_variation' },
           }
         }
       })
     )
 
     const ok = results.filter((r) => r.success)
-    const failed = results.filter((r) => !r.success)
 
     return NextResponse.json(
       {
         success: true,
         data: ok.map((r: any) => r.data),
-        failed,
+        failed: [],
         totalRequested: symbols.length,
         totalSuccessful: ok.length,
         timestamp: new Date().toISOString(),
