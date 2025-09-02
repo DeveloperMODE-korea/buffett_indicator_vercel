@@ -41,14 +41,21 @@ export async function GET(request: NextRequest) {
     const ok = results.filter((r) => r.success)
     const failed = results.filter((r) => !r.success)
 
-    return NextResponse.json({
-      success: true,
-      data: ok.map((r: any) => r.data),
-      failed,
-      totalRequested: symbols.length,
-      totalSuccessful: ok.length,
-      timestamp: new Date().toISOString(),
-    })
+    return NextResponse.json(
+      {
+        success: true,
+        data: ok.map((r: any) => r.data),
+        failed,
+        totalRequested: symbols.length,
+        totalSuccessful: ok.length,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200',
+        },
+      }
+    )
   } catch (error) {
     console.error('[Earnings API] 전체 오류:', error)
     return NextResponse.json(

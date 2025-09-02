@@ -1,8 +1,23 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import useSWR from 'swr'
+import dynamic from 'next/dynamic'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import TradingViewChart from '@/components/TradingViewChart'
+
+const TradingViewChart = dynamic(() => import('@/components/TradingViewChart'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-96 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-2 text-gray-600 dark:text-gray-400">차트를 불러오는 중...</p>
+      </div>
+    </div>
+  ),
+})
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 interface StockData {
   symbol: string
@@ -37,6 +52,7 @@ interface SearchResult {
 
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [selectedStock, setSelectedStock] = useState<StockData | null>(null)
   const [loading, setLoading] = useState(false)
@@ -56,10 +72,10 @@ export default function SearchPage() {
   const [loadingMap, setLoadingMap] = useState<Record<string, boolean>>({})
   const [errorMap, setErrorMap] = useState<Record<string, string | null>>({})
 
-  // 더보기 컨트롤
-  const [newsLimit, setNewsLimit] = useState(5)
-  const [ratingsLimit, setRatingsLimit] = useState(5)
-  const [filingsLimit, setFilingsLimit] = useState(5)
+  // 더보기 컨트롤(기본 10개)
+  const [newsLimit, setNewsLimit] = useState(10)
+  const [ratingsLimit, setRatingsLimit] = useState(10)
+  const [filingsLimit, setFilingsLimit] = useState(10)
 
   // 정렬/필터 컨트롤
   const [newsSort, setNewsSort] = useState<'latest' | 'title'>('latest')
@@ -72,36 +88,27 @@ export default function SearchPage() {
     'SPY', 'QQQ', 'VTI', 'VOO', 'IWM', 'GLD', 'TLT', 'BTC-USD', 'ETH-USD'
   ]
 
-  // 검색 실행
-  const handleSearch = async (query: string) => {
-    if (!query.trim()) {
-      setSearchResults([])
-      return
-    }
+  // 검색어 디바운스 + SWR로 캐싱/중복 제거
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(searchQuery.trim()), 300)
+    return () => clearTimeout(t)
+  }, [searchQuery])
 
-    setSearchLoading(true)
-    setError(null)
+  const { data: swrSearchData, isLoading: swrSearchLoading, error: swrSearchError } = useSWR(
+    debouncedQuery ? `/api/stock-search?query=${encodeURIComponent(debouncedQuery)}` : null,
+    fetcher,
+    { dedupingInterval: 30000 }
+  )
 
-    try {
-      const response = await fetch(`/api/stock-search?query=${encodeURIComponent(query)}`)
-      const result = await response.json()
+  useEffect(() => {
+    if (swrSearchLoading) setSearchLoading(true)
+    else setSearchLoading(false)
+    if (swrSearchError) setError('검색 중 오류가 발생했습니다.')
+    if (swrSearchData?.success) setSearchResults(swrSearchData.data || [])
+    if (debouncedQuery === '' && searchQuery === '') setSearchResults([])
+  }, [swrSearchLoading, swrSearchError, swrSearchData, debouncedQuery, searchQuery])
 
-      if (result.success) {
-        setSearchResults(result.data)
-      } else {
-        setError(result.error || '검색 중 오류가 발생했습니다.')
-        setSearchResults([])
-      }
-    } catch (err) {
-      console.error('검색 오류:', err)
-      setError('검색 중 오류가 발생했습니다.')
-      setSearchResults([])
-    } finally {
-      setSearchLoading(false)
-    }
-  }
-
-  // 주식 데이터 가져오기
+  // 주식 데이터 가져오기(선택시)
   const fetchStockData = async (symbol: string) => {
     setLoading(true)
     setError(null)
@@ -197,7 +204,7 @@ export default function SearchPage() {
   useEffect(() => {
     const run = async () => {
       if (!selectedStock?.symbol) return
-      setNewsLimit(5); setRatingsLimit(5); setFilingsLimit(5)
+      setNewsLimit(10); setRatingsLimit(10); setFilingsLimit(10)
       await Promise.all([
         loadEarnings(selectedStock.symbol),
         loadAnalyst(selectedStock.symbol),
@@ -210,19 +217,6 @@ export default function SearchPage() {
     }
     run()
   }, [selectedStock?.symbol])
-
-  // 검색어 변경 시 자동 검색
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (searchQuery.trim()) {
-        handleSearch(searchQuery)
-      } else {
-        setSearchResults([])
-      }
-    }, 300)
-
-    return () => clearTimeout(timeoutId)
-  }, [searchQuery])
 
   const formatNumber = (num: number, decimals: number = 2) => {
     if (num === null || num === undefined) return 'N/A'
