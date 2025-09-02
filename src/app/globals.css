@@ -1,6 +1,6 @@
-@import "tailwindcss";
-@plugin "@tailwindcss/forms";
-@plugin "@tailwindcss/typography";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* 아래는 그대로 유지 */
 @layer base {

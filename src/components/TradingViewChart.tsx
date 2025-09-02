@@ -10,8 +10,6 @@ import {
   HistogramData,
   CrosshairMode,
   LineStyle,
-  CandlestickSeries,   // ✅ 추가
-  HistogramSeries,     // ✅ 추가
   type Time,
 } from 'lightweight-charts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -146,8 +144,8 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
         },
       })
 
-      // ✅ v5 방식으로 시리즈 추가
-      const candlestickSeries = chart.addSeries(CandlestickSeries, {
+      // v4 방식으로 시리즈 추가
+      const candlestickSeries = chart.addCandlestickSeries({
         upColor: '#26a69a',
         downColor: '#ef5350',
         borderDownColor: '#ef5350',
@@ -156,7 +154,7 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
         wickUpColor: '#26a69a',
       })
 
-      const volumeSeries = chart.addSeries(HistogramSeries, {
+      const volumeSeries = chart.addHistogramSeries({
         color: '#26a69a',
         priceFormat: { type: 'volume' },
         priceScaleId: '', // 하단 별도 스케일
