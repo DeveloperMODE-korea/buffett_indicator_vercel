@@ -1,8 +1,77 @@
 import { NextRequest, NextResponse } from 'next/server'
 import yahooFinance from 'yahoo-finance2'
 
+// 간단 메모리 캐시: CIK 매핑과 만료 시간
+let cikMapCache: { map: Record<string, string>; expiresAt: number } | null = null
+
+async function loadCikMap(): Promise<Record<string, string>> {
+  const now = Date.now()
+  if (cikMapCache && cikMapCache.expiresAt > now) return cikMapCache.map
+
+  const url = 'https://www.sec.gov/files/company_tickers.json'
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': 'buffett-indicator-vercel (contact: dev@example.com)',
+      'Accept': 'application/json',
+    },
+    cache: 'no-store',
+  })
+  if (!res.ok) {
+    // 실패 시 빈 맵 반환 (폴백에서 처리)
+    cikMapCache = { map: {}, expiresAt: now + 60_000 }
+    return cikMapCache.map
+  }
+  const json = await res.json()
+  // company_tickers.json 형식: {"0": {cik_str, ticker, title}, ...}
+  const map: Record<string, string> = {}
+  Object.values(json as any).forEach((row: any) => {
+    if (row?.ticker && row?.cik_str) {
+      map[String(row.ticker).toUpperCase()] = String(row.cik_str).padStart(10, '0')
+    }
+  })
+  cikMapCache = { map, expiresAt: now + 24 * 60 * 60 * 1000 }
+  return map
+}
+
+async function fetchSecSubmissionsByTicker(symbol: string) {
+  const map = await loadCikMap()
+  const cik = map[symbol.toUpperCase()]
+  if (!cik) return null
+
+  const url = `https://data.sec.gov/submissions/CIK${cik}.json`
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent': 'buffett-indicator-vercel (contact: dev@example.com)',
+      'Accept': 'application/json',
+    },
+    cache: 'no-store',
+  })
+  if (!res.ok) return null
+  const data = await res.json()
+  // filings.recent: columns arrays
+  const recent = data?.filings?.recent
+  if (!recent || !recent.form || !recent.filingDate) return []
+  const len = Math.min(
+    recent.form.length,
+    recent.filingDate.length,
+    recent.accessionNumber?.length || 0,
+    recent.primaryDocument?.length || 0
+  )
+  const items = [] as any[]
+  for (let i = 0; i < Math.min(len, 50); i++) {
+    const form = recent.form[i]
+    const filingDate = recent.filingDate[i]
+    const accNoRaw = (recent.accessionNumber?.[i] || '').replace(/-/g, '')
+    const primaryDoc = recent.primaryDocument?.[i]
+    const edgarUrl = cik
+      ? `https://www.sec.gov/Archives/edgar/data/${parseInt(cik, 10)}/${accNoRaw}/${primaryDoc}`
+      : null
+    items.push({ form, type: form, date: filingDate, edgarUrl })
+  }
+  return items
+}
+
 async function fetchSecAtomBySymbol(symbol: string) {
-  // SEC CIK 조회는 별도 필요하지만 간단 폴백으로 심볼 기반 검색 RSS를 사용
   const url = `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&owner=exclude&count=40&output=atom&CIK=${encodeURIComponent(symbol)}`
   const res = await fetch(url, {
     headers: {
@@ -13,7 +82,6 @@ async function fetchSecAtomBySymbol(symbol: string) {
   })
   if (!res.ok) return []
   const text = await res.text()
-  // 매우 단순한 파서: entry 항목만 추출
   const entries = [...text.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].map((m) => m[1])
   return entries.slice(0, 20).map((e) => {
     const type = (e.match(/<category[^>]*term=\"([^\"]+)\"/) || [])[1] || null
@@ -31,37 +99,43 @@ export async function GET(request: NextRequest) {
 
     const results = await Promise.all(
       symbols.map(async (symbol: string) => {
+        // 1) SEC Submissions API (권장)
+        try {
+          const subs = await fetchSecSubmissionsByTicker(symbol)
+          if (subs && subs.length) {
+            return { success: true, symbol, data: { filings: subs, filingsRecent: [] } }
+          }
+        } catch (e) {
+          // 무시하고 다음 폴백
+        }
+
+        // 2) Yahoo secFilings (validateResult false)
         try {
           const res = await yahooFinance.quoteSummary(
             symbol,
             { modules: ['secFilings'] as any, validateResult: false } as any
           )
-          let data = (res as any)?.secFilings || { filings: [], filingsRecent: [] }
-
-          const combined = {
-            filings: Array.isArray(data?.filings) ? data.filings : [],
-            filingsRecent: Array.isArray(data?.filingsRecent) ? data.filingsRecent : [],
+          const yf = (res as any)?.secFilings || { filings: [], filingsRecent: [] }
+          if ((yf.filings?.length || 0) + (yf.filingsRecent?.length || 0)) {
+            return { success: true, symbol, data: yf }
           }
+        } catch (e) {
+          // 무시
+        }
 
-          if ((combined.filings.length + combined.filingsRecent.length) === 0) {
-            try {
-              const fallback = await fetchSecAtomBySymbol(symbol)
-              return { success: true, symbol, data: { filings: fallback, filingsRecent: [] } }
-            } catch (e) {
-              // 폴백 실패 시도 무시, 빈 값 반환
-              return { success: true, symbol, data: combined }
-            }
-          }
+        // 3) SEC Atom RSS 폴백
+        try {
+          const atom = await fetchSecAtomBySymbol(symbol)
+          if (atom.length) return { success: true, symbol, data: { filings: atom, filingsRecent: [] } }
+        } catch (e) {
+          // 무시
+        }
 
-          return { success: true, symbol, data: combined }
-        } catch (error) {
-          console.error(`[SEC Filings API] ${symbol} 오류:`, error)
-          // 소프트 성공
-          return {
-            success: true,
-            symbol,
-            data: { filings: [], filingsRecent: [], reason: 'unavailable_or_schema_variation' },
-          }
+        // 모두 실패: 소프트 성공 빈 데이터
+        return {
+          success: true,
+          symbol,
+          data: { filings: [], filingsRecent: [], reason: 'no_data_from_all_sources' },
         }
       })
     )
