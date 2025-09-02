@@ -8,6 +8,15 @@
 - 📈 **실시간 버핏 지수**: GDP 대비 주식 시장 총액 비율
 - 🔍 **주식 검색**: 실시간 주식 정보 검색 및 차트 시각화
 - 📊 **TradingView 차트**: 전문적인 캔들스틱 차트 및 거래량 분석
+- 🧾 **재무제표(연간/분기)**: 손익계산서/대차대조표/현금흐름표, CSV 내보내기 지원
+- 🧩 **핵심 지표(Key Stats)**: 시총/베타/밸류에이션 지표 요약
+- 🧾 **SEC 공시**: Submissions API+Yahoo+Atom 폴백으로 최근 공시 표시
+- 📰 **인사이트/뉴스**: Insights → News → Yahoo RSS 3단 폴백
+- 🧠 **애널리스트/목표가**: 추천 트렌드/목표가 요약
+- 🏦 **보유/내부자**: 기관/펀드/내부자/대주주 정보
+- 📈 **옵션 체인(요약)**: 가까운 만기 콜/풋 일부 체인
+- 🧰 **재무 타임시리즈(Fundamentals TS)**: 핵심 항목의 시계열 데이터
+- 📈 **ETF/펀드 정보**: 프로필/보유 상위/성과(요약), CSV 내보내기
 - 📱 **반응형 디자인**: 모바일/데스크톱 최적화
 - 🌙 **다크모드**: 테마 자동 전환 지원
 - 📈 **ETF 가이드**: 42개 ETF 정보 및 추천
@@ -21,6 +30,44 @@
 - **Data**: Yahoo Finance API, FRED API
 - **Deployment**: Vercel
 - **CI/CD**: GitHub Actions
+
+## 🧩 제공 API (App Router)
+
+다음 경로들은 `src/app/api/*/route.ts` 로 구현되어 있습니다.
+
+- GET `/api/stock-search?query=...`
+- GET `/api/stock-data?symbols=AAPL,MSFT&history=true&days=30`
+- GET `/api/earnings?symbols=AAPL`
+- GET `/api/analyst?symbols=AAPL`
+- GET `/api/ownership?symbols=AAPL`
+- GET `/api/summary?symbols=AAPL&modules=price,summaryDetail,financialData,assetProfile`
+- GET `/api/insights?symbols=AAPL`  (insights→news→RSS 폴백)
+- GET `/api/ratings?symbols=AAPL`
+- GET `/api/sec-filings?symbols=AAPL`  (SEC Submissions→Yahoo→Atom 폴백)
+- GET `/api/financials?symbols=AAPL&period=annual|quarterly`
+- GET `/api/key-stats?symbols=AAPL`
+- GET `/api/options?symbol=AAPL`
+- GET `/api/fundamentals-ts?symbol=AAPL&types=quarterlyTotalAssets,quarterlyNetIncome`
+- GET `/api/fund-facts?symbols=VTI` (ETF/펀드: fundProfile/topHoldings/fundPerformance)
+
+### 간단 예시
+
+```bash
+# 요약+프로필
+curl "http://localhost:3000/api/summary?symbols=AAPL&modules=price,summaryDetail,financialData,assetProfile" | jq .
+
+# 재무제표(분기)
+curl "http://localhost:3000/api/financials?symbols=AAPL&period=quarterly" | jq .
+
+# SEC 공시(폴백 포함)
+curl "http://localhost:3000/api/sec-filings?symbols=AAPL" | jq .
+
+# 옵션 체인(가까운 만기 요약)
+curl "http://localhost:3000/api/options?symbol=AAPL" | jq .
+
+# ETF 펀드 팩트
+curl "http://localhost:3000/api/fund-facts?symbols=VTI" | jq .
+```
 
 ## 🔄 CI/CD 파이프라인
 
@@ -54,6 +101,7 @@ VERCEL_PROJECT_ID=your_vercel_project_id
 
 # 보안 스캔
 SNYK_TOKEN=your_snyk_token
+```
 
 ### 📊 배포 환경
 
