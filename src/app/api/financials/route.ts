@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
       'cashflowStatementHistory',
       'financialData',
       'defaultKeyStatistics',
+      'earnings',
     ] as const;
 
     const quarterlyModules = [
@@ -25,6 +26,7 @@ export async function GET(request: NextRequest) {
       'cashflowStatementHistoryQuarterly',
       'financialData',
       'defaultKeyStatistics',
+      'earnings',
     ] as const;
 
     const modules =
@@ -35,7 +37,9 @@ export async function GET(request: NextRequest) {
     const results = await Promise.all(
       symbols.map(async (symbol: string) => {
         try {
+          console.log(`[Financials API] ${symbol} - 요청 모듈:`, modules);
           const res = await yahooFinance.quoteSummary(symbol, { modules });
+          console.log(`[Financials API] ${symbol} - 응답 샘플:`, JSON.stringify(res, null, 2).substring(0, 500) + '...');
           return { success: true, symbol, data: res };
         } catch (error) {
           console.error(`[Financials API] ${symbol} 오류:`, error);
