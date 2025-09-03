@@ -1346,35 +1346,54 @@ export default function SearchPage() {
                             )
                               .slice(0, 6)
                               .map((row: any, idx: number) => {
-                                const revenue =
+                                // 기본 데이터 추출
+                                let revenue =
                                   typeof row?.totalRevenue === 'number'
                                     ? row.totalRevenue
                                     : null;
-                                const gross =
-                                  typeof row?.grossProfit === 'number'
+                                let gross =
+                                  typeof row?.grossProfit === 'number' && row.grossProfit !== 0
                                     ? row.grossProfit
                                     : null;
-                                const op =
+                                let op =
                                   typeof row?.operatingIncome === 'number'
                                     ? row.operatingIncome
                                     : null;
-                                const ebit =
-                                  typeof row?.ebit === 'number'
+                                let ebit =
+                                  typeof row?.ebit === 'number' && row.ebit !== 0
                                     ? row.ebit
                                     : null;
-                                const interest =
+                                let interest =
                                   typeof row?.interestExpense === 'number'
                                     ? row.interestExpense
                                     : null;
+                                let net =
+                                  typeof row?.netIncome === 'number'
+                                    ? row.netIncome
+                                    : null;
+
+                                // financialData에서 현재 데이터로 보완 (첫 번째 행인 경우)
+                                if (idx === 0 && financialsData?.financialData) {
+                                  const fd = financialsData.financialData;
+                                  if (!revenue && fd.totalRevenue?.raw) {
+                                    revenue = fd.totalRevenue.raw;
+                                  }
+                                  if (!gross && fd.grossProfits?.raw) {
+                                    gross = fd.grossProfits.raw;
+                                  }
+                                  if (!op && fd.operatingMargins?.raw && revenue) {
+                                    op = revenue * fd.operatingMargins.raw;
+                                  }
+                                  if (!ebit && fd.ebitda?.raw) {
+                                    ebit = fd.ebitda.raw; // EBITDA를 EBIT 대신 사용
+                                  }
+                                }
+
                                 const icr =
                                   ebit != null &&
                                   interest != null &&
                                   interest !== 0
                                     ? ebit / Math.abs(interest)
-                                    : null;
-                                const net =
-                                  typeof row?.netIncome === 'number'
-                                    ? row.netIncome
                                     : null;
                                 return (
                                   <tr
@@ -1440,22 +1459,39 @@ export default function SearchPage() {
                             )
                               .slice(0, 6)
                               .map((row: any, idx: number) => {
-                                const assets =
+                                // 기본 데이터 추출
+                                let assets =
                                   typeof row?.totalAssets === 'number'
                                     ? row.totalAssets
                                     : null;
-                                const liab =
+                                let liab =
                                   typeof row?.totalLiab === 'number'
                                     ? row.totalLiab
                                     : null;
-                                const equity =
-                                  typeof row?.totalStockholderEquity ===
-                                  'number'
+                                let equity =
+                                  typeof row?.totalStockholderEquity === 'number'
                                     ? row.totalStockholderEquity
-                                    : typeof row?.stockholdersEquity ===
-                                        'number'
+                                    : typeof row?.stockholdersEquity === 'number'
                                       ? row.stockholdersEquity
                                       : null;
+
+                                // financialData 또는 defaultKeyStatistics에서 보완 (첫 번째 행인 경우)
+                                if (idx === 0) {
+                                  const fd = financialsData?.financialData;
+                                  const dks = financialsData?.defaultKeyStatistics;
+                                  
+                                  if (!assets && fd?.totalCash?.raw && fd?.totalDebt?.raw) {
+                                    // 현금 + 부채를 기반으로 총자산 추정 (불완전하지만 참고용)
+                                    assets = null; // 부정확할 수 있으므로 null 유지
+                                  }
+                                  if (!liab && fd?.totalDebt?.raw) {
+                                    liab = fd.totalDebt.raw;
+                                  }
+                                  if (!equity && dks?.bookValue?.raw && dks?.sharesOutstanding?.raw) {
+                                    equity = dks.bookValue.raw * dks.sharesOutstanding.raw;
+                                  }
+                                }
+
                                 const debtRatio =
                                   assets != null && liab != null && assets !== 0
                                     ? (liab / assets) * 100

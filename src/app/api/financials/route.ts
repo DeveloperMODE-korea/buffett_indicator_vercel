@@ -15,12 +15,16 @@ export async function GET(request: NextRequest) {
       'incomeStatementHistory',
       'balanceSheetHistory',
       'cashflowStatementHistory',
+      'financialData',
+      'defaultKeyStatistics',
     ] as const;
 
     const quarterlyModules = [
       'incomeStatementHistoryQuarterly',
       'balanceSheetHistoryQuarterly',
       'cashflowStatementHistoryQuarterly',
+      'financialData',
+      'defaultKeyStatistics',
     ] as const;
 
     const modules =
