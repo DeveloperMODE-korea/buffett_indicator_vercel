@@ -47,7 +47,6 @@
 - GET `/api/financials?symbols=AAPL&period=annual|quarterly`
 - GET `/api/key-stats?symbols=AAPL`
 - GET `/api/options?symbol=AAPL`
-- GET `/api/fundamentals-ts?symbol=AAPL&types=quarterlyTotalAssets,quarterlyNetIncome`
 - GET `/api/fund-facts?symbols=VTI` (ETF/펀드: fundProfile/topHoldings/fundPerformance)
 
 ### 간단 예시

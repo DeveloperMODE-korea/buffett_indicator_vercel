@@ -101,7 +101,6 @@ export default function SearchPage() {
   >('annual');
   const [keyStatsData, setKeyStatsData] = useState<any | null>(null);
   const [optionsData, setOptionsData] = useState<any | null>(null);
-  const [ftsData, setFtsData] = useState<any | null>(null);
   const [fundFactsData, setFundFactsData] = useState<any | null>(null);
 
   // 섹션별 로딩/에러
@@ -329,17 +328,6 @@ export default function SearchPage() {
     []
   );
 
-  const loadFts = useCallback(
-    async (symbol: string) =>
-      withSectionLoader('fts', async () => {
-        const r = await fetch(`/api/fundamentals-ts?symbol=${symbol}`);
-        const j = await r.json();
-        if (!j?.success) throw new Error('Fundamentals TS 데이터 오류');
-        setFtsData(j.data || null);
-      }),
-    []
-  );
-
   const loadFundFacts = useCallback(
     async (symbol: string) =>
       withSectionLoader('fundFacts', async () => {
@@ -369,7 +357,6 @@ export default function SearchPage() {
         loadFinancials(selectedStock.symbol, financialsPeriod),
         loadKeyStats(selectedStock.symbol),
         loadOptions(selectedStock.symbol),
-        loadFts(selectedStock.symbol),
         loadFundFacts(selectedStock.symbol),
       ]);
     };
@@ -387,7 +374,6 @@ export default function SearchPage() {
     loadFinancials,
     loadKeyStats,
     loadOptions,
-    loadFts,
     loadFundFacts,
   ]);
 
@@ -1757,40 +1743,6 @@ export default function SearchPage() {
                         </div>
                       </div>
                     )}
-                </CardContent>
-              </Card>
-
-              {/* Fundamentals TimeSeries (요약) */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl">재무 시계열(요약)</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {loadingMap.fts && (
-                    <p className="text-sm text-gray-500">불러오는 중...</p>
-                  )}
-                  {errorMap.fts && (
-                    <div className="text-sm text-red-500 flex items-center gap-2">
-                      <span>{errorMap.fts}</span>
-                      <button
-                        className="px-2 py-1 bg-red-100 dark:bg-red-900/30 rounded"
-                        onClick={() =>
-                          selectedStock && loadFts(selectedStock.symbol)
-                        }
-                      >
-                        재시도
-                      </button>
-                    </div>
-                  )}
-                  {!loadingMap.fts && !errorMap.fts && ftsData && (
-                    <pre className="text-xs whitespace-pre-wrap bg-gray-50 dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-x-auto">
-                      {JSON.stringify(
-                        ftsData?.timeseries?.result?.[0]?.timeSeries ?? ftsData,
-                        null,
-                        2
-                      )}
-                    </pre>
-                  )}
                 </CardContent>
               </Card>
 
