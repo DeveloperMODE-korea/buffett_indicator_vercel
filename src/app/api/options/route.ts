@@ -6,7 +6,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const symbol = searchParams.get('symbol') || 'AAPL';
 
-    const opt = await yahooFinance.options(symbol as any, {}, {});
+    // Yahoo Finance 2 options API - 기본 옵션으로 호출
+    const opt = await yahooFinance.options(symbol, {
+      // 추가 설정이 필요하면 여기에 추가
+    });
+    
     // 가장 가까운 만기만 간단 요약
     const first =
       Array.isArray(opt?.options) && opt.options.length ? opt.options[0] : null;
@@ -33,12 +37,20 @@ export async function GET(request: NextRequest) {
         },
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('[Options API] 오류:', error);
+    
+    // 더 자세한 오류 정보 로깅
+    if (error instanceof Error) {
+      console.error('[Options API] 오류 메시지:', error.message);
+      console.error('[Options API] 스택 트레이스:', error.stack);
+    }
+    
     return NextResponse.json(
-      {
-        success: false,
-        error: '옵션 데이터를 가져오는 중 오류가 발생했습니다.',
+      { 
+        success: false, 
+        error: '옵션 데이터 로드 중 오류',
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );
