@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
     startDate.setFullYear(endDate.getFullYear() - 5);
 
     const res = await (yahooFinance as any).fundamentalsTimeSeries(symbol, {
+      module: 'fundamentalsTimeSeries',  // 필수 매개변수 추가
       type: requestedType,  // 단일 문자열로 변경
       period1: startDate,
       period2: endDate,
