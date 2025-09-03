@@ -5,10 +5,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const symbol = searchParams.get('symbol') || 'AAPL';
-    const types = (
-      searchParams.get('types') ||
-      'quarterlyTotalAssets,quarterlyTotalLiabilitiesNetMinorityInterest,quarterlyTotalRevenue,quarterlyNetIncome'
-    ).split(',');
+    const requestedType = searchParams.get('type') || 'quarterlyTotalRevenue';
 
     // 기간 설정: 최근 5년간의 데이터
     const endDate = new Date();
@@ -16,8 +13,7 @@ export async function GET(request: NextRequest) {
     startDate.setFullYear(endDate.getFullYear() - 5);
 
     const res = await (yahooFinance as any).fundamentalsTimeSeries(symbol, {
-      module: 'fundamentalsTimeSeries',
-      type: types,
+      type: requestedType,  // 단일 문자열로 변경
       period1: startDate,
       period2: endDate,
     });
