@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const symbol = searchParams.get('symbol') || 'AAPL';
-    const requestedType = searchParams.get('type') || 'quarterlyTotalRevenue';
+    const requestedType = searchParams.get('type') || 'quarterlyTotalAssets';
 
     // 기간 설정: 최근 5년간의 데이터
     const endDate = new Date();
