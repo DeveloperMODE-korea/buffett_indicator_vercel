@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
     startDate.setFullYear(endDate.getFullYear() - 5);
 
     const res = await (yahooFinance as any).fundamentalsTimeSeries(symbol, {
+      module: 'fundamentalsTimeSeries',
       type: types,
       period1: startDate,
       period2: endDate,
