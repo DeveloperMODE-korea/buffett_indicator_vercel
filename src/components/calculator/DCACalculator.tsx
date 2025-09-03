@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Line, Bar } from 'react-chartjs-2'
+import { useState, useEffect } from 'react';
+import { Line, Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,11 +12,11 @@ import {
   Title,
   Tooltip,
   Legend,
-  Filler
-} from 'chart.js'
-import InputField from '@/components/ui/InputField'
-import ResultCard from '@/components/ui/ResultCard'
-import { calculateDCA, formatKoreanCurrency } from '@/lib/calculator-utils'
+  Filler,
+} from 'chart.js';
+import InputField from '@/components/ui/InputField';
+import ResultCard from '@/components/ui/ResultCard';
+import { calculateDCA, formatKoreanCurrency } from '@/lib/calculator-utils';
 
 ChartJS.register(
   CategoryScale,
@@ -28,29 +28,29 @@ ChartJS.register(
   Tooltip,
   Legend,
   Filler
-)
+);
 
 export default function DCACalculator() {
   const [inputs, setInputs] = useState({
-    monthlyInvestment: 1000000,    // 월 투자금 (100만원)
-    years: 10,                     // 투자 기간 (10년)
-    annualReturn: 8,              // 예상 연간 수익률 (8%)
-    volatility: 15,               // 변동성 (15%)
-  })
+    monthlyInvestment: 1000000, // 월 투자금 (100만원)
+    years: 10, // 투자 기간 (10년)
+    annualReturn: 8, // 예상 연간 수익률 (8%)
+    volatility: 15, // 변동성 (15%)
+  });
 
-  const [result, setResult] = useState(calculateDCA(inputs))
+  const [result, setResult] = useState(calculateDCA(inputs));
 
   // 입력값이 변경될 때마다 계산 결과 업데이트
   useEffect(() => {
-    setResult(calculateDCA(inputs))
-  }, [inputs])
+    setResult(calculateDCA(inputs));
+  }, [inputs]);
 
   const handleInputChange = (field: keyof typeof inputs) => (value: number) => {
     setInputs(prev => ({
       ...prev,
-      [field]: value
-    }))
-  }
+      [field]: value,
+    }));
+  };
 
   // 월별 자산 증가 차트 데이터 (연도별로 표시)
   const yearlyChartData = {
@@ -77,9 +77,9 @@ export default function DCACalculator() {
         backgroundColor: 'rgba(37, 99, 235, 0.1)',
         fill: true,
         tension: 0.1,
-      }
+      },
     ],
-  }
+  };
 
   // 시나리오 비교 차트 데이터
   const scenarioChartData = {
@@ -90,12 +90,12 @@ export default function DCACalculator() {
         data: [
           result.scenarios.pessimistic,
           result.scenarios.realistic,
-          result.scenarios.optimistic
+          result.scenarios.optimistic,
         ],
         backgroundColor: [
-          'rgba(239, 68, 68, 0.8)',   // 빨간색
-          'rgba(37, 99, 235, 0.8)',   // 파란색
-          'rgba(34, 197, 94, 0.8)',   // 초록색
+          'rgba(239, 68, 68, 0.8)', // 빨간색
+          'rgba(37, 99, 235, 0.8)', // 파란색
+          'rgba(34, 197, 94, 0.8)', // 초록색
         ],
         borderColor: [
           'rgb(239, 68, 68)',
@@ -105,7 +105,7 @@ export default function DCACalculator() {
         borderWidth: 2,
       },
     ],
-  }
+  };
 
   const chartOptions = {
     responsive: true,
@@ -123,10 +123,10 @@ export default function DCACalculator() {
       },
       tooltip: {
         callbacks: {
-          label: function(context: any) {
-            const label = context.dataset.label || ''
-            const value = formatKoreanCurrency(context.parsed.y)
-            return `${label}: ${value}`
+          label: function (context: any) {
+            const label = context.dataset.label || '';
+            const value = formatKoreanCurrency(context.parsed.y);
+            return `${label}: ${value}`;
           },
         },
       },
@@ -146,13 +146,13 @@ export default function DCACalculator() {
           text: '금액 (원)',
         },
         ticks: {
-          callback: function(value: any) {
-            return formatKoreanCurrency(value)
+          callback: function (value: any) {
+            return formatKoreanCurrency(value);
           },
         },
       },
     },
-  }
+  };
 
   const scenarioChartOptions = {
     responsive: true,
@@ -170,9 +170,9 @@ export default function DCACalculator() {
       },
       tooltip: {
         callbacks: {
-          label: function(context: any) {
-            const value = formatKoreanCurrency(context.parsed.y)
-            return `예상 자산: ${value}`
+          label: function (context: any) {
+            const value = formatKoreanCurrency(context.parsed.y);
+            return `예상 자산: ${value}`;
           },
         },
       },
@@ -185,13 +185,13 @@ export default function DCACalculator() {
           text: '금액 (원)',
         },
         ticks: {
-          callback: function(value: any) {
-            return formatKoreanCurrency(value)
+          callback: function (value: any) {
+            return formatKoreanCurrency(value);
           },
         },
       },
     },
-  }
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -201,7 +201,7 @@ export default function DCACalculator() {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors">
             ⏰ DCA 투자 설정
           </h3>
-          
+
           <div className="space-y-4">
             <InputField
               label="월 투자금액"
@@ -211,7 +211,7 @@ export default function DCACalculator() {
               placeholder="1000000"
               description="매월 정기적으로 투자할 금액"
             />
-            
+
             <InputField
               label="투자 기간"
               value={inputs.years}
@@ -222,7 +222,7 @@ export default function DCACalculator() {
               placeholder="10"
               description="정기투자를 지속할 기간"
             />
-            
+
             <InputField
               label="예상 연간 수익률"
               value={inputs.annualReturn}
@@ -234,7 +234,7 @@ export default function DCACalculator() {
               placeholder="8"
               description="장기 평균 수익률 (S&P 500: 연 8~10%)"
             />
-            
+
             <InputField
               label="변동성 (표준편차)"
               value={inputs.volatility}
@@ -254,10 +254,18 @@ export default function DCACalculator() {
             💡 DCA(정기투자)의 장점
           </h4>
           <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200 transition-colors">
-            <p>• <strong>시점 분산 효과</strong>: 고점/저점 타이밍 위험 완화</p>
-            <p>• <strong>평균 매수 단가 하락</strong>: 변동성 활용한 수익 증대</p>
-            <p>• <strong>감정적 투자 방지</strong>: 규칙적이고 체계적인 투자</p>
-            <p>• <strong>복리 효과 극대화</strong>: 시간과 함께 기하급수적 성장</p>
+            <p>
+              • <strong>시점 분산 효과</strong>: 고점/저점 타이밍 위험 완화
+            </p>
+            <p>
+              • <strong>평균 매수 단가 하락</strong>: 변동성 활용한 수익 증대
+            </p>
+            <p>
+              • <strong>감정적 투자 방지</strong>: 규칙적이고 체계적인 투자
+            </p>
+            <p>
+              • <strong>복리 효과 극대화</strong>: 시간과 함께 기하급수적 성장
+            </p>
           </div>
         </div>
       </div>
@@ -347,20 +355,27 @@ export default function DCACalculator() {
           </h4>
           <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400 transition-colors">
             <p>
-              • <strong>{inputs.years}년 동안</strong> 매월 <strong>{formatKoreanCurrency(inputs.monthlyInvestment)}</strong>씩 투자
+              • <strong>{inputs.years}년 동안</strong> 매월{' '}
+              <strong>{formatKoreanCurrency(inputs.monthlyInvestment)}</strong>
+              씩 투자
             </p>
             <p>
-              • 총 <strong>{formatKoreanCurrency(result.totalInvestment)}</strong> 투자로 <strong>{formatKoreanCurrency(result.totalReturn)}</strong> 수익 예상
+              • 총{' '}
+              <strong>{formatKoreanCurrency(result.totalInvestment)}</strong>{' '}
+              투자로 <strong>{formatKoreanCurrency(result.totalReturn)}</strong>{' '}
+              수익 예상
             </p>
             <p>
-              • 시장 변동성 <strong>{inputs.volatility}%</strong>에도 안정적인 장기 투자
+              • 시장 변동성 <strong>{inputs.volatility}%</strong>에도 안정적인
+              장기 투자
             </p>
             <p>
-              • DCA 전략으로 <strong>{result.returnRate.toFixed(1)}%</strong> 수익률 기대
+              • DCA 전략으로 <strong>{result.returnRate.toFixed(1)}%</strong>{' '}
+              수익률 기대
             </p>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

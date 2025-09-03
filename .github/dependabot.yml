@@ -1,45 +1,45 @@
 version: 2
 updates:
   # npm 패키지 자동 업데이트
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
     open-pull-requests-limit: 10
     reviewers:
-      - "DeveloperMODE-korea"
+      - 'DeveloperMODE-korea'
     assignees:
-      - "DeveloperMODE-korea"
+      - 'DeveloperMODE-korea'
     commit-message:
-      prefix: "chore"
-      include: "scope"
+      prefix: 'chore'
+      include: 'scope'
     labels:
-      - "dependencies"
-      - "npm"
+      - 'dependencies'
+      - 'npm'
     ignore:
       # 주요 버전 업데이트는 수동으로 처리
-      - dependency-name: "next"
-      - dependency-name: "react"
-      - dependency-name: "react-dom"
-      - dependency-name: "typescript"
+      - dependency-name: 'next'
+      - dependency-name: 'react'
+      - dependency-name: 'react-dom'
+      - dependency-name: 'typescript'
 
   # GitHub Actions 자동 업데이트
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
     open-pull-requests-limit: 5
     reviewers:
-      - "DeveloperMODE-korea"
+      - 'DeveloperMODE-korea'
     assignees:
-      - "DeveloperMODE-korea"
+      - 'DeveloperMODE-korea'
     commit-message:
-      prefix: "ci"
-      include: "scope"
+      prefix: 'ci'
+      include: 'scope'
     labels:
-      - "dependencies"
-      - "github-actions"
+      - 'dependencies'
+      - 'github-actions'

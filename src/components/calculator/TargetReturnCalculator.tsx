@@ -1,40 +1,38 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Doughnut } from 'react-chartjs-2'
+import { useState, useEffect } from 'react';
+import { Doughnut } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import InputField from '@/components/ui/InputField';
+import ResultCard from '@/components/ui/ResultCard';
 import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from 'chart.js'
-import InputField from '@/components/ui/InputField'
-import ResultCard from '@/components/ui/ResultCard'
-import { calculateTargetReturn, formatKoreanCurrency } from '@/lib/calculator-utils'
+  calculateTargetReturn,
+  formatKoreanCurrency,
+} from '@/lib/calculator-utils';
 
-ChartJS.register(ArcElement, Tooltip, Legend)
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function TargetReturnCalculator() {
   const [inputs, setInputs] = useState({
-    currentAsset: 5000000,      // 현재 자산 (500만원)
-    targetAsset: 100000000,     // 목표 자산 (1억원)
-    years: 10,                  // 투자 기간 (10년)
+    currentAsset: 5000000, // 현재 자산 (500만원)
+    targetAsset: 100000000, // 목표 자산 (1억원)
+    years: 10, // 투자 기간 (10년)
     monthlyContribution: 1000000, // 월 추가 투자금 (100만원)
-  })
+  });
 
-  const [result, setResult] = useState(calculateTargetReturn(inputs))
+  const [result, setResult] = useState(calculateTargetReturn(inputs));
 
   // 입력값이 변경될 때마다 계산 결과 업데이트
   useEffect(() => {
-    setResult(calculateTargetReturn(inputs))
-  }, [inputs])
+    setResult(calculateTargetReturn(inputs));
+  }, [inputs]);
 
   const handleInputChange = (field: keyof typeof inputs) => (value: number) => {
     setInputs(prev => ({
       ...prev,
-      [field]: value
-    }))
-  }
+      [field]: value,
+    }));
+  };
 
   // 리스크 레벨에 따른 정보
   const getRiskInfo = (level: string) => {
@@ -46,8 +44,8 @@ export default function TargetReturnCalculator() {
           bgColor: 'bg-green-50 dark:bg-green-900/20',
           borderColor: 'border-green-200 dark:border-green-700',
           description: '안전한 투자로 달성 가능 (채권, 예금 등)',
-          emoji: '🟢'
-        }
+          emoji: '🟢',
+        };
       case 'medium':
         return {
           text: '중간 리스크',
@@ -55,8 +53,8 @@ export default function TargetReturnCalculator() {
           bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
           borderColor: 'border-yellow-200 dark:border-yellow-700',
           description: '주식 투자 필요 (인덱스 펀드, ETF 등)',
-          emoji: '🟡'
-        }
+          emoji: '🟡',
+        };
       case 'high':
         return {
           text: '높은 리스크',
@@ -64,8 +62,8 @@ export default function TargetReturnCalculator() {
           bgColor: 'bg-red-50 dark:bg-red-900/20',
           borderColor: 'border-red-200 dark:border-red-700',
           description: '고위험 투자 필요 (성장주, 스타트업 등)',
-          emoji: '🔴'
-        }
+          emoji: '🔴',
+        };
       default:
         return {
           text: '계산 중',
@@ -73,12 +71,12 @@ export default function TargetReturnCalculator() {
           bgColor: 'bg-gray-50 dark:bg-gray-900/20',
           borderColor: 'border-gray-200 dark:border-gray-700',
           description: '',
-          emoji: '⚪'
-        }
+          emoji: '⚪',
+        };
     }
-  }
+  };
 
-  const riskInfo = getRiskInfo(result.riskLevel)
+  const riskInfo = getRiskInfo(result.riskLevel);
 
   // 도넛 차트 데이터 (현재 vs 목표)
   const chartData = {
@@ -86,18 +84,12 @@ export default function TargetReturnCalculator() {
     datasets: [
       {
         data: [inputs.currentAsset, inputs.targetAsset - inputs.currentAsset],
-        backgroundColor: [
-          'rgba(37, 99, 235, 0.8)',
-          'rgba(107, 114, 128, 0.3)',
-        ],
-        borderColor: [
-          'rgb(37, 99, 235)',
-          'rgb(107, 114, 128)',
-        ],
+        backgroundColor: ['rgba(37, 99, 235, 0.8)', 'rgba(107, 114, 128, 0.3)'],
+        borderColor: ['rgb(37, 99, 235)', 'rgb(107, 114, 128)'],
         borderWidth: 2,
       },
     ],
-  }
+  };
 
   const chartOptions = {
     responsive: true,
@@ -108,15 +100,15 @@ export default function TargetReturnCalculator() {
       },
       tooltip: {
         callbacks: {
-          label: function(context: any) {
-            const label = context.label || ''
-            const value = formatKoreanCurrency(context.parsed)
-            return `${label}: ${value}`
+          label: function (context: any) {
+            const label = context.label || '';
+            const value = formatKoreanCurrency(context.parsed);
+            return `${label}: ${value}`;
           },
         },
       },
     },
-  }
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -126,7 +118,7 @@ export default function TargetReturnCalculator() {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors">
             🎯 목표 설정
           </h3>
-          
+
           <div className="space-y-4">
             <InputField
               label="현재 자산"
@@ -136,7 +128,7 @@ export default function TargetReturnCalculator() {
               placeholder="5000000"
               description="현재 보유하고 있는 총 자산"
             />
-            
+
             <InputField
               label="목표 자산"
               value={inputs.targetAsset}
@@ -145,7 +137,7 @@ export default function TargetReturnCalculator() {
               placeholder="100000000"
               description="달성하고 싶은 목표 금액"
             />
-            
+
             <InputField
               label="투자 기간"
               value={inputs.years}
@@ -156,7 +148,7 @@ export default function TargetReturnCalculator() {
               placeholder="10"
               description="목표 달성까지의 기간"
             />
-            
+
             <InputField
               label="월 추가 투자금 (선택)"
               value={inputs.monthlyContribution}
@@ -174,7 +166,9 @@ export default function TargetReturnCalculator() {
             📊 달성 가능성 분석
           </h4>
           <div className="space-y-3">
-            <div className={`p-3 rounded-lg ${riskInfo.bgColor} ${riskInfo.borderColor} border transition-colors`}>
+            <div
+              className={`p-3 rounded-lg ${riskInfo.bgColor} ${riskInfo.borderColor} border transition-colors`}
+            >
               <div className="flex items-center justify-between">
                 <span className="font-medium">달성 가능성</span>
                 <span className={`text-2xl ${result.achievable ? '✅' : '❌'}`}>
@@ -182,11 +176,17 @@ export default function TargetReturnCalculator() {
                 </span>
               </div>
             </div>
-            
+
             <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1 transition-colors">
-              <p>• <strong>연 15% 이상</strong>의 수익률은 매우 도전적입니다</p>
-              <p>• <strong>S&P 500 장기 평균</strong>: 연 7~10%</p>
-              <p>• <strong>안전한 투자</strong>: 연 3~5% (채권, 예금)</p>
+              <p>
+                • <strong>연 15% 이상</strong>의 수익률은 매우 도전적입니다
+              </p>
+              <p>
+                • <strong>S&P 500 장기 평균</strong>: 연 7~10%
+              </p>
+              <p>
+                • <strong>안전한 투자</strong>: 연 3~5% (채권, 예금)
+              </p>
             </div>
           </div>
         </div>
@@ -212,7 +212,9 @@ export default function TargetReturnCalculator() {
         </div>
 
         {/* 리스크 레벨 카드 */}
-        <div className={`card p-6 ${riskInfo.bgColor} ${riskInfo.borderColor} border-2 transition-colors`}>
+        <div
+          className={`card p-6 ${riskInfo.bgColor} ${riskInfo.borderColor} border-2 transition-colors`}
+        >
           <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-3 transition-colors">
             {riskInfo.emoji} 리스크 레벨: {riskInfo.text}
           </h4>
@@ -231,7 +233,11 @@ export default function TargetReturnCalculator() {
           </div>
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors">
-              목표까지 <strong>{formatKoreanCurrency(inputs.targetAsset - inputs.currentAsset)}</strong> 더 필요
+              목표까지{' '}
+              <strong>
+                {formatKoreanCurrency(inputs.targetAsset - inputs.currentAsset)}
+              </strong>{' '}
+              더 필요
             </p>
           </div>
         </div>
@@ -243,29 +249,45 @@ export default function TargetReturnCalculator() {
           </h4>
           <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400 transition-colors">
             {result.requiredAnnualReturn <= 5 && (
-              <p>• <strong>안전 투자</strong>: 국채, 회사채, 예금</p>
+              <p>
+                • <strong>안전 투자</strong>: 국채, 회사채, 예금
+              </p>
             )}
-            {result.requiredAnnualReturn > 5 && result.requiredAnnualReturn <= 10 && (
-              <>
-                <p>• <strong>균형 투자</strong>: 인덱스 펀드 (60%) + 채권 (40%)</p>
-                <p>• <strong>추천 ETF</strong>: S&P 500, 전세계 주식</p>
-              </>
-            )}
-            {result.requiredAnnualReturn > 10 && result.requiredAnnualReturn <= 15 && (
-              <>
-                <p>• <strong>성장 투자</strong>: 성장주, 신흥시장</p>
-                <p>• <strong>주의사항</strong>: 높은 변동성 감수 필요</p>
-              </>
-            )}
+            {result.requiredAnnualReturn > 5 &&
+              result.requiredAnnualReturn <= 10 && (
+                <>
+                  <p>
+                    • <strong>균형 투자</strong>: 인덱스 펀드 (60%) + 채권 (40%)
+                  </p>
+                  <p>
+                    • <strong>추천 ETF</strong>: S&P 500, 전세계 주식
+                  </p>
+                </>
+              )}
+            {result.requiredAnnualReturn > 10 &&
+              result.requiredAnnualReturn <= 15 && (
+                <>
+                  <p>
+                    • <strong>성장 투자</strong>: 성장주, 신흥시장
+                  </p>
+                  <p>
+                    • <strong>주의사항</strong>: 높은 변동성 감수 필요
+                  </p>
+                </>
+              )}
             {result.requiredAnnualReturn > 15 && (
               <>
-                <p>• <strong>고위험 투자</strong>: 개별주, 스타트업 투자</p>
-                <p>• <strong>대안</strong>: 투자기간 연장 또는 목표액 조정 고려</p>
+                <p>
+                  • <strong>고위험 투자</strong>: 개별주, 스타트업 투자
+                </p>
+                <p>
+                  • <strong>대안</strong>: 투자기간 연장 또는 목표액 조정 고려
+                </p>
               </>
             )}
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

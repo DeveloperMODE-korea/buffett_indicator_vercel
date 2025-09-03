@@ -3,7 +3,7 @@ const nextConfig = {
   env: {
     FRED_API_KEY: process.env.FRED_API_KEY,
   },
-  webpack: (config) => {
+  webpack: config => {
     config.externals.push({
       '@std/testing/mock': 'mock',
       '@std/testing/bdd': 'bdd',

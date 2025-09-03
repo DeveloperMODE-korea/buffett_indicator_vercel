@@ -1,31 +1,31 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import CalculatorTabs from '@/components/calculator/CalculatorTabs'
-import CompoundCalculator from '@/components/calculator/CompoundCalculator'
-import TargetReturnCalculator from '@/components/calculator/TargetReturnCalculator'
-import DCACalculator from '@/components/calculator/DCACalculator'
-import RetirementCalculator from '@/components/calculator/RetirementCalculator'
+import { useState } from 'react';
+import CalculatorTabs from '@/components/calculator/CalculatorTabs';
+import CompoundCalculator from '@/components/calculator/CompoundCalculator';
+import TargetReturnCalculator from '@/components/calculator/TargetReturnCalculator';
+import DCACalculator from '@/components/calculator/DCACalculator';
+import RetirementCalculator from '@/components/calculator/RetirementCalculator';
 
-type CalculatorType = 'compound' | 'target' | 'dca' | 'retirement'
+type CalculatorType = 'compound' | 'target' | 'dca' | 'retirement';
 
 export default function CalculatorPage() {
-  const [activeTab, setActiveTab] = useState<CalculatorType>('compound')
+  const [activeTab, setActiveTab] = useState<CalculatorType>('compound');
 
   const renderCalculator = () => {
     switch (activeTab) {
       case 'compound':
-        return <CompoundCalculator />
+        return <CompoundCalculator />;
       case 'target':
-        return <TargetReturnCalculator />
+        return <TargetReturnCalculator />;
       case 'dca':
-        return <DCACalculator />
+        return <DCACalculator />;
       case 'retirement':
-        return <RetirementCalculator />
+        return <RetirementCalculator />;
       default:
-        return <CompoundCalculator />
+        return <CompoundCalculator />;
     }
-  }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -44,9 +44,7 @@ export default function CalculatorPage() {
       <CalculatorTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Calculator Content */}
-      <div className="mt-8">
-        {renderCalculator()}
-      </div>
+      <div className="mt-8">{renderCalculator()}</div>
 
       {/* Info Section */}
       <div className="mt-16 p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg transition-colors">
@@ -63,5 +61,5 @@ export default function CalculatorPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

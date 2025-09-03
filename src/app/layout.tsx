@@ -1,27 +1,29 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
-import MobileNavigation from '@/components/MobileNavigation'
-import './globals.css'
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
+import MobileNavigation from '@/components/MobileNavigation';
+import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Buffett Indicator - 버핏 지수 관측소',
-  description: '워렌 버핏의 선호 지표인 총 시가총액 대비 GDP 비율을 실시간으로 관측하는 웹사이트',
+  description:
+    '워렌 버핏의 선호 지표인 총 시가총액 대비 GDP 비율을 실시간으로 관측하는 웹사이트',
   keywords: ['Buffett Indicator', '버핏 지수', '주식시장', 'GDP', '시가총액'],
   authors: [{ name: 'Buffett Indicator Team' }],
   openGraph: {
     title: 'Buffett Indicator - 버핏 지수 관측소',
-    description: '워렌 버핏의 선호 지표인 총 시가총액 대비 GDP 비율을 실시간으로 관측',
+    description:
+      '워렌 버핏의 선호 지표인 총 시가총액 대비 GDP 비율을 실시간으로 관측',
     type: 'website',
   },
-}
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="ko">
@@ -29,7 +31,7 @@ export default function RootLayout({
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
           <MobileNavigation />
           <main className="transition-colors">{children}</main>
-          
+
           {/* Footer */}
           <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16 transition-colors">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -89,5 +91,5 @@ export default function RootLayout({
         <Analytics />
       </body>
     </html>
-  )
+  );
 }

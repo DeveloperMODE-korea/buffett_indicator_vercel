@@ -1,40 +1,42 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState('light')
-  const [mounted, setMounted] = useState(false)
+  const [theme, setTheme] = useState('light');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-    const savedTheme = localStorage.getItem('theme')
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light')
-    setTheme(initialTheme)
-  }, [])
+    setMounted(true);
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia(
+      '(prefers-color-scheme: dark)'
+    ).matches;
+    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+    setTheme(initialTheme);
+  }, []);
 
   useEffect(() => {
     if (theme === 'dark') {
-      document.documentElement.classList.add('dark')
-      localStorage.setItem('theme', 'dark')
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
     } else {
-      document.documentElement.classList.remove('dark')
-      localStorage.setItem('theme', 'light')
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
     }
-  }, [theme])
+  }, [theme]);
 
   const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light')
-  }
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
 
   if (!mounted) {
     return (
       <div className="w-14 h-8 bg-gray-300 rounded-full animate-pulse"></div>
-    )
+    );
   }
 
-  const isDarkMode = theme === 'dark'
+  const isDarkMode = theme === 'dark';
 
   return (
     <button
@@ -45,16 +47,14 @@ export default function ThemeToggle() {
       <span className="sr-only">
         {isDarkMode ? '라이트모드로 변경' : '다크모드로 변경'}
       </span>
-      
+
       {/* 토글 배경 */}
       <span
         className={`absolute inset-0 rounded-full transition-colors duration-200 ${
-          isDarkMode 
-            ? 'bg-gray-800 dark:bg-gray-600' 
-            : 'bg-gray-200'
+          isDarkMode ? 'bg-gray-800 dark:bg-gray-600' : 'bg-gray-200'
         }`}
       />
-      
+
       {/* 토글 슬라이더 */}
       <span
         className={`absolute left-1 top-1 h-6 w-6 rounded-full bg-white transition-transform duration-200 flex items-center justify-center shadow-sm ${
@@ -88,5 +88,5 @@ export default function ThemeToggle() {
         )}
       </span>
     </button>
-  )
+  );
 }

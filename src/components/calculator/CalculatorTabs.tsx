@@ -1,37 +1,40 @@
-'use client'
+'use client';
 
 interface CalculatorTabsProps {
-  activeTab: 'compound' | 'target' | 'dca' | 'retirement'
-  onTabChange: (tab: 'compound' | 'target' | 'dca' | 'retirement') => void
+  activeTab: 'compound' | 'target' | 'dca' | 'retirement';
+  onTabChange: (tab: 'compound' | 'target' | 'dca' | 'retirement') => void;
 }
 
-export default function CalculatorTabs({ activeTab, onTabChange }: CalculatorTabsProps) {
+export default function CalculatorTabs({
+  activeTab,
+  onTabChange,
+}: CalculatorTabsProps) {
   const tabs = [
     {
       id: 'compound' as const,
       name: '복리 계산기',
       icon: '📈',
-      description: '복리의 마법을 경험해보세요'
+      description: '복리의 마법을 경험해보세요',
     },
     {
       id: 'target' as const,
       name: '목표 수익률',
       icon: '🎯',
-      description: '목표 달성에 필요한 수익률'
+      description: '목표 달성에 필요한 수익률',
     },
     {
       id: 'dca' as const,
       name: '정기투자(DCA)',
       icon: '⏰',
-      description: '시간 분산 투자 전략'
+      description: '시간 분산 투자 전략',
     },
     {
       id: 'retirement' as const,
       name: '은퇴 자금',
       icon: '🏖️',
-      description: '편안한 은퇴를 위한 계획'
-    }
-  ]
+      description: '편안한 은퇴를 위한 계획',
+    },
+  ];
 
   return (
     <div className="w-full">
@@ -39,7 +42,7 @@ export default function CalculatorTabs({ activeTab, onTabChange }: CalculatorTab
       <div className="hidden sm:block">
         <div className="border-b border-gray-200 dark:border-gray-700 transition-colors">
           <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-            {tabs.map((tab) => (
+            {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
@@ -66,10 +69,10 @@ export default function CalculatorTabs({ activeTab, onTabChange }: CalculatorTab
           id="tabs"
           name="tabs"
           value={activeTab}
-          onChange={(e) => onTabChange(e.target.value as any)}
+          onChange={e => onTabChange(e.target.value as any)}
           className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white py-2 pl-3 pr-10 text-base focus:border-primary-500 focus:outline-none focus:ring-primary-500 transition-colors"
         >
-          {tabs.map((tab) => (
+          {tabs.map(tab => (
             <option key={tab.id} value={tab.id}>
               {tab.icon} {tab.name}
             </option>
@@ -84,5 +87,5 @@ export default function CalculatorTabs({ activeTab, onTabChange }: CalculatorTab
         </p>
       </div>
     </div>
-  )
+  );
 }

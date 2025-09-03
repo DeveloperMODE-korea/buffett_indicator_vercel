@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Bar, Doughnut } from 'react-chartjs-2'
+import { useState, useEffect } from 'react';
+import { Bar, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,10 +11,13 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js'
-import InputField from '@/components/ui/InputField'
-import ResultCard from '@/components/ui/ResultCard'
-import { calculateRetirement, formatKoreanCurrency } from '@/lib/calculator-utils'
+} from 'chart.js';
+import InputField from '@/components/ui/InputField';
+import ResultCard from '@/components/ui/ResultCard';
+import {
+  calculateRetirement,
+  formatKoreanCurrency,
+} from '@/lib/calculator-utils';
 
 ChartJS.register(
   CategoryScale,
@@ -24,32 +27,32 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend
-)
+);
 
 export default function RetirementCalculator() {
   const [inputs, setInputs] = useState({
-    currentAge: 30,               // 현재 나이
-    retirementAge: 60,           // 은퇴 희망 나이
-    currentAsset: 50000000,      // 현재 자산 (5천만원)
-    monthlyExpense: 3000000,     // 은퇴 후 월 생활비 (300만원)
-    lifeExpectancy: 85,          // 예상 수명
-    inflationRate: 2.5,          // 인플레이션율 (2.5%)
-    expectedReturn: 6,           // 예상 투자 수익률 (6%)
-  })
+    currentAge: 30, // 현재 나이
+    retirementAge: 60, // 은퇴 희망 나이
+    currentAsset: 50000000, // 현재 자산 (5천만원)
+    monthlyExpense: 3000000, // 은퇴 후 월 생활비 (300만원)
+    lifeExpectancy: 85, // 예상 수명
+    inflationRate: 2.5, // 인플레이션율 (2.5%)
+    expectedReturn: 6, // 예상 투자 수익률 (6%)
+  });
 
-  const [result, setResult] = useState(calculateRetirement(inputs))
+  const [result, setResult] = useState(calculateRetirement(inputs));
 
   // 입력값이 변경될 때마다 계산 결과 업데이트
   useEffect(() => {
-    setResult(calculateRetirement(inputs))
-  }, [inputs])
+    setResult(calculateRetirement(inputs));
+  }, [inputs]);
 
   const handleInputChange = (field: keyof typeof inputs) => (value: number) => {
     setInputs(prev => ({
       ...prev,
-      [field]: value
-    }))
-  }
+      [field]: value,
+    }));
+  };
 
   // 은퇴 자금 구성 차트 데이터
   const assetCompositionData = {
@@ -57,35 +60,39 @@ export default function RetirementCalculator() {
     datasets: [
       {
         data: [
-          inputs.currentAsset * Math.pow(1 + inputs.expectedReturn / 100, result.yearsToRetirement),
-          result.currentShortfall
+          inputs.currentAsset *
+            Math.pow(1 + inputs.expectedReturn / 100, result.yearsToRetirement),
+          result.currentShortfall,
         ],
         backgroundColor: [
-          'rgba(34, 197, 94, 0.8)',   // 초록색
-          'rgba(239, 68, 68, 0.8)',   // 빨간색
+          'rgba(34, 197, 94, 0.8)', // 초록색
+          'rgba(239, 68, 68, 0.8)', // 빨간색
         ],
-        borderColor: [
-          'rgb(34, 197, 94)',
-          'rgb(239, 68, 68)',
-        ],
+        borderColor: ['rgb(34, 197, 94)', 'rgb(239, 68, 68)'],
         borderWidth: 2,
       },
     ],
-  }
+  };
 
   // 연도별 필요 적립금 시뮬레이션
   const yearlyContributionData = {
-    labels: Array.from({ length: Math.min(result.yearsToRetirement, 10) }, (_, i) => `${i + 1}년차`),
+    labels: Array.from(
+      { length: Math.min(result.yearsToRetirement, 10) },
+      (_, i) => `${i + 1}년차`
+    ),
     datasets: [
       {
         label: '월 적립금',
-        data: Array.from({ length: Math.min(result.yearsToRetirement, 10) }, () => result.monthlyContributionNeeded),
+        data: Array.from(
+          { length: Math.min(result.yearsToRetirement, 10) },
+          () => result.monthlyContributionNeeded
+        ),
         backgroundColor: 'rgba(37, 99, 235, 0.8)',
         borderColor: 'rgb(37, 99, 235)',
         borderWidth: 1,
       },
     ],
-  }
+  };
 
   const chartOptions = {
     responsive: true,
@@ -96,15 +103,15 @@ export default function RetirementCalculator() {
       },
       tooltip: {
         callbacks: {
-          label: function(context: any) {
-            const label = context.label || ''
-            const value = formatKoreanCurrency(context.parsed)
-            return `${label}: ${value}`
+          label: function (context: any) {
+            const label = context.label || '';
+            const value = formatKoreanCurrency(context.parsed);
+            return `${label}: ${value}`;
           },
         },
       },
     },
-  }
+  };
 
   const barChartOptions = {
     responsive: true,
@@ -122,9 +129,9 @@ export default function RetirementCalculator() {
       },
       tooltip: {
         callbacks: {
-          label: function(context: any) {
-            const value = formatKoreanCurrency(context.parsed.y)
-            return `월 적립금: ${value}`
+          label: function (context: any) {
+            const value = formatKoreanCurrency(context.parsed.y);
+            return `월 적립금: ${value}`;
           },
         },
       },
@@ -137,17 +144,20 @@ export default function RetirementCalculator() {
           text: '금액 (원)',
         },
         ticks: {
-          callback: function(value: any) {
-            return formatKoreanCurrency(value)
+          callback: function (value: any) {
+            return formatKoreanCurrency(value);
           },
         },
       },
     },
-  }
+  };
 
   const getRetirementReadiness = () => {
-    const readinessScore = Math.min(100, (1 - result.currentShortfall / result.requiredAmount) * 100);
-    
+    const readinessScore = Math.min(
+      100,
+      (1 - result.currentShortfall / result.requiredAmount) * 100
+    );
+
     if (readinessScore >= 80) {
       return {
         level: '우수',
@@ -155,7 +165,7 @@ export default function RetirementCalculator() {
         bgColor: 'bg-green-50 dark:bg-green-900/20',
         borderColor: 'border-green-200 dark:border-green-700',
         emoji: '🟢',
-        description: '은퇴 준비가 잘 되어 있습니다!'
+        description: '은퇴 준비가 잘 되어 있습니다!',
       };
     } else if (readinessScore >= 50) {
       return {
@@ -164,7 +174,7 @@ export default function RetirementCalculator() {
         bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
         borderColor: 'border-yellow-200 dark:border-yellow-700',
         emoji: '🟡',
-        description: '추가 준비가 필요합니다.'
+        description: '추가 준비가 필요합니다.',
       };
     } else {
       return {
@@ -173,7 +183,7 @@ export default function RetirementCalculator() {
         bgColor: 'bg-red-50 dark:bg-red-900/20',
         borderColor: 'border-red-200 dark:border-red-700',
         emoji: '🔴',
-        description: '적극적인 은퇴 준비가 필요합니다.'
+        description: '적극적인 은퇴 준비가 필요합니다.',
       };
     }
   };
@@ -188,7 +198,7 @@ export default function RetirementCalculator() {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors">
             🏖️ 은퇴 계획 설정
           </h3>
-          
+
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <InputField
@@ -201,7 +211,7 @@ export default function RetirementCalculator() {
                 placeholder="30"
                 description="현재 나이"
               />
-              
+
               <InputField
                 label="은퇴 희망 나이"
                 value={inputs.retirementAge}
@@ -213,7 +223,7 @@ export default function RetirementCalculator() {
                 description="은퇴하고 싶은 나이"
               />
             </div>
-            
+
             <InputField
               label="현재 보유 자산"
               value={inputs.currentAsset}
@@ -222,7 +232,7 @@ export default function RetirementCalculator() {
               placeholder="50000000"
               description="현재 총 자산 (예금 + 투자 + 부동산 등)"
             />
-            
+
             <InputField
               label="은퇴 후 월 생활비"
               value={inputs.monthlyExpense}
@@ -231,7 +241,7 @@ export default function RetirementCalculator() {
               placeholder="3000000"
               description="은퇴 후 필요한 월 생활비 (현재 기준)"
             />
-            
+
             <InputField
               label="예상 수명"
               value={inputs.lifeExpectancy}
@@ -242,7 +252,7 @@ export default function RetirementCalculator() {
               placeholder="85"
               description="예상 수명 (한국 평균: 83세)"
             />
-            
+
             <div className="grid grid-cols-2 gap-4">
               <InputField
                 label="인플레이션율"
@@ -255,7 +265,7 @@ export default function RetirementCalculator() {
                 placeholder="2.5"
                 description="연간 인플레이션율"
               />
-              
+
               <InputField
                 label="예상 투자 수익률"
                 value={inputs.expectedReturn}
@@ -272,7 +282,9 @@ export default function RetirementCalculator() {
         </div>
 
         {/* 은퇴 준비 상태 */}
-        <div className={`card p-6 ${readiness.bgColor} ${readiness.borderColor} border-2 transition-colors`}>
+        <div
+          className={`card p-6 ${readiness.bgColor} ${readiness.borderColor} border-2 transition-colors`}
+        >
           <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-3 transition-colors">
             {readiness.emoji} 은퇴 준비 상태: {readiness.level}
           </h4>
@@ -345,17 +357,37 @@ export default function RetirementCalculator() {
           </h4>
           <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400 transition-colors">
             <p>
-              • <strong>{result.yearsToRetirement}년 후</strong> 은퇴하여 <strong>{inputs.lifeExpectancy - inputs.retirementAge}년간</strong> 생활
+              • <strong>{result.yearsToRetirement}년 후</strong> 은퇴하여{' '}
+              <strong>
+                {inputs.lifeExpectancy - inputs.retirementAge}년간
+              </strong>{' '}
+              생활
             </p>
             <p>
-              • 인플레이션 <strong>{inputs.inflationRate}%</strong>를 고려한 실질 구매력 유지
+              • 인플레이션 <strong>{inputs.inflationRate}%</strong>를 고려한
+              실질 구매력 유지
             </p>
             <p>
-              • 현재 자산 <strong>{formatKoreanCurrency(inputs.currentAsset)}</strong>이 은퇴 시점에 약{' '}
-              <strong>{formatKoreanCurrency(inputs.currentAsset * Math.pow(1 + inputs.expectedReturn / 100, result.yearsToRetirement))}</strong>로 성장 예상
+              • 현재 자산{' '}
+              <strong>{formatKoreanCurrency(inputs.currentAsset)}</strong>이
+              은퇴 시점에 약{' '}
+              <strong>
+                {formatKoreanCurrency(
+                  inputs.currentAsset *
+                    Math.pow(
+                      1 + inputs.expectedReturn / 100,
+                      result.yearsToRetirement
+                    )
+                )}
+              </strong>
+              로 성장 예상
             </p>
             <p>
-              • 매월 <strong>{formatKoreanCurrency(result.monthlyContributionNeeded)}</strong> 적립으로 목표 달성
+              • 매월{' '}
+              <strong>
+                {formatKoreanCurrency(result.monthlyContributionNeeded)}
+              </strong>{' '}
+              적립으로 목표 달성
             </p>
           </div>
         </div>
@@ -366,13 +398,21 @@ export default function RetirementCalculator() {
             💡 은퇴 준비 팁
           </h4>
           <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200 transition-colors">
-            <p>• <strong>일찍 시작</strong>: 복리의 힘을 최대한 활용</p>
-            <p>• <strong>다양한 투자</strong>: 주식, 채권, 부동산 등 분산 투자</p>
-            <p>• <strong>세금 혜택</strong>: 연금저축, IRP 등 활용</p>
-            <p>• <strong>정기 점검</strong>: 매년 은퇴 계획 재검토</p>
+            <p>
+              • <strong>일찍 시작</strong>: 복리의 힘을 최대한 활용
+            </p>
+            <p>
+              • <strong>다양한 투자</strong>: 주식, 채권, 부동산 등 분산 투자
+            </p>
+            <p>
+              • <strong>세금 혜택</strong>: 연금저축, IRP 등 활용
+            </p>
+            <p>
+              • <strong>정기 점검</strong>: 매년 은퇴 계획 재검토
+            </p>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

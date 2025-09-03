@@ -1,10 +1,10 @@
 export interface InvestmentTerm {
-  id: string
-  term: string
-  definition: string
-  category: string
-  example?: string
-  relatedTerms?: string[]
+  id: string;
+  term: string;
+  definition: string;
+  category: string;
+  example?: string;
+  relatedTerms?: string[];
 }
 
 export const investmentTerms: InvestmentTerm[] = [
@@ -12,18 +12,20 @@ export const investmentTerms: InvestmentTerm[] = [
   {
     id: 'buffett-indicator',
     term: '버핏 지수 (Buffett Indicator)',
-    definition: '총 주식시장 시가총액을 국내총생산(GDP)로 나눈 비율. 시장이 과열/과냉 상태인지 판단하는 지표.',
+    definition:
+      '총 주식시장 시가총액을 국내총생산(GDP)로 나눈 비율. 시장이 과열/과냉 상태인지 판단하는 지표.',
     category: '시장지표',
     example: '버핏 지수 = (총 시가총액 ÷ GDP) × 100',
-    relatedTerms: ['GDP', '시가총액', 'P/E 비율']
+    relatedTerms: ['GDP', '시가총액', 'P/E 비율'],
   },
   {
     id: 'gdp',
     term: 'GDP (국내총생산)',
-    definition: '한 국가에서 일정 기간 동안 생산된 모든 재화와 서비스의 시장가치 총합.',
+    definition:
+      '한 국가에서 일정 기간 동안 생산된 모든 재화와 서비스의 시장가치 총합.',
     category: '경제지표',
     example: '명목/실질 GDP, QoQ/YoY 성장률',
-    relatedTerms: ['경제성장률', '버핏 지수']
+    relatedTerms: ['경제성장률', '버핏 지수'],
   },
   {
     id: 'market-cap',
@@ -31,7 +33,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '상장 주식의 시장 가치 총합. 주가 × 발행주식수.',
     category: '주식용어',
     example: 'A사 시총 = 10만원 × 1억주 = 1조원',
-    relatedTerms: ['유동주식수', 'P/E 비율']
+    relatedTerms: ['유동주식수', 'P/E 비율'],
   },
   {
     id: 'pe-ratio',
@@ -39,7 +41,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '주가가 주당순이익(EPS)의 몇 배로 거래되는지 나타내는 지표.',
     category: '주식용어',
     example: 'P/E 15배 = 연간 순이익의 15배 가격',
-    relatedTerms: ['PBR', 'ROE', 'EPS']
+    relatedTerms: ['PBR', 'ROE', 'EPS'],
   },
   {
     id: 'pbr',
@@ -47,7 +49,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '주가를 1주당 순자산가치(BPS)로 나눈 값.',
     category: '주식용어',
     example: 'PBR 1.5배 = 순자산가치의 1.5배',
-    relatedTerms: ['ROE', '밸류에이션']
+    relatedTerms: ['ROE', '밸류에이션'],
   },
   {
     id: 'roe',
@@ -55,23 +57,25 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '자기자본이익률. 주주자본 1원당 순이익.',
     category: '성과지표',
     example: 'ROE 15% = 자기자본 100원으로 15원 이익',
-    relatedTerms: ['ROA', 'PBR']
+    relatedTerms: ['ROA', 'PBR'],
   },
   {
     id: 'compound-interest',
     term: '복리 (Compound Interest)',
-    definition: '이자에 이자가 붙는 효과로, 시간이 지날수록 기하급수적으로 증가.',
+    definition:
+      '이자에 이자가 붙는 효과로, 시간이 지날수록 기하급수적으로 증가.',
     category: '투자기본',
     example: '연 10% 복리, 100만원 → 10년 후 약 259만원',
-    relatedTerms: ['단리', '수익률', '투자기간']
+    relatedTerms: ['단리', '수익률', '투자기간'],
   },
   {
     id: 'dca',
     term: 'DCA (Dollar Cost Averaging)',
-    definition: '정기적으로 일정 금액을 투자해 평균 매입단가를 평준화하는 전략.',
+    definition:
+      '정기적으로 일정 금액을 투자해 평균 매입단가를 평준화하는 전략.',
     category: '투자전략',
     example: '매월 말 S&P 500 ETF 50만원 매수',
-    relatedTerms: ['분산투자', '자동이체', '리밸런싱']
+    relatedTerms: ['분산투자', '자동이체', '리밸런싱'],
   },
   {
     id: 'volatility',
@@ -79,7 +83,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '수익률의 표준편차로 표현되는 가격 변동의 정도.',
     category: '위험관리',
     example: '연 변동성 20% ≈ ±1표준편차 구간',
-    relatedTerms: ['표준편차', 'VaR', '드로우다운']
+    relatedTerms: ['표준편차', 'VaR', '드로우다운'],
   },
   {
     id: 'diversification',
@@ -87,7 +91,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '상관관계가 낮은 자산을 섞어 포트폴리오 위험을 낮추는 방법.',
     category: '투자전략',
     example: '주식·채권·원자재·부동산 혼합',
-    relatedTerms: ['상관계수', '자산배분', '리스크 패리티']
+    relatedTerms: ['상관계수', '자산배분', '리스크 패리티'],
   },
   {
     id: 'bull-market',
@@ -95,7 +99,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '지속적 가격 상승 국면. 위험선호 확대.',
     category: '시장용어',
     example: '2009–2021 미국 장기 강세장',
-    relatedTerms: ['약세장', '조정', '모멘텀']
+    relatedTerms: ['약세장', '조정', '모멘텀'],
   },
   {
     id: 'bear-market',
@@ -103,7 +107,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '고점 대비 20% 이상 하락한 시장 국면.',
     category: '시장용어',
     example: '2008 금융위기, 2020 팬데믹 초기',
-    relatedTerms: ['강세장', '조정', '변동성']
+    relatedTerms: ['강세장', '조정', '변동성'],
   },
   {
     id: 'inflation',
@@ -111,7 +115,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '일반적인 물가 수준의 지속적 상승.',
     category: '경제지표',
     example: 'CPI, PCE 물가지수',
-    relatedTerms: ['디스인플레이션', '디플레이션', '금리']
+    relatedTerms: ['디스인플레이션', '디플레이션', '금리'],
   },
   {
     id: 'interest-rate',
@@ -119,7 +123,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '자금의 시간가치. 기준금리, 시장금리 등.',
     category: '경제지표',
     example: '연준 FF Rate 5% 등',
-    relatedTerms: ['채권가격', '듀레이션', '통화정책']
+    relatedTerms: ['채권가격', '듀레이션', '통화정책'],
   },
   {
     id: 'etf',
@@ -127,7 +131,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '거래소 상장 인덱스 펀드. 실시간 가격으로 매매.',
     category: '투자상품',
     example: 'SPY, QQQ, VTI, ARKK',
-    relatedTerms: ['인덱스펀드', '뮤추얼펀드', 'NAV']
+    relatedTerms: ['인덱스펀드', '뮤추얼펀드', 'NAV'],
   },
 
   // ===== 성과·위험 지표 =====
@@ -137,7 +141,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '벤치마크 대비 초과수익률.',
     category: '성과지표',
     example: '연간 알파 +2% = 시장보다 2% 초과',
-    relatedTerms: ['베타', '샤프비율']
+    relatedTerms: ['베타', '샤프비율'],
   },
   {
     id: 'beta',
@@ -145,7 +149,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '시장수익률 변동에 대한 민감도. 1보다 크면 시장보다 민감.',
     category: '위험관리',
     example: '베타 1.2: 시장 10% 상승시 12% 기대',
-    relatedTerms: ['CAPM', '시스템 리스크']
+    relatedTerms: ['CAPM', '시스템 리스크'],
   },
   {
     id: 'sharpe-ratio',
@@ -153,7 +157,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '무위험수익률 대비 초과수익을 변동성으로 나눈 값.',
     category: '성과지표',
     example: 'Sharpe ≥ 1: 양호, ≥ 2: 우수',
-    relatedTerms: ['정보비율', '트레이너비율']
+    relatedTerms: ['정보비율', '트레이너비율'],
   },
   {
     id: 'sortino-ratio',
@@ -161,7 +165,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '샤프와 유사하나 하방 변동성(손실)만 사용.',
     category: '성과지표',
     example: '하락 위험을 더 중시하는 평가',
-    relatedTerms: ['샤프 비율', '드로우다운']
+    relatedTerms: ['샤프 비율', '드로우다운'],
   },
   {
     id: 'max-drawdown',
@@ -169,7 +173,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '고점 대비 최저점까지의 최대 손실 비율.',
     category: '위험관리',
     example: '최대 낙폭 -35%',
-    relatedTerms: ['변동성', 'VaR']
+    relatedTerms: ['변동성', 'VaR'],
   },
   {
     id: 'var',
@@ -177,7 +181,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '특정 신뢰수준에서 예상 가능한 최대 손실 추정치.',
     category: '위험관리',
     example: '1일 95% VaR = -3%',
-    relatedTerms: ['CVaR', '분산·공분산']
+    relatedTerms: ['CVaR', '분산·공분산'],
   },
   {
     id: 'correlation',
@@ -185,7 +189,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '자산 간 동행 정도(-1~+1). 낮을수록 분산효과 ↑.',
     category: '위험관리',
     example: '주식–채권 상관 -0.2',
-    relatedTerms: ['분산투자', '공분산']
+    relatedTerms: ['분산투자', '공분산'],
   },
 
   // ===== 채권(Bonds) =====
@@ -195,7 +199,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '정부/기업 등이 자금을 조달하기 위해 발행하는 부채성 증권.',
     category: '채권',
     example: '만기, 쿠폰, 액면가, 수익률',
-    relatedTerms: ['듀레이션', '금리', '크레딧 스프레드']
+    relatedTerms: ['듀레이션', '금리', '크레딧 스프레드'],
   },
   {
     id: 'duration',
@@ -203,7 +207,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '채권 가격의 금리 민감도. 높을수록 금리 변화에 민감.',
     category: '채권',
     example: '듀레이션 8: 금리 +1% 시 가격 약 -8%',
-    relatedTerms: ['컨벡서티', '금리위험']
+    relatedTerms: ['컨벡서티', '금리위험'],
   },
   {
     id: 'convexity',
@@ -211,7 +215,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '금리 변화에 대한 채권 가격 곡선의 굴곡(비선형성) 측정.',
     category: '채권',
     example: '듀레이션 보정치로 정밀한 민감도',
-    relatedTerms: ['듀레이션']
+    relatedTerms: ['듀레이션'],
   },
   {
     id: 'credit-spread',
@@ -219,7 +223,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '무위험채(국채) 대비 회사채 추가 금리.',
     category: '채권',
     example: 'A등급 회사채 200bp 스프레드',
-    relatedTerms: ['신용등급', '하이일드']
+    relatedTerms: ['신용등급', '하이일드'],
   },
   {
     id: 'yield-curve',
@@ -227,7 +231,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '만기별 금리 수준을 나타내는 곡선. 정상/평탄/역전.',
     category: '채권',
     example: '장단기 금리 역전 = 경기 둔화 신호로 해석되기도',
-    relatedTerms: ['경기선행', '금리정책']
+    relatedTerms: ['경기선행', '금리정책'],
   },
 
   // ===== 파생상품(Derivatives) =====
@@ -237,15 +241,16 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '기초자산(주식, 지수, 금리, 원자재 등)에 연동된 금융상품.',
     category: '파생상품',
     example: '선물, 옵션, 스왑',
-    relatedTerms: ['헷지', '레버리지']
+    relatedTerms: ['헷지', '레버리지'],
   },
   {
     id: 'futures',
     term: '선물 (Futures)',
-    definition: '미래의 특정 시점에 미리 정한 가격으로 자산을 사고파는 표준화 계약.',
+    definition:
+      '미래의 특정 시점에 미리 정한 가격으로 자산을 사고파는 표준화 계약.',
     category: '파생상품',
     example: 'E-mini S&P 500 선물',
-    relatedTerms: ['현물', '레버리지', '마진']
+    relatedTerms: ['현물', '레버리지', '마진'],
   },
   {
     id: 'options',
@@ -253,7 +258,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '정해진 가격으로 살/팔 권리를 매수자에게 부여하는 계약(콜/풋).',
     category: '파생상품',
     example: '콜옵션 프리미엄, 델타/감마/세타/베가',
-    relatedTerms: ['IV', '그릭스', '커버드콜']
+    relatedTerms: ['IV', '그릭스', '커버드콜'],
   },
   {
     id: 'covered-call',
@@ -261,7 +266,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '보유 주식 위에 콜옵션을 매도해 프리미엄 수취하는 전략.',
     category: '파생상품',
     example: 'JEPI 유사전략(프리미엄/배당)',
-    relatedTerms: ['옵션', '소득전략']
+    relatedTerms: ['옵션', '소득전략'],
   },
   {
     id: 'swap',
@@ -269,7 +274,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '현금흐름 교환 계약. 금리스왑/통화스왑 등.',
     category: '파생상품',
     example: '고정↔변동 금리 교환',
-    relatedTerms: ['헤지', '파생상품']
+    relatedTerms: ['헤지', '파생상품'],
   },
 
   // ===== 포트폴리오/자산배분 =====
@@ -279,7 +284,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '목표수익·위험 수준에 맞춰 자산군 비중을 결정.',
     category: '투자전략',
     example: '60/40(주식/채권), 올웨더, 영구 포트폴리오',
-    relatedTerms: ['리스크 패리티', '리밸런싱']
+    relatedTerms: ['리스크 패리티', '리밸런싱'],
   },
   {
     id: 'rebalancing',
@@ -287,7 +292,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '변경된 비중을 목표비중으로 되돌리는 작업.',
     category: '투자전략',
     example: '연 1회 또는 밴드 방식(±5%p)',
-    relatedTerms: ['자산배분', '거래비용']
+    relatedTerms: ['자산배분', '거래비용'],
   },
   {
     id: 'risk-parity',
@@ -295,7 +300,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '각 자산이 기여하는 위험을 균등하게 배분하는 전략.',
     category: '투자전략',
     example: '채권 레버리지로 위험 균형',
-    relatedTerms: ['분산투자', '변동성 타깃팅']
+    relatedTerms: ['분산투자', '변동성 타깃팅'],
   },
   {
     id: 'smart-beta',
@@ -303,7 +308,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '가치·모멘텀·퀄리티·저변동성 등 팩터에 기반한 인덱싱.',
     category: '투자전략',
     example: 'VTV(가치), MTUM(모멘텀), QUAL(퀄리티)',
-    relatedTerms: ['팩터', '인덱스']
+    relatedTerms: ['팩터', '인덱스'],
   },
 
   // ===== 펀드/ETF 심화 =====
@@ -313,7 +318,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '펀드 운용에 부과되는 연간 총비용 비율.',
     category: '투자상품',
     example: 'VTI 0.03% 등',
-    relatedTerms: ['AUM', '추적오차']
+    relatedTerms: ['AUM', '추적오차'],
   },
   {
     id: 'aum',
@@ -321,7 +326,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '펀드 운용사가 관리 중인 자산의 총 규모.',
     category: '투자상품',
     example: '규모가 클수록 유동성·스프레드 유리 경향',
-    relatedTerms: ['유동성', '거래비용']
+    relatedTerms: ['유동성', '거래비용'],
   },
   {
     id: 'tracking-error',
@@ -329,7 +334,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: 'ETF 수익률이 기준지수와 얼마나 어긋나는지의 표준편차.',
     category: '투자상품',
     example: '작을수록 지수추종 정확도 ↑',
-    relatedTerms: ['인덱스', '리플리케이션']
+    relatedTerms: ['인덱스', '리플리케이션'],
   },
   {
     id: 'etf-structure',
@@ -337,7 +342,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: 'AP가 바스켓을 주고받아 ETF 유통주식을 창출/환매하는 메커니즘.',
     category: '투자상품',
     example: '프리미엄·할인율 완화 기능',
-    relatedTerms: ['NAV', 'AP', '프리미엄/디스카운트']
+    relatedTerms: ['NAV', 'AP', '프리미엄/디스카운트'],
   },
 
   // ===== 회계/현금흐름 =====
@@ -347,7 +352,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '영업현금흐름에서 자본적지출을 차감한 현금.',
     category: '재무지표',
     example: 'FCF 증가 = 배당/자사주/재투자 여력 확대',
-    relatedTerms: ['EBITDA', 'CAPEX']
+    relatedTerms: ['EBITDA', 'CAPEX'],
   },
   {
     id: 'ebitda',
@@ -355,7 +360,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '이자·세금·감가상각·무형자산상각 전 이익. 현금창출력 지표.',
     category: '재무지표',
     example: 'EV/EBITDA 배수로 밸류에이션 비교',
-    relatedTerms: ['FCF', '영업이익']
+    relatedTerms: ['FCF', '영업이익'],
   },
 
   // ===== 매크로/환율 =====
@@ -365,7 +370,7 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '소비자물가지수/생산자물가지수. 물가의 대표 지표.',
     category: '경제지표',
     example: '핵심 CPI(식품·에너지 제외) 주시',
-    relatedTerms: ['인플레이션', '금리']
+    relatedTerms: ['인플레이션', '금리'],
   },
   {
     id: 'dxy',
@@ -373,9 +378,9 @@ export const investmentTerms: InvestmentTerm[] = [
     definition: '미 달러의 주요 통화 대비 가치 지수.',
     category: '시장지표',
     example: '달러 강세 → 신흥국/원자재 압박 경향',
-    relatedTerms: ['환율', '원자재']
-  }
-]
+    relatedTerms: ['환율', '원자재'],
+  },
+];
 
 // 카테고리 목록 (세분화)
 export const categories = [
@@ -391,5 +396,5 @@ export const categories = [
   '위험관리',
   '채권',
   '파생상품',
-  '시장용어'
-]
+  '시장용어',
+];

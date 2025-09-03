@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
 
 interface InputFieldProps {
-  label: string
-  value: number
-  onChange: (value: number) => void
-  type?: 'currency' | 'percentage' | 'number' | 'years'
-  min?: number
-  max?: number
-  step?: number
-  placeholder?: string
-  description?: string
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  type?: 'currency' | 'percentage' | 'number' | 'years';
+  min?: number;
+  max?: number;
+  step?: number;
+  placeholder?: string;
+  description?: string;
 }
 
 export default function InputField({
@@ -23,62 +23,62 @@ export default function InputField({
   max,
   step = 1,
   placeholder,
-  description
+  description,
 }: InputFieldProps) {
-  const [displayValue, setDisplayValue] = useState(value.toString())
+  const [displayValue, setDisplayValue] = useState(value.toString());
 
   const formatValue = (val: number): string => {
     switch (type) {
       case 'currency':
-        return new Intl.NumberFormat('ko-KR').format(val)
+        return new Intl.NumberFormat('ko-KR').format(val);
       case 'percentage':
-        return val.toString()
+        return val.toString();
       case 'years':
-        return val.toString()
+        return val.toString();
       default:
-        return val.toString()
+        return val.toString();
     }
-  }
+  };
 
   const parseValue = (str: string): number => {
     // 콤마 제거 후 숫자 변환
-    const cleaned = str.replace(/,/g, '')
-    const parsed = parseFloat(cleaned)
-    return isNaN(parsed) ? 0 : parsed
-  }
+    const cleaned = str.replace(/,/g, '');
+    const parsed = parseFloat(cleaned);
+    return isNaN(parsed) ? 0 : parsed;
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value
-    setDisplayValue(newValue)
-    
-    const parsedValue = parseValue(newValue)
+    const newValue = e.target.value;
+    setDisplayValue(newValue);
+
+    const parsedValue = parseValue(newValue);
     if (!isNaN(parsedValue)) {
-      onChange(parsedValue)
+      onChange(parsedValue);
     }
-  }
+  };
 
   const handleBlur = () => {
     // 포커스가 벗어나면 포맷된 값으로 표시
-    setDisplayValue(formatValue(value))
-  }
+    setDisplayValue(formatValue(value));
+  };
 
   const handleFocus = () => {
     // 포커스 시 순수 숫자만 표시
-    setDisplayValue(value.toString())
-  }
+    setDisplayValue(value.toString());
+  };
 
   const getSuffix = () => {
     switch (type) {
       case 'currency':
-        return '원'
+        return '원';
       case 'percentage':
-        return '%'
+        return '%';
       case 'years':
-        return '년'
+        return '년';
       default:
-        return ''
+        return '';
     }
-  }
+  };
 
   return (
     <div className="space-y-2">
@@ -112,5 +112,5 @@ export default function InputField({
         </p>
       )}
     </div>
-  )
+  );
 }

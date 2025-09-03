@@ -41,9 +41,9 @@
 - GET `/api/analyst?symbols=AAPL`
 - GET `/api/ownership?symbols=AAPL`
 - GET `/api/summary?symbols=AAPL&modules=price,summaryDetail,financialData,assetProfile`
-- GET `/api/insights?symbols=AAPL`  (insights→news→RSS 폴백)
+- GET `/api/insights?symbols=AAPL` (insights→news→RSS 폴백)
 - GET `/api/ratings?symbols=AAPL`
-- GET `/api/sec-filings?symbols=AAPL`  (SEC Submissions→Yahoo→Atom 폴백)
+- GET `/api/sec-filings?symbols=AAPL` (SEC Submissions→Yahoo→Atom 폴백)
 - GET `/api/financials?symbols=AAPL&period=annual|quarterly`
 - GET `/api/key-stats?symbols=AAPL`
 - GET `/api/options?symbol=AAPL`
@@ -74,6 +74,7 @@ curl "http://localhost:3000/api/fund-facts?symbols=VTI" | jq .
 ### 📋 워크플로우 구성
 
 #### 1. **메인 CI/CD 파이프라인** (`.github/workflows/ci-cd.yml`)
+
 - **트리거**: `main`, `develop` 브랜치 푸시, PR
 - **단계**:
   - 🔍 **Lint & Test**: ESLint, TypeScript 체크, 빌드
@@ -84,10 +85,12 @@ curl "http://localhost:3000/api/fund-facts?symbols=VTI" | jq .
   - 📊 **Performance**: Lighthouse CI 성능 측정
 
 #### 2. **스테이징 배포** (`.github/workflows/deploy-staging.yml`)
+
 - **트리거**: `develop` 브랜치 푸시
 - **목적**: 스테이징 환경 자동 배포
 
 #### 3. **캐시 정리** (`.github/workflows/cache-cleanup.yml`)
+
 - **트리거**: 매주 일요일 새벽 2시 (스케줄)
 - **목적**: GitHub Actions 캐시 정리
 
@@ -105,15 +108,16 @@ SNYK_TOKEN=your_snyk_token
 
 ### 📊 배포 환경
 
-| 환경 | 브랜치 | URL | 목적 |
-|------|--------|-----|------|
-| **Production** | `main` | `https://your-app.vercel.app` | 라이브 서비스 |
-| **Staging** | `develop` | `https://staging-your-app.vercel.app` | 테스트 환경 |
-| **Preview** | PR | `https://pr-123-your-app.vercel.app` | PR 검토 |
+| 환경           | 브랜치    | URL                                   | 목적          |
+| -------------- | --------- | ------------------------------------- | ------------- |
+| **Production** | `main`    | `https://your-app.vercel.app`         | 라이브 서비스 |
+| **Staging**    | `develop` | `https://staging-your-app.vercel.app` | 테스트 환경   |
+| **Preview**    | PR        | `https://pr-123-your-app.vercel.app`  | PR 검토       |
 
 ### 🔄 배포 프로세스
 
 1. **개발자 작업**
+
    ```bash
    git checkout develop
    git add .
@@ -128,11 +132,13 @@ SNYK_TOKEN=your_snyk_token
    - 🚀 스테이징 배포
 
 3. **프로덕션 배포**
+
    ```bash
    git checkout main
    git merge develop
    git push origin main
    ```
+
    - 🚀 자동 프로덕션 배포
    - 📊 성능 측정
    - 📧 팀 알림

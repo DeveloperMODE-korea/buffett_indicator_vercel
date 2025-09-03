@@ -1,17 +1,17 @@
 export interface ETFInfo {
-  symbol: string
-  name: string
-  category: string
-  description: string
-  expenseRatio: string // 퍼센트 문자열 유지 (예: "0.03%")
-  aum: string // 표기 단위 유지 (예: "3,200억 달러")
-  riskLevel: 'low' | 'medium' | 'high'
-  suitability: string[]
-  pros: string[]
-  cons: string[]
-  currentPrice?: number
-  ytdReturn?: string
-  dividendYield?: string
+  symbol: string;
+  name: string;
+  category: string;
+  description: string;
+  expenseRatio: string; // 퍼센트 문자열 유지 (예: "0.03%")
+  aum: string; // 표기 단위 유지 (예: "3,200억 달러")
+  riskLevel: 'low' | 'medium' | 'high';
+  suitability: string[];
+  pros: string[];
+  cons: string[];
+  currentPrice?: number;
+  ytdReturn?: string;
+  dividendYield?: string;
 }
 
 export const etfRecommendations: ETFInfo[] = [
@@ -20,35 +20,53 @@ export const etfRecommendations: ETFInfo[] = [
     symbol: 'VTI',
     name: 'Vanguard Total Stock Market ETF',
     category: '미국 전체 시장',
-    description: '미국 전체 주식시장을 추종하는 대표적인 ETF로, 대형주부터 소형주까지 포괄적으로 투자합니다.',
+    description:
+      '미국 전체 주식시장을 추종하는 대표적인 ETF로, 대형주부터 소형주까지 포괄적으로 투자합니다.',
     expenseRatio: '0.03%',
     aum: '3,200억 달러',
     riskLevel: 'medium',
     suitability: ['초보 투자자', '장기 투자', '분산 투자', '코어 포트폴리오'],
-    pros: ['매우 낮은 수수료', '넓은 분산 투자', '유동성이 높음', '안정적인 운용사'],
+    pros: [
+      '매우 낮은 수수료',
+      '넓은 분산 투자',
+      '유동성이 높음',
+      '안정적인 운용사',
+    ],
     cons: ['미국 시장에만 집중', '환율 리스크'],
     ytdReturn: '+15.2%',
-    dividendYield: '1.4%'
+    dividendYield: '1.4%',
   },
   {
     symbol: 'VOO',
     name: 'Vanguard S&P 500 ETF',
     category: '미국 대형주',
-    description: 'S&P 500 지수를 추종하는 ETF로, 미국 대형 기업들에 집중 투자합니다.',
+    description:
+      'S&P 500 지수를 추종하는 ETF로, 미국 대형 기업들에 집중 투자합니다.',
     expenseRatio: '0.03%',
     aum: '4,100억 달러',
     riskLevel: 'medium',
-    suitability: ['초보 투자자', '대형주 선호', '안정적 투자', '코어 포트폴리오'],
-    pros: ['매우 낮은 수수료', '대형주 중심 안정성', '높은 유동성', '검증된 지수'],
+    suitability: [
+      '초보 투자자',
+      '대형주 선호',
+      '안정적 투자',
+      '코어 포트폴리오',
+    ],
+    pros: [
+      '매우 낮은 수수료',
+      '대형주 중심 안정성',
+      '높은 유동성',
+      '검증된 지수',
+    ],
     cons: ['소형주 배제', '미국 시장 의존'],
     ytdReturn: '+14.8%',
-    dividendYield: '1.5%'
+    dividendYield: '1.5%',
   },
   {
     symbol: 'SPY',
     name: 'SPDR S&P 500 ETF Trust',
     category: '미국 대형주',
-    description: '최초의 ETF로, S&P 500 지수를 추종하며 높은 유동성을 제공합니다.',
+    description:
+      '최초의 ETF로, S&P 500 지수를 추종하며 높은 유동성을 제공합니다.',
     expenseRatio: '0.09%',
     aum: '4,800억 달러',
     riskLevel: 'medium',
@@ -56,7 +74,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['최고의 유동성', '옵션 거래 활발', '실시간 가격 추적', '오랜 역사'],
     cons: ['상대적으로 높은 수수료', '배당금 재투자 지연'],
     ytdReturn: '+14.7%',
-    dividendYield: '1.4%'
+    dividendYield: '1.4%',
   },
   // 동급/대체(추가)
   {
@@ -69,19 +87,20 @@ export const etfRecommendations: ETFInfo[] = [
     riskLevel: 'medium',
     suitability: ['코어 포트폴리오', '장기 투자', '초보 투자자'],
     pros: ['낮은 수수료', '높은 유동성', '추적 오차 낮음'],
-    cons: ['소형주 미포함', '미국 시장 의존']
+    cons: ['소형주 미포함', '미국 시장 의존'],
   },
   {
     symbol: 'ITOT',
     name: 'iShares Core S&P Total U.S. Stock Market ETF',
     category: '미국 전체 시장',
-    description: '미국 전체 주식시장(대/중/소형)을 광범위하게 추종하는 iShares 코어 ETF.',
+    description:
+      '미국 전체 주식시장(대/중/소형)을 광범위하게 추종하는 iShares 코어 ETF.',
     expenseRatio: '0.03%',
     aum: '1,400억 달러',
     riskLevel: 'medium',
     suitability: ['코어 포트폴리오', '장기 투자', '분산 투자'],
     pros: ['낮은 수수료', '광범위 분산', '유동성 우수'],
-    cons: ['미국 시장 집중']
+    cons: ['미국 시장 집중'],
   },
 
   // 기술주 ETF
@@ -89,29 +108,46 @@ export const etfRecommendations: ETFInfo[] = [
     symbol: 'QQQ',
     name: 'Invesco QQQ Trust',
     category: '기술주',
-    description: 'NASDAQ-100 지수를 추종하는 ETF로, 기술주 중심의 성장주에 투자합니다.',
+    description:
+      'NASDAQ-100 지수를 추종하는 ETF로, 기술주 중심의 성장주에 투자합니다.',
     expenseRatio: '0.20%',
     aum: '2,300억 달러',
     riskLevel: 'high',
-    suitability: ['성장 투자', '기술주 선호', '높은 수익 추구', '리스크 감수 가능'],
-    pros: ['높은 성장 잠재력', '기술 혁신 기업 집중', '높은 유동성', '글로벌 기술 기업'],
+    suitability: [
+      '성장 투자',
+      '기술주 선호',
+      '높은 수익 추구',
+      '리스크 감수 가능',
+    ],
+    pros: [
+      '높은 성장 잠재력',
+      '기술 혁신 기업 집중',
+      '높은 유동성',
+      '글로벌 기술 기업',
+    ],
     cons: ['높은 변동성', '높은 밸류에이션', '섹터 집중 리스크'],
     ytdReturn: '+42.3%',
-    dividendYield: '0.6%'
+    dividendYield: '0.6%',
   },
   {
     symbol: 'IYW',
     name: 'iShares U.S. Technology ETF',
     category: '기술주',
-    description: '미국 기술 섹터에 집중 투자하는 ETF로, 다양한 기술 기업들을 포함합니다.',
+    description:
+      '미국 기술 섹터에 집중 투자하는 ETF로, 다양한 기술 기업들을 포함합니다.',
     expenseRatio: '0.39%', // 최신화
     aum: '120억 달러',
     riskLevel: 'high',
     suitability: ['기술주 투자', '섹터 베팅', '성장 투자', '높은 리스크 감수'],
-    pros: ['순수 기술주 집중', '다양한 기술 기업', '높은 성장 잠재력', '섹터 특화'],
+    pros: [
+      '순수 기술주 집중',
+      '다양한 기술 기업',
+      '높은 성장 잠재력',
+      '섹터 특화',
+    ],
     cons: ['비교적 높은 수수료', '섹터 리스크', '높은 변동성'],
     ytdReturn: '+38.7%',
-    dividendYield: '0.4%'
+    dividendYield: '0.4%',
   },
   // 추가(섹터 대표)
   {
@@ -124,7 +160,7 @@ export const etfRecommendations: ETFInfo[] = [
     riskLevel: 'high',
     suitability: ['기술주 선호', '섹터 투자', '성장 투자'],
     pros: ['대표 기술 대형주 집중', '유동성 우수'],
-    cons: ['섹터 편중 리스크', '변동성 높음']
+    cons: ['섹터 편중 리스크', '변동성 높음'],
   },
 
   // 배당주 ETF
@@ -140,7 +176,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['높은 배당 수익률', '안정적인 기업', '낮은 수수료', '소득 창출'],
     cons: ['성장성 제한', '금리 민감성', '배당 감소 가능성'],
     ytdReturn: '+8.2%',
-    dividendYield: '3.1%'
+    dividendYield: '3.1%',
   },
   {
     symbol: 'SCHD',
@@ -154,7 +190,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['배당 성장 추구', '품질 기업 선별', '낮은 수수료', '균형잡힌 접근'],
     cons: ['성장성 제한', '배당 기준 엄격', '섹터 편중 가능성'],
     ytdReturn: '+9.8%',
-    dividendYield: '3.5%'
+    dividendYield: '3.5%',
   },
   // 추가(품질/고배당 대안)
   {
@@ -167,7 +203,7 @@ export const etfRecommendations: ETFInfo[] = [
     riskLevel: 'medium',
     suitability: ['소득 투자', '배당 투자'],
     pros: ['꾸준한 배당', '배당 안정성 중심'],
-    cons: ['성장성 제한', '섹터 편중 가능성']
+    cons: ['성장성 제한', '섹터 편중 가능성'],
   },
 
   // 소형주 ETF
@@ -175,7 +211,8 @@ export const etfRecommendations: ETFInfo[] = [
     symbol: 'IWM',
     name: 'iShares Russell 2000 ETF',
     category: '소형주',
-    description: 'Russell 2000 지수를 추종하는 ETF로, 미국 소형주에 투자합니다.',
+    description:
+      'Russell 2000 지수를 추종하는 ETF로, 미국 소형주에 투자합니다.',
     expenseRatio: '0.19%',
     aum: '680억 달러',
     riskLevel: 'high',
@@ -183,13 +220,14 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['높은 성장 잠재력', '소형주 분산', '높은 유동성', '미국 경제 대표'],
     cons: ['높은 변동성', '높은 리스크', '경기 민감성'],
     ytdReturn: '+12.4%',
-    dividendYield: '1.2%'
+    dividendYield: '1.2%',
   },
   {
     symbol: 'VB',
     name: 'Vanguard Small-Cap ETF',
     category: '소형주',
-    description: 'CRSP US Small Cap 지수를 추종하는 Vanguard의 소형주 ETF입니다.',
+    description:
+      'CRSP US Small Cap 지수를 추종하는 Vanguard의 소형주 ETF입니다.',
     expenseRatio: '0.05%',
     aum: '180억 달러',
     riskLevel: 'high',
@@ -197,7 +235,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['매우 낮은 수수료', '소형주 분산', '안정적인 운용사', '장기 성장'],
     cons: ['높은 변동성', '소형주 리스크', '경기 민감성'],
     ytdReturn: '+11.8%',
-    dividendYield: '1.4%'
+    dividendYield: '1.4%',
   },
 
   // 스타일/팩터
@@ -205,7 +243,8 @@ export const etfRecommendations: ETFInfo[] = [
     symbol: 'VTV',
     name: 'Vanguard Value ETF',
     category: '가치주',
-    description: '미국 대형 가치주에 투자하는 ETF로, 저평가된 기업들에 집중합니다.',
+    description:
+      '미국 대형 가치주에 투자하는 ETF로, 저평가된 기업들에 집중합니다.',
     expenseRatio: '0.04%',
     aum: '1,050억 달러',
     riskLevel: 'medium',
@@ -213,13 +252,14 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['낮은 수수료', '안정적 수익', '높은 배당', '저평가 기업'],
     cons: ['성장성 제한', '경기 민감성', '낮은 변동성'],
     ytdReturn: '+9.3%',
-    dividendYield: '2.3%'
+    dividendYield: '2.3%',
   },
   {
     symbol: 'VUG',
     name: 'Vanguard Growth ETF',
     category: '성장주',
-    description: '미국 대형 성장주에 투자하는 ETF로, 고성장 기업들에 집중합니다.',
+    description:
+      '미국 대형 성장주에 투자하는 ETF로, 고성장 기업들에 집중합니다.',
     expenseRatio: '0.04%',
     aum: '1,980억 달러',
     riskLevel: 'high',
@@ -227,7 +267,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['높은 성장 잠재력', '낮은 수수료', '기술 기업 집중', '높은 수익'],
     cons: ['높은 변동성', '높은 밸류에이션', '금리 민감성'],
     ytdReturn: '+18.7%',
-    dividendYield: '0.6%'
+    dividendYield: '0.6%',
   },
   {
     symbol: 'IWD',
@@ -241,7 +281,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['가치주 집중', '높은 배당', '안정적 수익', '다양한 기업'],
     cons: ['상대적으로 높은 수수료', '성장성 제한', '경기 민감성'],
     ytdReturn: '+8.1%',
-    dividendYield: '2.5%'
+    dividendYield: '2.5%',
   },
   // 추가 팩터
   {
@@ -254,7 +294,7 @@ export const etfRecommendations: ETFInfo[] = [
     riskLevel: 'medium',
     suitability: ['장기 투자', '변동성 완화', '팩터 투자'],
     pros: ['질적 선별', '상대적 방어력'],
-    cons: ['팩터 로테이션 리스크']
+    cons: ['팩터 로테이션 리스크'],
   },
   {
     symbol: 'MTUM',
@@ -266,7 +306,7 @@ export const etfRecommendations: ETFInfo[] = [
     riskLevel: 'high',
     suitability: ['성장/추세 추종', '팩터 투자'],
     pros: ['상승장 초과성과 잠재'],
-    cons: ['회귀 리스크', '섹터 편중']
+    cons: ['회귀 리스크', '섹터 편중'],
   },
   {
     symbol: 'SPLV',
@@ -278,7 +318,7 @@ export const etfRecommendations: ETFInfo[] = [
     riskLevel: 'medium',
     suitability: ['방어적 투자', '변동성 관리'],
     pros: ['하락 방어력 기대'],
-    cons: ['상승장 언더퍼폼 가능']
+    cons: ['상승장 언더퍼폼 가능'],
   },
 
   // 국제 ETF
@@ -294,7 +334,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['글로벌 분산', '낮은 수수료', '다양한 지역', '성장 잠재력'],
     cons: ['환율 리스크', '정치적 리스크', '유동성 제한'],
     ytdReturn: '+8.9%',
-    dividendYield: '2.8%'
+    dividendYield: '2.8%',
   },
   {
     symbol: 'EFA',
@@ -308,7 +348,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['선진국 집중', '높은 유동성', '검증된 지수', '다양한 지역'],
     cons: ['높은 수수료', '환율 리스크', '성장성 제한'],
     ytdReturn: '+7.2%',
-    dividendYield: '3.1%'
+    dividendYield: '3.1%',
   },
 
   // 신흥시장 ETF
@@ -320,11 +360,16 @@ export const etfRecommendations: ETFInfo[] = [
     expenseRatio: '0.07%', // 최신화
     aum: '780억 달러',
     riskLevel: 'high',
-    suitability: ['신흥시장 투자', '높은 성장 추구', '리스크 감수', '글로벌 분산'],
+    suitability: [
+      '신흥시장 투자',
+      '높은 성장 추구',
+      '리스크 감수',
+      '글로벌 분산',
+    ],
     pros: ['높은 성장 잠재력', '낮은 수수료', '다양한 국가', '인구 통계 이점'],
     cons: ['높은 변동성', '정치적 리스크', '환율 리스크', '유동성 제한'],
     ytdReturn: '+5.4%',
-    dividendYield: '2.9%'
+    dividendYield: '2.9%',
   },
   // 대안(저비용 코어 EM)
   {
@@ -337,7 +382,7 @@ export const etfRecommendations: ETFInfo[] = [
     riskLevel: 'high',
     suitability: ['신흥시장', '장기 분산'],
     pros: ['낮은 비용', '광범위 분산'],
-    cons: ['환율/정치 리스크']
+    cons: ['환율/정치 리스크'],
   },
 
   // 채권 ETF
@@ -345,7 +390,8 @@ export const etfRecommendations: ETFInfo[] = [
     symbol: 'BND',
     name: 'Vanguard Total Bond Market ETF',
     category: '채권',
-    description: '미국 전체 채권시장을 추종하는 ETF로, 안정적인 수익을 제공합니다.',
+    description:
+      '미국 전체 채권시장을 추종하는 ETF로, 안정적인 수익을 제공합니다.',
     expenseRatio: '0.03%',
     aum: '980억 달러',
     riskLevel: 'low',
@@ -353,7 +399,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['안정적인 수익', '매우 낮은 수수료', '높은 유동성', '이자 수익'],
     cons: ['낮은 수익률', '금리 리스크', '인플레이션 민감성'],
     ytdReturn: '+2.1%',
-    dividendYield: '3.2%'
+    dividendYield: '3.2%',
   },
   {
     symbol: 'AGG',
@@ -367,7 +413,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['매우 낮은 수수료', '높은 유동성', '안정적 수익', '다양한 채권'],
     cons: ['낮은 수익률', '금리 리스크', '인플레이션 민감성'],
     ytdReturn: '+1.8%',
-    dividendYield: '3.1%'
+    dividendYield: '3.1%',
   },
   {
     symbol: 'LQD',
@@ -381,7 +427,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['높은 이자 수익', '투자등급 안정성', '다양한 기업', '정기 배당'],
     cons: ['금리 리스크', '신용 리스크', '경기 민감성'],
     ytdReturn: '+2.3%',
-    dividendYield: '4.2%'
+    dividendYield: '4.2%',
   },
   {
     symbol: 'HYG',
@@ -395,7 +441,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['높은 이자 수익', '경기 회복 수혜', '다양한 기업', '정기 배당'],
     cons: ['높은 신용 리스크', '높은 변동성', '경기 민감성', '높은 수수료'],
     ytdReturn: '+4.8%',
-    dividendYield: '6.7%'
+    dividendYield: '6.7%',
   },
   {
     symbol: 'TLT',
@@ -405,11 +451,16 @@ export const etfRecommendations: ETFInfo[] = [
     expenseRatio: '0.15%',
     aum: '420억 달러',
     riskLevel: 'medium',
-    suitability: ['안전 자산', '금리 하락 베팅', '소득 투자', '포트폴리오 헤징'],
+    suitability: [
+      '안전 자산',
+      '금리 하락 베팅',
+      '소득 투자',
+      '포트폴리오 헤징',
+    ],
     pros: ['안전한 자산', '높은 이자 수익', '금리 하락 시 수익', '정부 보장'],
     cons: ['금리 상승 리스크', '높은 변동성', '장기 투자 필요'],
     ytdReturn: '-8.7%',
-    dividendYield: '3.8%'
+    dividendYield: '3.8%',
   },
 
   // 부동산 ETF
@@ -425,7 +476,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['높은 배당 수익률', '인플레이션 보호', '부동산 노출', '낮은 수수료'],
     cons: ['금리 민감성', '경기 민감성', '높은 변동성'],
     ytdReturn: '+2.8%',
-    dividendYield: '4.2%'
+    dividendYield: '4.2%',
   },
   {
     symbol: 'IYR',
@@ -439,7 +490,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['높은 배당 수익률', '부동산 노출', '인플레이션 보호', '다양한 REIT'],
     cons: ['비교적 높은 수수료', '금리 민감성', '경기 민감성', '높은 변동성'],
     ytdReturn: '+3.1%',
-    dividendYield: '4.5%'
+    dividendYield: '4.5%',
   },
   {
     symbol: 'SCHH',
@@ -453,7 +504,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['매우 낮은 수수료', '높은 배당', '부동산 노출', '인플레이션 보호'],
     cons: ['금리 민감성', '경기 민감성', '높은 변동성', '낮은 유동성'],
     ytdReturn: '+2.9%',
-    dividendYield: '4.3%'
+    dividendYield: '4.3%',
   },
 
   // 원자재 ETF
@@ -461,15 +512,21 @@ export const etfRecommendations: ETFInfo[] = [
     symbol: 'GLD',
     name: 'SPDR Gold Shares',
     category: '원자재',
-    description: '금에 직접 투자하는 ETF로, 인플레이션 헤징과 안전 자산 역할을 합니다.',
+    description:
+      '금에 직접 투자하는 ETF로, 인플레이션 헤징과 안전 자산 역할을 합니다.',
     expenseRatio: '0.40%',
     aum: '580억 달러',
     riskLevel: 'medium',
-    suitability: ['인플레이션 헤징', '안전 자산', '포트폴리오 보호', '글로벌 불확실성'],
+    suitability: [
+      '인플레이션 헤징',
+      '안전 자산',
+      '포트폴리오 보호',
+      '글로벌 불확실성',
+    ],
     pros: ['인플레이션 보호', '안전 자산', '글로벌 통화', '위기 시 수익'],
     cons: ['보관 비용', '배당 없음', '가격 변동성', '실용성 부족'],
     ytdReturn: '+12.4%',
-    dividendYield: '0.0%'
+    dividendYield: '0.0%',
   },
   {
     symbol: 'SLV',
@@ -479,11 +536,16 @@ export const etfRecommendations: ETFInfo[] = [
     expenseRatio: '0.50%',
     aum: '120억 달러',
     riskLevel: 'high',
-    suitability: ['원자재 투자', '인플레이션 헤징', '고위험 투자', '포트폴리오 보호'],
+    suitability: [
+      '원자재 투자',
+      '인플레이션 헤징',
+      '고위험 투자',
+      '포트폴리오 보호',
+    ],
     pros: ['은 가격 노출', '인플레이션 보호', '산업용 수요', '안전 자산'],
     cons: ['높은 변동성', '높은 수수료', '배당 없음', '보관 비용'],
     ytdReturn: '+15.2%',
-    dividendYield: '0.0%'
+    dividendYield: '0.0%',
   },
   {
     symbol: 'USO',
@@ -494,10 +556,15 @@ export const etfRecommendations: ETFInfo[] = [
     aum: '15억 달러',
     riskLevel: 'high',
     suitability: ['원유 투자', '인플레이션 헤징', '고위험 투자', '상품 베팅'],
-    pros: ['원유 가격 노출', '인플레이션 보호', '에너지 섹터 베팅', '높은 수익'],
+    pros: [
+      '원유 가격 노출',
+      '인플레이션 보호',
+      '에너지 섹터 베팅',
+      '높은 수익',
+    ],
     cons: ['매우 높은 변동성', '높은 수수료', '배당 없음', '롤오버 비용'],
     ytdReturn: '+2.8%',
-    dividendYield: '0.0%'
+    dividendYield: '0.0%',
   },
 
   // 섹터별 ETF (SPDR)
@@ -513,7 +580,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['금융 섹터 집중', '낮은 수수료', '높은 유동성', '경기 민감성'],
     cons: ['섹터 리스크', '금리 민감성', '규제 리스크'],
     ytdReturn: '+8.9%',
-    dividendYield: '2.1%'
+    dividendYield: '2.1%',
   },
   {
     symbol: 'XLE',
@@ -523,11 +590,21 @@ export const etfRecommendations: ETFInfo[] = [
     expenseRatio: '0.08%', // 최신화
     aum: '420억 달러',
     riskLevel: 'high',
-    suitability: ['에너지 투자', '인플레이션 헤징', '원자재 베팅', '고위험 투자'],
-    pros: ['에너지 섹터 집중', '인플레이션 보호', '높은 배당', '상품 가격 연동'],
+    suitability: [
+      '에너지 투자',
+      '인플레이션 헤징',
+      '원자재 베팅',
+      '고위험 투자',
+    ],
+    pros: [
+      '에너지 섹터 집중',
+      '인플레이션 보호',
+      '높은 배당',
+      '상품 가격 연동',
+    ],
     cons: ['높은 변동성', '원유 가격 의존', '환경 규제 리스크'],
     ytdReturn: '+3.2%',
-    dividendYield: '3.8%'
+    dividendYield: '3.8%',
   },
   {
     symbol: 'XLV',
@@ -541,7 +618,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['방어적 특성', '인구 고령화 수혜', '안정적 수익', '높은 배당'],
     cons: ['규제 리스크', '의료 정책 변화', '특허 만료 리스크'],
     ytdReturn: '+6.7%',
-    dividendYield: '1.6%'
+    dividendYield: '1.6%',
   },
   // 방어 섹터 추가
   {
@@ -554,7 +631,7 @@ export const etfRecommendations: ETFInfo[] = [
     riskLevel: 'medium',
     suitability: ['방어적 투자', '배당 투자'],
     pros: ['상대적 변동성 낮음', '배당 매력'],
-    cons: ['금리 민감성', '성장성 제한']
+    cons: ['금리 민감성', '성장성 제한'],
   },
 
   // 국제/국가별
@@ -570,7 +647,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['일본 시장 노출', '기술 기업 집중', '선진국 안정성', '환율 헤징'],
     cons: ['높은 수수료', '환율 리스크', '경제 성장 제한'],
     ytdReturn: '+7.8%',
-    dividendYield: '1.8%'
+    dividendYield: '1.8%',
   },
   {
     symbol: 'EWU',
@@ -584,7 +661,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['영국 시장 노출', '높은 배당', '선진국 안정성', '다양한 섹터'],
     cons: ['높은 수수료', '브렉시트 영향', '환율 리스크'],
     ytdReturn: '+5.2%',
-    dividendYield: '3.4%'
+    dividendYield: '3.4%',
   },
   {
     symbol: 'EWG',
@@ -598,7 +675,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['독일 시장 노출', '제조업 강국', '선진국 안정성', '기술 기업'],
     cons: ['높은 수수료', '유럽 경제 의존', '환율 리스크'],
     ytdReturn: '+6.9%',
-    dividendYield: '2.7%'
+    dividendYield: '2.7%',
   },
   {
     symbol: 'INDA',
@@ -612,7 +689,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['높은 성장 잠재력', '인구 통계 이점', '기술 기업', '소비 성장'],
     cons: ['높은 수수료', '높은 변동성', '정치적 리스크', '환율 리스크'],
     ytdReturn: '+12.3%',
-    dividendYield: '1.2%'
+    dividendYield: '1.2%',
   },
   {
     symbol: 'EWZ',
@@ -626,7 +703,7 @@ export const etfRecommendations: ETFInfo[] = [
     pros: ['원자재 수혜', '높은 성장 잠재력', '다양한 섹터', '높은 배당'],
     cons: ['높은 변동성', '정치적 리스크', '환율 리스크', '경제 불안정'],
     ytdReturn: '+8.7%',
-    dividendYield: '3.1%'
+    dividendYield: '3.1%',
   },
 
   // 특수/전략
@@ -640,9 +717,14 @@ export const etfRecommendations: ETFInfo[] = [
     riskLevel: 'high',
     suitability: ['혁신 투자', '높은 성장 추구', '액티브 투자', '고위험 투자'],
     pros: ['혁신 기업 집중', '높은 성장 잠재력', '액티브 운용', '다양한 기술'],
-    cons: ['매우 높은 변동성', '높은 수수료', '액티브 리스크', '높은 밸류에이션'],
+    cons: [
+      '매우 높은 변동성',
+      '높은 수수료',
+      '액티브 리스크',
+      '높은 밸류에이션',
+    ],
     ytdReturn: '+45.2%',
-    dividendYield: '0.0%'
+    dividendYield: '0.0%',
   },
   {
     symbol: 'JEPI',
@@ -654,36 +736,43 @@ export const etfRecommendations: ETFInfo[] = [
     riskLevel: 'medium',
     suitability: ['소득 투자', '배당 투자', '안정적 투자', '은퇴 준비'],
     pros: ['높은 배당 수익률', '안정적 수익', '옵션 전략', '월 배당'],
-    cons: ['성장성 제한', '복잡한 전략', '옵션 리스크', '상대적으로 높은 수수료'],
+    cons: [
+      '성장성 제한',
+      '복잡한 전략',
+      '옵션 리스크',
+      '상대적으로 높은 수수료',
+    ],
     ytdReturn: '+8.9%',
-    dividendYield: '7.8%'
+    dividendYield: '7.8%',
   },
   // 레버리지/인버스 (주의 섹션)
   {
     symbol: 'TQQQ',
     name: 'ProShares UltraPro QQQ',
     category: '레버리지',
-    description: 'NASDAQ-100 일일 수익의 3배를 목표로 하는 레버리지 ETF(매우 고위험).',
+    description:
+      'NASDAQ-100 일일 수익의 3배를 목표로 하는 레버리지 ETF(매우 고위험).',
     expenseRatio: '0.86%',
     aum: '180억 달러',
     riskLevel: 'high',
     suitability: ['단기 트레이딩', '고위험 투자'],
     pros: ['상승장 수익 극대화'],
-    cons: ['감가(디케이) 리스크', '변동성 극대', '장기 보유 부적합']
+    cons: ['감가(디케이) 리스크', '변동성 극대', '장기 보유 부적합'],
   },
   {
     symbol: 'SQQQ',
     name: 'ProShares UltraPro Short QQQ',
     category: '인버스',
-    description: 'NASDAQ-100 일일 수익의 -3배를 목표로 하는 인버스 레버리지 ETF(매우 고위험).',
+    description:
+      'NASDAQ-100 일일 수익의 -3배를 목표로 하는 인버스 레버리지 ETF(매우 고위험).',
     expenseRatio: '0.95%',
     aum: '50억 달러',
     riskLevel: 'high',
     suitability: ['단기 헤지', '고위험 투자'],
     pros: ['하락장 헤지 수단'],
-    cons: ['감가(디케이) 리스크', '변동성 극대', '장기 보유 부적합']
-  }
-]
+    cons: ['감가(디케이) 리스크', '변동성 극대', '장기 보유 부적합'],
+  },
+];
 
 // ETF 카테고리별 분류
 export const etfCategories = [
@@ -719,8 +808,8 @@ export const etfCategories = [
   '저변동성',
   '공공서비스',
   '레버리지',
-  '인버스'
-]
+  '인버스',
+];
 
 // 투자 목적별 추천 ETF (추가 반영)
 export const etfByPurpose = {
@@ -736,12 +825,12 @@ export const etfByPurpose = {
   '섹터 투자': ['XLK', 'XLF', 'XLV', 'XLE', 'IYW'],
   '가치 투자': ['VTV', 'IWD', 'VYM', 'SCHD'],
   '국제 분산': ['VXUS', 'EFA', 'IEMG', 'EWJ', 'EWU', 'EWG'],
-  '신흥시장': ['VWO', 'IEMG', 'INDA', 'EWZ'],
+  신흥시장: ['VWO', 'IEMG', 'INDA', 'EWZ'],
   '채권 투자': ['BND', 'AGG', 'LQD', 'HYG', 'TLT'],
   '부동산 투자': ['VNQ', 'IYR', 'SCHH'],
   '원자재 투자': ['GLD', 'SLV', 'USO', 'XLE'],
   '혁신 투자': ['ARKK', 'QQQ', 'IYW', 'VUG'],
   '고배당 투자': ['VYM', 'SCHD', 'JEPI', 'VNQ', 'LQD'],
   '방어적 투자': ['XLU', 'SPLV', 'VTV', 'BND'],
-  '단기 트레이딩(고위험)': ['TQQQ', 'SQQQ']
-}
+  '단기 트레이딩(고위험)': ['TQQQ', 'SQQQ'],
+};

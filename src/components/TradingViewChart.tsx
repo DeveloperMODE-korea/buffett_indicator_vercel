@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   createChart,
   ColorType,
@@ -11,28 +11,28 @@ import {
   CrosshairMode,
   LineStyle,
   type Time,
-} from 'lightweight-charts'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+} from 'lightweight-charts';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface StockData {
-  symbol: string
-  name: string
-  price: number
-  change: number
-  changePercent: number
+  symbol: string;
+  name: string;
+  price: number;
+  change: number;
+  changePercent: number;
   history?: Array<{
-    date: string
-    open: number
-    high: number
-    low: number
-    close: number
-    volume: number
-  }>
+    date: string;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    volume: number;
+  }>;
 }
 
 interface TradingViewChartProps {
-  stockData: StockData | null
-  loading?: boolean
+  stockData: StockData | null;
+  loading?: boolean;
 }
 
 const timeRangeOptions = [
@@ -42,32 +42,35 @@ const timeRangeOptions = [
   { value: '3M', label: '3개월', days: 90 },
   { value: '6M', label: '6개월', days: 180 },
   { value: '1Y', label: '1년', days: 365 },
-] as const
+] as const;
 
-type TimeRangeValue = typeof timeRangeOptions[number]['value']
+type TimeRangeValue = (typeof timeRangeOptions)[number]['value'];
 
-export default function TradingViewChart({ stockData, loading = false }: TradingViewChartProps) {
-  const [timeRange, setTimeRange] = useState<TimeRangeValue>('1M')
-  const [chartLoading, setChartLoading] = useState(false)
-  const [chartError, setChartError] = useState<string | null>(null)
-  const chartContainerRef = useRef<HTMLDivElement>(null)
-  const chartRef = useRef<IChartApi | null>(null)
-  const candlestickSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null)
-  const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null)
-  const resizeObserverRef = useRef<ResizeObserver | null>(null)
+export default function TradingViewChart({
+  stockData,
+  loading = false,
+}: TradingViewChartProps) {
+  const [timeRange, setTimeRange] = useState<TimeRangeValue>('1M');
+  const [chartLoading, setChartLoading] = useState(false);
+  const [chartError, setChartError] = useState<string | null>(null);
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<IChartApi | null>(null);
+  const candlestickSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
+  const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
   const cleanupChart = useCallback(() => {
     if (chartRef.current) {
-      chartRef.current.remove()
-      chartRef.current = null
+      chartRef.current.remove();
+      chartRef.current = null;
     }
-    candlestickSeriesRef.current = null
-    volumeSeriesRef.current = null
-  }, [])
+    candlestickSeriesRef.current = null;
+    volumeSeriesRef.current = null;
+  }, []);
 
   const initializeChart = useCallback(() => {
-    if (!chartContainerRef.current) return
-    cleanupChart()
+    if (!chartContainerRef.current) return;
+    cleanupChart();
 
     try {
       const chart = createChart(chartContainerRef.current, {
@@ -110,19 +113,35 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
           tickMarkFormatter: (time: Time) => {
             try {
               if (typeof time === 'number') {
-                const date = new Date(time * 1000)
-                return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
-              } else if (typeof time === 'object' && 'year' in time && 'month' in time && 'day' in time) {
-                const date = new Date(Date.UTC(time.year, time.month - 1, time.day))
-                return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
+                const date = new Date(time * 1000);
+                return date.toLocaleDateString('ko-KR', {
+                  month: 'short',
+                  day: 'numeric',
+                });
+              } else if (
+                typeof time === 'object' &&
+                'year' in time &&
+                'month' in time &&
+                'day' in time
+              ) {
+                const date = new Date(
+                  Date.UTC(time.year, time.month - 1, time.day)
+                );
+                return date.toLocaleDateString('ko-KR', {
+                  month: 'short',
+                  day: 'numeric',
+                });
               } else if (typeof time === 'string') {
-                const [y, m, d] = time.split('-').map((v) => parseInt(v, 10))
-                const date = new Date(Date.UTC(y, m - 1, d))
-                return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
+                const [y, m, d] = time.split('-').map(v => parseInt(v, 10));
+                const date = new Date(Date.UTC(y, m - 1, d));
+                return date.toLocaleDateString('ko-KR', {
+                  month: 'short',
+                  day: 'numeric',
+                });
               }
-              return ''
+              return '';
             } catch {
-              return ''
+              return '';
             }
           },
         },
@@ -142,7 +161,7 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
           mouseWheel: true,
           pinch: true,
         },
-      })
+      });
 
       // v4 방식으로 시리즈 추가
       const candlestickSeries = chart.addCandlestickSeries({
@@ -152,126 +171,134 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
         borderUpColor: '#26a69a',
         wickDownColor: '#ef5350',
         wickUpColor: '#26a69a',
-      })
+      });
 
       const volumeSeries = chart.addHistogramSeries({
         color: '#26a69a',
         priceFormat: { type: 'volume' },
         priceScaleId: '', // 하단 별도 스케일
-      })
+      });
 
       // 하단 거래량 패널 여백
       volumeSeries.priceScale().applyOptions({
         scaleMargins: { top: 0.8, bottom: 0 },
-      })
+      });
 
-      chartRef.current = chart
-      candlestickSeriesRef.current = candlestickSeries
-      volumeSeriesRef.current = volumeSeries
+      chartRef.current = chart;
+      candlestickSeriesRef.current = candlestickSeries;
+      volumeSeriesRef.current = volumeSeries;
 
-      if (resizeObserverRef.current) resizeObserverRef.current.disconnect()
-      resizeObserverRef.current = new ResizeObserver((entries) => {
+      if (resizeObserverRef.current) resizeObserverRef.current.disconnect();
+      resizeObserverRef.current = new ResizeObserver(entries => {
         if (entries.length > 0 && chartRef.current) {
-          const { width, height } = entries[0].contentRect
-          chartRef.current.resize(width, height)
+          const { width, height } = entries[0].contentRect;
+          chartRef.current.resize(width, height);
         }
-      })
-      resizeObserverRef.current.observe(chartContainerRef.current)
+      });
+      resizeObserverRef.current.observe(chartContainerRef.current);
     } catch (error) {
-      console.error('Chart initialization error:', error)
-      setChartError('차트 초기화 중 오류가 발생했습니다.')
+      console.error('Chart initialization error:', error);
+      setChartError('차트 초기화 중 오류가 발생했습니다.');
     }
-  }, [cleanupChart])
+  }, [cleanupChart]);
 
   const processChartData = useCallback((history: StockData['history']) => {
-    if (!candlestickSeriesRef.current || !volumeSeriesRef.current || !history) return
+    if (!candlestickSeriesRef.current || !volumeSeriesRef.current || !history)
+      return;
 
     try {
       const sortedHistory = [...history].sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-      )
+      );
 
       const candlestickData: CandlestickData<Time>[] = sortedHistory
-        .filter((i) => i.open != null && i.high != null && i.low != null && i.close != null)
-        .map((i) => ({
+        .filter(
+          i =>
+            i.open != null && i.high != null && i.low != null && i.close != null
+        )
+        .map(i => ({
           time: Math.floor(new Date(i.date).getTime() / 1000) as Time,
           open: Number(i.open),
           high: Number(i.high),
           low: Number(i.low),
           close: Number(i.close),
-        }))
+        }));
 
       const volumeData: HistogramData<Time>[] = sortedHistory
-        .filter((i) => i.volume != null)
-        .map((i) => ({
+        .filter(i => i.volume != null)
+        .map(i => ({
           time: Math.floor(new Date(i.date).getTime() / 1000) as Time,
           value: Number(i.volume),
           color: i.close >= i.open ? '#26a69a' : '#ef5350',
-        }))
+        }));
 
-      if (candlestickData.length) candlestickSeriesRef.current.setData(candlestickData)
-      if (volumeData.length) volumeSeriesRef.current.setData(volumeData)
-      if (chartRef.current && candlestickData.length) chartRef.current.timeScale().fitContent()
+      if (candlestickData.length)
+        candlestickSeriesRef.current.setData(candlestickData);
+      if (volumeData.length) volumeSeriesRef.current.setData(volumeData);
+      if (chartRef.current && candlestickData.length)
+        chartRef.current.timeScale().fitContent();
 
-      setChartError(null)
+      setChartError(null);
     } catch (error) {
-      console.error('Chart data processing error:', error)
-      setChartError('차트 데이터 처리 중 오류가 발생했습니다.')
+      console.error('Chart data processing error:', error);
+      setChartError('차트 데이터 처리 중 오류가 발생했습니다.');
     }
-  }, [])
+  }, []);
 
   const fetchChartData = useCallback(
     async (symbol: string, days: number) => {
-      if (!symbol) return
-      setChartLoading(true)
-      setChartError(null)
+      if (!symbol) return;
+      setChartLoading(true);
+      setChartError(null);
 
       try {
-        const res = await fetch(`/api/stock-data?symbols=${symbol}&history=true&days=${days}`)
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const result = await res.json()
+        const res = await fetch(
+          `/api/stock-data?symbols=${symbol}&history=true&days=${days}`
+        );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const result = await res.json();
 
         if (result.success && result.data?.length > 0) {
-          const stock = result.data[0]
+          const stock = result.data[0];
           if (stock.history?.length > 0) {
-            processChartData(stock.history)
+            processChartData(stock.history);
           } else {
-            setChartError('히스토리 데이터가 없습니다.')
+            setChartError('히스토리 데이터가 없습니다.');
           }
         } else {
-          setChartError('데이터를 가져올 수 없습니다.')
+          setChartError('데이터를 가져올 수 없습니다.');
         }
       } catch (e) {
-        console.error(e)
-        setChartError('데이터를 가져오는 중 오류가 발생했습니다.')
+        console.error(e);
+        setChartError('데이터를 가져오는 중 오류가 발생했습니다.');
       } finally {
-        setChartLoading(false)
+        setChartLoading(false);
       }
     },
     [processChartData]
-  )
+  );
 
   useEffect(() => {
-    initializeChart()
+    initializeChart();
     return () => {
       if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect()
-        resizeObserverRef.current = null
+        resizeObserverRef.current.disconnect();
+        resizeObserverRef.current = null;
       }
-      cleanupChart()
-    }
-  }, [initializeChart, cleanupChart])
+      cleanupChart();
+    };
+  }, [initializeChart, cleanupChart]);
 
   useEffect(() => {
     if (stockData?.symbol) {
-      const selected = timeRangeOptions.find((o) => o.value === timeRange)
-      if (selected) fetchChartData(stockData.symbol, selected.days)
+      const selected = timeRangeOptions.find(o => o.value === timeRange);
+      if (selected) fetchChartData(stockData.symbol, selected.days);
     }
-  }, [stockData?.symbol, timeRange, fetchChartData])
+  }, [stockData?.symbol, timeRange, fetchChartData]);
 
   useEffect(() => {
-    if (stockData?.history?.length) processChartData(stockData.history)
-  }, [stockData, processChartData])
+    if (stockData?.history?.length) processChartData(stockData.history);
+  }, [stockData, processChartData]);
 
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat('en-US', {
@@ -279,7 +306,7 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
       currency: 'USD',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(value)
+    }).format(value);
 
   if (loading || chartLoading) {
     return (
@@ -291,12 +318,14 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
           <div className="h-96 flex items-center justify-center">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-2 text-gray-600 dark:text-gray-400">차트를 불러오는 중...</p>
+              <p className="mt-2 text-gray-600 dark:text-gray-400">
+                차트를 불러오는 중...
+              </p>
             </div>
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (chartError) {
@@ -312,10 +341,13 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
               <p>{chartError}</p>
               <button
                 onClick={() => {
-                  setChartError(null)
+                  setChartError(null);
                   if (stockData?.symbol) {
-                    const selected = timeRangeOptions.find((o) => o.value === timeRange)
-                    if (selected) fetchChartData(stockData.symbol, selected.days)
+                    const selected = timeRangeOptions.find(
+                      o => o.value === timeRange
+                    );
+                    if (selected)
+                      fetchChartData(stockData.symbol, selected.days);
                   }
                 }}
                 className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
@@ -326,7 +358,7 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (!stockData) {
@@ -344,7 +376,7 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -357,14 +389,17 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
             </CardTitle>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
               현재가: {formatCurrency(stockData.price)}
-              <span className={`ml-2 ${stockData.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <span
+                className={`ml-2 ${stockData.change >= 0 ? 'text-green-600' : 'text-red-600'}`}
+              >
                 {stockData.change >= 0 ? '+' : ''}
-                {stockData.change.toFixed(2)} ({stockData.changePercent.toFixed(2)}%)
+                {stockData.change.toFixed(2)} (
+                {stockData.changePercent.toFixed(2)}%)
               </span>
             </p>
           </div>
           <div className="flex space-x-1">
-            {timeRangeOptions.map((option) => (
+            {timeRangeOptions.map(option => (
               <button
                 key={option.value}
                 onClick={() => setTimeRange(option.value)}
@@ -389,5 +424,5 @@ export default function TradingViewChart({ stockData, loading = false }: Trading
         />
       </CardContent>
     </Card>
-  )
+  );
 }
