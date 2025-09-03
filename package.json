@@ -24,7 +24,7 @@
     "chartjs-adapter-date-fns": "^3.0.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "lightweight-charts": "^4.2.0",
+    "lightweight-charts": "^5.0.8",
     "next": "15.4.7",
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
