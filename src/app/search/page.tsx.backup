@@ -293,11 +293,16 @@ export default function SearchPage() {
     []
   );
 
-  // 재무제표 기능 비활성화
   const loadFinancials = useCallback(
-    async (symbol: string, period: 'annual' | 'quarterly') => {
-      console.log('재무제표 기능이 비활성화되었습니다.');
-    },
+    async (symbol: string, period: 'annual' | 'quarterly') =>
+      withSectionLoader('financials', async () => {
+        const r = await fetch(
+          `/api/financials?symbols=${symbol}&period=${period}`
+        );
+        const j = await r.json();
+        if (!j?.success) throw new Error('재무제표 데이터 오류');
+        setFinancialsData(j.data?.[0] || null);
+      }),
     []
   );
 
@@ -1145,8 +1150,7 @@ export default function SearchPage() {
                 </Card>
               </div>
 
-              {/* 재무제표 - 임시 비활성화 */}
-              {false && (
+              {/* 재무제표 */}
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -1595,8 +1599,6 @@ export default function SearchPage() {
                     )}
                 </CardContent>
               </Card>
-
-              )}
 
               {/* Key Stats */}
               <Card>

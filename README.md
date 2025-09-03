@@ -44,7 +44,6 @@
 - GET `/api/insights?symbols=AAPL` (insights→news→RSS 폴백)
 - GET `/api/ratings?symbols=AAPL`
 - GET `/api/sec-filings?symbols=AAPL` (SEC Submissions→Yahoo→Atom 폴백)
-- GET `/api/financials?symbols=AAPL&period=annual|quarterly`
 - GET `/api/key-stats?symbols=AAPL`
 - GET `/api/options?symbol=AAPL`
 - GET `/api/fund-facts?symbols=VTI` (ETF/펀드: fundProfile/topHoldings/fundPerformance)
@@ -54,9 +53,6 @@
 ```bash
 # 요약+프로필
 curl "http://localhost:3000/api/summary?symbols=AAPL&modules=price,summaryDetail,financialData,assetProfile" | jq .
-
-# 재무제표(분기)
-curl "http://localhost:3000/api/financials?symbols=AAPL&period=quarterly" | jq .
 
 # SEC 공시(폴백 포함)
 curl "http://localhost:3000/api/sec-filings?symbols=AAPL" | jq .
